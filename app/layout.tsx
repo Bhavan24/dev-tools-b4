@@ -10,9 +10,10 @@ const geistMono = Geist_Mono({
 })
 
 export const metadata: Metadata = {
-  title: 'v0 App',
-  description: 'Created with v0',
+  title: 'DevTools - Free Developer Utilities',
+  description: 'Comprehensive collection of free developer tools including JSON formatters, text utilities, data generators, timestamp converters, and more.',
   generator: 'v0.app',
+  keywords: 'developer tools, JSON formatter, timestamp converter, text utilities, free tools, web tools',
   icons: {
     icon: [
       {
@@ -35,9 +36,12 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   colorScheme: 'light dark',
   themeColor: [
-    { media: '(prefers-color-scheme: light)', color: 'white' },
-    { media: '(prefers-color-scheme: dark)', color: 'black' },
+    { media: '(prefers-color-scheme: light)', color: '#ffffff' },
+    { media: '(prefers-color-scheme: dark)', color: '#08080c' },
   ],
+  userScalable: true,
+  width: 'device-width',
+  initialScale: 1,
 }
 
 export default function RootLayout({
