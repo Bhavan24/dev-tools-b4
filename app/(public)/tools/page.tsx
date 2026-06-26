@@ -27,38 +27,39 @@ export default function ToolsPage() {
   return (
     <div className="container-main py-12 md:py-16">
       {/* Header */}
-      <div className="mb-12">
-        <h1 className="text-4xl md:text-5xl font-bold mb-4 text-balance">
-          Developer Tools
+      <div className="mb-16">
+        <h1 className="text-5xl md:text-6xl font-bold mb-4 text-balance">
+          All Tools
         </h1>
-        <p className="text-lg text-muted-foreground text-balance">
-          {TOOLS.length}+ free tools to boost your development workflow
+        <p className="text-lg md:text-xl text-muted-foreground text-balance">
+          Browse our collection of {TOOLS.length}+ free developer utilities. All tools work instantly, no signup required.
         </p>
       </div>
 
       {/* Search Bar */}
-      <div className="mb-8">
-        <div className="relative">
+      <div className="mb-12">
+        <div className="relative max-w-2xl">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground" size={20} />
           <input
             type="text"
-            placeholder="Search tools..."
+            placeholder="Search tools by name or function..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="input-base pl-12 py-3 text-base"
+            className="input-base pl-12 py-4 text-base rounded-2xl shadow-sm focus:shadow-md"
           />
         </div>
       </div>
 
       {/* Category Filter */}
-      <div className="mb-12">
+      <div className="mb-16">
+        <p className="text-sm font-semibold text-muted-foreground mb-4">FILTER BY CATEGORY</p>
         <div className="flex flex-wrap gap-3">
           <button
             onClick={() => setSelectedCategory(null)}
-            className={`px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
+            className={`px-4 py-2 rounded-full font-medium transition-all duration-200 text-sm ${
               selectedCategory === null
-                ? 'btn-primary'
-                : 'btn-secondary'
+                ? 'bg-primary text-primary-foreground shadow-lg'
+                : 'bg-secondary text-foreground hover:bg-muted'
             }`}
           >
             All Tools
@@ -69,10 +70,10 @@ export default function ToolsPage() {
               <button
                 key={category}
                 onClick={() => setSelectedCategory(category)}
-                className={`px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
+                className={`px-4 py-2 rounded-full font-medium transition-all duration-200 text-sm ${
                   selectedCategory === category
-                    ? 'btn-primary'
-                    : 'btn-secondary'
+                    ? 'bg-primary text-primary-foreground shadow-lg'
+                    : 'bg-secondary text-foreground hover:bg-muted'
                 }`}
               >
                 {info.name}
@@ -95,6 +96,7 @@ export default function ToolsPage() {
                 name={tool.name}
                 description={tool.description}
                 icon={Icon}
+                category={tool.category}
               />
             )
           })}

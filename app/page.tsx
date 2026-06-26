@@ -1,105 +1,105 @@
 import { Navbar } from '@/components/layout/navbar'
 import { Footer } from '@/components/layout/footer'
-import { ArrowRight, Zap, Code2, Clock, Beaker } from 'lucide-react'
+import { ArrowRight, Sparkles, Zap, Gauge, Shield } from 'lucide-react'
 import Link from 'next/link'
 import { TOOLS, CATEGORY_INFO, TOOLS_CATEGORIES } from '@/lib/constants'
 
 export default function Home() {
   const featuredTools = TOOLS.slice(0, 6)
   const categories = Object.values(TOOLS_CATEGORIES)
+  
+  const categoryColors: Record<string, { bg: string; icon: string }> = {
+    utility: { bg: 'from-purple-500 to-purple-600', icon: '⚙️' },
+    json: { bg: 'from-cyan-500 to-cyan-600', icon: '{}' },
+    testing: { bg: 'from-amber-500 to-amber-600', icon: '🧪' },
+    text: { bg: 'from-pink-500 to-pink-600', icon: '✏️' },
+    time: { bg: 'from-green-500 to-green-600', icon: '⏱️' },
+    finance: { bg: 'from-violet-500 to-violet-600', icon: '💰' },
+    links: { bg: 'from-indigo-500 to-indigo-600', icon: '🔗' },
+    notes: { bg: 'from-blue-500 to-blue-600', icon: '📝' },
+  }
 
   return (
     <>
       <Navbar />
-      <main className="min-h-screen bg-background">
+      <main className="min-h-screen bg-gradient-to-b from-background to-secondary">
         {/* Hero Section */}
-        <section className="container-main py-20 md:py-32 flex flex-col items-center text-center gap-8 animate-fade-in">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20">
-            <Zap size={16} className="text-primary" />
-            <span className="text-sm font-medium text-primary">Free Tools For All Developers</span>
+        <section className="container-main py-20 md:py-32 flex flex-col items-center text-center gap-8">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 animate-fade-in">
+            <Sparkles size={18} className="text-primary" />
+            <span className="text-sm font-semibold text-primary">Free Developer Toolkit</span>
           </div>
 
-          <div className="flex flex-col gap-6 max-w-3xl">
-            <h1 className="text-5xl md:text-6xl font-bold text-balance leading-tight">
-              Developer Tools,
-              <span className="block text-primary">Made Simple</span>
+          <div className="flex flex-col gap-6 max-w-4xl animate-fade-in" style={{ animationDelay: '0.1s' }}>
+            <h1 className="text-6xl md:text-7xl font-bold text-balance leading-tight">
+              Developer Tools to Make
+              <span className="block bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
+                Your Work Simple
+              </span>
             </h1>
-            <p className="text-xl text-muted-foreground text-balance">
-              Comprehensive collection of free, powerful tools to enhance your development workflow. No signup required—use them instantly.
+            <p className="text-lg md:text-xl text-muted-foreground text-balance max-w-3xl mx-auto">
+              Access 100+ free tools for formatting, converting, generating, and debugging. No signup, no limits, no nonsense.
             </p>
           </div>
 
-          <div className="flex flex-col sm:flex-row gap-4 pt-4">
-            <Link href="/tools" className="btn-primary flex items-center gap-2 text-lg">
+          <div className="flex flex-col sm:flex-row gap-4 pt-4 animate-fade-in" style={{ animationDelay: '0.2s' }}>
+            <Link href="/tools" className="btn-primary inline-flex items-center gap-2 text-lg px-8 py-3 rounded-xl font-semibold shadow-lg hover:shadow-xl hover:shadow-primary/30">
               Explore Tools
               <ArrowRight size={20} />
             </Link>
-            <Link href="#features" className="btn-secondary flex items-center gap-2 text-lg">
-              Learn More
+            <Link href="#categories" className="btn-secondary inline-flex items-center gap-2 text-lg px-8 py-3 rounded-xl font-semibold hover:bg-muted">
+              Browse Categories
             </Link>
           </div>
-        </section>
 
-        {/* Features Section */}
-        <section id="features" className="container-main py-20 md:py-32">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
-            <div className="card-base text-center">
-              <div className="p-4 rounded-lg bg-primary/10 w-fit mx-auto mb-4">
-                <Code2 size={32} className="text-primary" />
-              </div>
-              <h3 className="font-semibold text-lg mb-2">100+ Tools</h3>
-              <p className="text-muted-foreground">
-                A comprehensive suite of developer utilities covering everything from JSON formatting to data generation.
-              </p>
+          {/* Stats */}
+          <div className="grid grid-cols-3 gap-6 pt-12 w-full max-w-2xl animate-fade-in" style={{ animationDelay: '0.3s' }}>
+            <div className="text-center">
+              <p className="text-3xl font-bold text-foreground">100+</p>
+              <p className="text-muted-foreground text-sm">Tools Available</p>
             </div>
-            <div className="card-base text-center">
-              <div className="p-4 rounded-lg bg-accent/10 w-fit mx-auto mb-4">
-                <Zap size={32} className="text-accent" />
-              </div>
-              <h3 className="font-semibold text-lg mb-2">Instant Access</h3>
-              <p className="text-muted-foreground">
-                No signup, no installation. Use any tool immediately from your browser without any hassle.
-              </p>
+            <div className="text-center">
+              <p className="text-3xl font-bold text-foreground">Instant</p>
+              <p className="text-muted-foreground text-sm">No Setup Required</p>
             </div>
-            <div className="card-base text-center">
-              <div className="p-4 rounded-lg bg-blue-500/10 w-fit mx-auto mb-4">
-                <Beaker size={32} className="text-blue-500" />
-              </div>
-              <h3 className="font-semibold text-lg mb-2">Always Free</h3>
-              <p className="text-muted-foreground">
-                All tools are completely free. No subscriptions, no premium features, no limitations.
-              </p>
+            <div className="text-center">
+              <p className="text-3xl font-bold text-foreground">Forever</p>
+              <p className="text-muted-foreground text-sm">100% Free</p>
             </div>
           </div>
         </section>
 
-        {/* Tool Categories */}
-        <section className="container-main py-20 md:py-32">
+        {/* Tool Categories - Vibrant Grid */}
+        <section id="categories" className="container-main py-20 md:py-32">
           <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold mb-4 text-balance">Powerful Categories</h2>
+            <h2 className="text-4xl md:text-5xl font-bold mb-4 text-balance">Browse by Category</h2>
             <p className="text-lg text-muted-foreground text-balance">
-              Organized by function for easy discovery
+              Find exactly what you need from our organized collection
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
             {categories.map((category) => {
               const info = CATEGORY_INFO[category]
-              const IconComponent = require('lucide-react')[info.icon]
+              const colors = categoryColors[category] || categoryColors.utility
               return (
                 <Link key={category} href={`/tools?category=${category}`}>
-                  <div className="card-base group">
-                    <div className="flex items-center gap-3 mb-3">
-                      <div className="p-2 rounded-lg bg-primary/10 group-hover:bg-primary/20 transition-colors">
-                        <IconComponent size={20} className="text-primary" />
+                  <div className={`group bg-gradient-to-br ${colors.bg} rounded-2xl p-6 text-white shadow-lg hover:shadow-2xl transition-all duration-300 hover:scale-105 cursor-pointer min-h-48 flex flex-col justify-between`}>
+                    <div>
+                      <div className="text-5xl mb-3 opacity-80 group-hover:opacity-100 transition-opacity">
+                        {colors.icon}
                       </div>
-                      <h3 className="font-semibold text-foreground group-hover:text-primary transition-colors">
+                      <h3 className="font-bold text-lg md:text-xl mb-2 text-white">
                         {info.name}
                       </h3>
+                      <p className="text-sm text-white/80 line-clamp-2">
+                        {info.description}
+                      </p>
                     </div>
-                    <p className="text-sm text-muted-foreground line-clamp-2">
-                      {info.description}
-                    </p>
+                    <div className="flex items-center gap-2 text-white/90 text-sm font-medium group-hover:gap-3 transition-all">
+                      <span>Explore</span>
+                      <ArrowRight size={16} />
+                    </div>
                   </div>
                 </Link>
               )
@@ -107,27 +107,68 @@ export default function Home() {
           </div>
         </section>
 
+        {/* Features */}
+        <section className="container-main py-20 md:py-32">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl md:text-5xl font-bold mb-4 text-balance">Why Choose DevTools?</h2>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="card-base group hover:border-primary/50">
+              <div className="p-4 rounded-xl bg-gradient-to-br from-blue-100 to-blue-50 w-fit mb-4 group-hover:scale-110 transition-transform">
+                <Zap size={28} className="text-primary" />
+              </div>
+              <h3 className="font-bold text-lg mb-3">Lightning Fast</h3>
+              <p className="text-muted-foreground">
+                Optimized for speed. All tools run instantly in your browser with zero lag.
+              </p>
+            </div>
+
+            <div className="card-base group hover:border-primary/50">
+              <div className="p-4 rounded-xl bg-gradient-to-br from-purple-100 to-purple-50 w-fit mb-4 group-hover:scale-110 transition-transform">
+                <Gauge size={28} className="text-purple-600" />
+              </div>
+              <h3 className="font-bold text-lg mb-3">Powerful & Flexible</h3>
+              <p className="text-muted-foreground">
+                Comprehensive tools with advanced options for professional developers.
+              </p>
+            </div>
+
+            <div className="card-base group hover:border-primary/50">
+              <div className="p-4 rounded-xl bg-gradient-to-br from-green-100 to-green-50 w-fit mb-4 group-hover:scale-110 transition-transform">
+                <Shield size={28} className="text-green-600" />
+              </div>
+              <h3 className="font-bold text-lg mb-3">Private & Secure</h3>
+              <p className="text-muted-foreground">
+                Your data stays in your browser. We don&apos;t store or process any of your information.
+              </p>
+            </div>
+          </div>
+        </section>
+
         {/* Featured Tools */}
         <section className="container-main py-20 md:py-32">
           <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold mb-4 text-balance">Featured Tools</h2>
-            <p className="text-lg text-muted-foreground text-balance">
-              Get started with our most popular utilities
-            </p>
+            <h2 className="text-4xl md:text-5xl font-bold mb-4 text-balance">Most Popular Tools</h2>
+            <p className="text-lg text-muted-foreground">Get started with our most-used utilities</p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
             {featuredTools.map((tool) => (
               <Link key={tool.id} href={`/tools/${tool.id}`}>
-                <div className="card-base group">
-                  <h3 className="font-semibold text-lg mb-2 group-hover:text-primary transition-colors">
-                    {tool.name}
-                  </h3>
-                  <p className="text-muted-foreground mb-4">
+                <div className="card-base group hover:shadow-lg hover:border-primary/50">
+                  <div className="flex items-start justify-between mb-4">
+                    <h3 className="font-bold text-lg text-foreground group-hover:text-primary transition-colors flex-1">
+                      {tool.name}
+                    </h3>
+                    <ArrowRight size={20} className="text-muted-foreground group-hover:text-primary transition-colors opacity-0 group-hover:opacity-100" />
+                  </div>
+                  <p className="text-muted-foreground text-sm mb-4">
                     {tool.description}
                   </p>
-                  <div className="flex items-center gap-2 text-primary opacity-0 group-hover:opacity-100 transition-opacity">
-                    Try it <ArrowRight size={18} />
+                  <div className="inline-flex items-center gap-2 text-primary font-semibold text-sm group-hover:gap-3 transition-all">
+                    <span>Try it now</span>
+                    <Sparkles size={16} />
                   </div>
                 </div>
               </Link>
@@ -135,8 +176,8 @@ export default function Home() {
           </div>
 
           <div className="text-center">
-            <Link href="/tools" className="btn-primary inline-flex items-center gap-2">
-              View All Tools
+            <Link href="/tools" className="btn-primary inline-flex items-center gap-2 text-lg px-8 py-3 rounded-xl font-semibold shadow-lg hover:shadow-xl">
+              View All {TOOLS.length} Tools
               <ArrowRight size={20} />
             </Link>
           </div>
@@ -144,18 +185,19 @@ export default function Home() {
 
         {/* CTA Section */}
         <section className="container-main py-20 md:py-32">
-          <div className="card-base bg-gradient-to-br from-primary/10 to-accent/10 border border-primary/20 text-center p-12 md:p-16">
-            <h2 className="text-4xl md:text-5xl font-bold mb-6 text-balance">Ready to level up?</h2>
-            <p className="text-xl text-muted-foreground mb-8 text-balance max-w-2xl mx-auto">
-              Create an account to save your favorite tools, build custom workflows, and unlock personalized features like notes and todo lists.
+          <div className="bg-gradient-to-r from-primary via-purple-500 to-pink-500 rounded-3xl p-12 md:p-16 text-white text-center shadow-2xl">
+            <h2 className="text-4xl md:text-5xl font-bold mb-6 text-balance">Ready to Boost Productivity?</h2>
+            <p className="text-lg text-white/90 mb-8 text-balance max-w-2xl mx-auto">
+              Create an account to save your favorite tools, build custom workflows, and unlock personalized features.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link href="/tools" className="btn-primary text-lg">
-                Start Using Tools Now
+              <Link href="/tools" className="bg-white text-primary font-semibold px-8 py-3 rounded-xl hover:bg-gray-100 transition-colors inline-flex items-center gap-2">
+                Start Using Now
+                <ArrowRight size={20} />
               </Link>
-              <Link href="#" className="btn-secondary text-lg">
+              <button className="bg-white/20 border border-white/40 text-white font-semibold px-8 py-3 rounded-xl hover:bg-white/30 transition-colors backdrop-blur">
                 Create Account
-              </Link>
+              </button>
             </div>
           </div>
         </section>

@@ -7,24 +7,41 @@ interface ToolCardProps {
   name: string
   description: string
   icon: LucideIcon
+  category?: string
 }
 
-export function ToolCard({ id, name, description, icon: Icon }: ToolCardProps) {
+const categoryGradients: Record<string, string> = {
+  utility: 'from-purple-500 to-purple-600',
+  json: 'from-cyan-500 to-cyan-600',
+  testing: 'from-amber-500 to-amber-600',
+  text: 'from-pink-500 to-pink-600',
+  time: 'from-green-500 to-green-600',
+  finance: 'from-violet-500 to-violet-600',
+  links: 'from-indigo-500 to-indigo-600',
+  notes: 'from-blue-500 to-blue-600',
+}
+
+export function ToolCard({ id, name, description, icon: Icon, category = 'utility' }: ToolCardProps) {
+  const gradient = categoryGradients[category] || categoryGradients.utility
+  
   return (
     <Link href={`/tools/${id}`}>
-      <div className="card-base group cursor-pointer">
-        <div className="flex items-start justify-between mb-4">
-          <div className="p-3 rounded-lg bg-primary/10 group-hover:bg-primary/20 transition-colors">
-            <Icon size={24} className="text-primary" />
+      <div className={`group bg-gradient-to-br ${gradient} rounded-2xl p-6 text-white shadow-lg hover:shadow-2xl transition-all duration-300 hover:scale-105 cursor-pointer min-h-56 flex flex-col justify-between`}>
+        <div>
+          <div className="p-3 rounded-lg bg-white/20 backdrop-blur-sm w-fit mb-4 group-hover:bg-white/30 transition-all group-hover:scale-110">
+            <Icon size={28} className="text-white" />
           </div>
-          <ArrowRight size={20} className="text-muted-foreground group-hover:text-primary transition-all group-hover:translate-x-1" />
+          <h3 className="font-bold text-lg text-white mb-3">
+            {name}
+          </h3>
+          <p className="text-sm text-white/90 line-clamp-3">
+            {description}
+          </p>
         </div>
-        <h3 className="font-semibold text-foreground mb-2 group-hover:text-primary transition-colors">
-          {name}
-        </h3>
-        <p className="text-sm text-muted-foreground line-clamp-2">
-          {description}
-        </p>
+        <div className="flex items-center gap-2 text-white/90 text-sm font-semibold group-hover:gap-3 transition-all">
+          <span>Open Tool</span>
+          <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
+        </div>
       </div>
     </Link>
   )
