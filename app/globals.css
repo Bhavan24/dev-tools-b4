@@ -165,5 +165,62 @@
   }
   html {
     @apply font-sans;
+    scroll-behavior: smooth;
+  }
+}
+
+@layer components {
+  .container-main {
+    @apply mx-auto max-w-7xl px-4 sm:px-6 lg:px-8;
+  }
+
+  .btn-primary {
+    @apply rounded-lg bg-primary px-4 py-2 font-medium text-primary-foreground transition-all duration-200 hover:shadow-lg hover:shadow-primary/30 active:scale-95;
+  }
+
+  .btn-secondary {
+    @apply rounded-lg border border-border bg-card px-4 py-2 font-medium text-foreground transition-all duration-200 hover:bg-secondary active:scale-95;
+  }
+
+  .btn-ghost {
+    @apply rounded-lg px-4 py-2 font-medium transition-all duration-200 hover:bg-secondary;
+  }
+
+  .card-base {
+    @apply rounded-xl border border-border bg-card p-6 shadow-sm transition-all duration-200 hover:shadow-md;
+  }
+
+  .input-base {
+    @apply w-full rounded-lg border border-border bg-input px-3 py-2 text-foreground placeholder:text-muted-foreground transition-colors duration-200 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background;
+  }
+
+  .fade-in {
+    animation: fadeIn 0.3s ease-in-out;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .slide-in-from-left {
+    animation: slideInFromLeft 0.3s ease-out;
+  }
+
+  @keyframes slideInFromLeft {
+    from {
+      opacity: 0;
+      transform: translateX(-20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
   }
 }
