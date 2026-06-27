@@ -131,4 +131,11 @@ export const TOOLS = [
     description: 'Convert between different currencies',
     shortDescription: 'Convert currency',
   },
+  {
+    id: 'password-generator',
+    name: 'Password Generator',
+    category: TOOLS_CATEGORIES.UTILITY,
+    description: 'Generate secure passwords with customizable options',
+    shortDescription: 'Generate passwords',
+  },
 ] as const

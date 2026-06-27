@@ -1,14 +1,23 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
+import { useSearchParams } from 'next/navigation'
 import { TOOLS, TOOLS_CATEGORIES, CATEGORY_INFO } from '@/lib/constants'
 import { ToolCard } from '@/components/tools/tool-card'
 import { Search } from 'lucide-react'
 import * as LucideIcons from 'lucide-react'
 
 export default function ToolsPage() {
+  const searchParams = useSearchParams()
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
+
+  useEffect(() => {
+    const categoryParam = searchParams.get('category')
+    if (categoryParam) {
+      setSelectedCategory(categoryParam)
+    }
+  }, [searchParams])
 
   const filteredTools = useMemo(() => {
     return TOOLS.filter((tool) => {

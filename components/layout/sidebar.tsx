@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import {
   LayoutDashboard,
@@ -12,8 +13,11 @@ import {
   X,
   Code2,
 } from 'lucide-react'
+import { useAuth } from '@/components/providers/auth-provider'
 
 export function Sidebar() {
+  const router = useRouter()
+  const { user, logout } = useAuth()
   const [isOpen, setIsOpen] = useState(false)
 
   const menuItems = [
@@ -66,11 +70,18 @@ export function Sidebar() {
         </nav>
 
         {/* Footer */}
-        <div className="p-4 border-t border-border">
+        <div className="p-4 border-t border-border space-y-4">
+          {user && (
+            <div className="px-4 py-3 bg-secondary rounded-lg">
+              <p className="text-sm font-medium text-foreground">{user.name}</p>
+              <p className="text-xs text-muted-foreground truncate">{user.email}</p>
+            </div>
+          )}
           <button
             className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-foreground hover:bg-secondary transition-colors group"
             onClick={() => {
-              // TODO: Implement logout
+              logout()
+              router.push('/')
               setIsOpen(false)
             }}
           >
