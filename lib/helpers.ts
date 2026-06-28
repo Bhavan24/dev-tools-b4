@@ -209,7 +209,7 @@ export function convertUnits(
   toUnit: string,
   type: string
 ): number {
-  const conversions: Record<string, Record<string, number>> = {
+  const conversions: Record<string, Record<string, number | ((val: number) => number)>> = {
     length: {
       'm-to-ft': 3.28084,
       'ft-to-m': 0.3048,
@@ -270,14 +270,14 @@ export function convertUnits(
   if (type === 'temperature') {
     const tempFunc = conversions[type][`${fromUnit}-to-${toUnit}`]
     if (typeof tempFunc === 'function') {
-      return tempFunc(value)
+      return (tempFunc as (val: number) => number)(value)
     }
   }
 
   const key = `${fromUnit}-to-${toUnit}`
   const factor = conversions[type]?.[key]
 
-  return factor ? value * factor : value
+  return typeof factor === 'number' ? value * factor : value
 }
 
 const firstNames = [
@@ -449,4 +449,74 @@ export function calculatePasswordStrength(password: string): 'weak' | 'medium' |
   if (strength <= 4) return 'medium'
   if (strength <= 5) return 'strong'
   return 'very strong'
+}
+
+export function generateBulkMockData(categories: string[], count: number): Record<string, unknown>[] {
+  // Dynamic import Chance in browser
+  if (typeof window === 'undefined') {
+    return []
+  }
+
+  try {
+    // Use dynamic require for browser
+    const Chance = require('chance').default || require('chance').Chance
+    const records: Record<string, unknown>[] = []
+
+    for (let i = 0; i < count; i++) {
+      const chance = new Chance()
+      const record: Record<string, unknown> = {}
+
+      categories.forEach(category => {
+        switch (category) {
+          case 'person':
+            record.name = chance.name()
+            record.first = chance.first()
+            record.last = chance.last()
+            record.age = chance.age()
+            record.gender = chance.gender()
+            record.phone = chance.phone()
+            record.email = chance.email()
+            break
+          case 'text':
+            record.paragraph = chance.paragraph()
+            record.sentence = chance.sentence()
+            record.word = chance.word()
+            break
+          case 'web':
+            record.email = record.email || chance.email()
+            record.domain = chance.domain()
+            record.url = chance.url()
+            record.ip = chance.ip()
+            record.color = chance.color()
+            record.company = chance.company()
+            break
+          case 'location':
+            record.address = chance.address()
+            record.city = chance.city()
+            record.country = chance.country({ full: true })
+            record.state = chance.state()
+            record.zip = chance.zip()
+            break
+          case 'time':
+            record.date = chance.date({ string: true })
+            record.timestamp = chance.timestamp()
+            break
+          case 'finance':
+            record.cc = chance.cc()
+            record.currency = chance.currency()
+            break
+          case 'miscellaneous':
+            record.guid = chance.guid()
+            record.hash = chance.hash()
+            break
+        }
+      })
+
+      records.push(record)
+    }
+    return records
+  } catch (error) {
+    console.error('Error generating bulk data:', error)
+    return []
+  }
 }

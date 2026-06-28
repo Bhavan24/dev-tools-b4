@@ -6,6 +6,8 @@ export const TOOLS_CATEGORIES = {
   TIME: 'time',
   FINANCE: 'finance',
   MISCELLANEOUS: 'miscellaneous',
+  PRODUCTIVITY: 'productivity',
+  REFERENCE: 'reference',
 } as const
 
 export const CATEGORY_INFO = {
@@ -43,6 +45,16 @@ export const CATEGORY_INFO = {
     name: 'Miscellaneous',
     description: 'Other useful developer tools',
     icon: 'MoreHorizontal',
+  },
+  [TOOLS_CATEGORIES.PRODUCTIVITY]: {
+    name: 'Productivity',
+    description: 'Prompt templates and productivity tools',
+    icon: 'Sparkles',
+  },
+  [TOOLS_CATEGORIES.REFERENCE]: {
+    name: 'Reference',
+    description: 'Resource library and quick search',
+    icon: 'BookOpen',
   },
 } as const
 
@@ -137,5 +149,40 @@ export const TOOLS = [
     category: TOOLS_CATEGORIES.UTILITY,
     description: 'Generate secure passwords with customizable options',
     shortDescription: 'Generate passwords',
+  },
+  {
+    id: 'prompt-templates',
+    name: 'Prompt Templates',
+    category: TOOLS_CATEGORIES.PRODUCTIVITY,
+    description: 'Create, save, and manage AI prompt templates for developers',
+    shortDescription: 'Manage prompt templates',
+  },
+  {
+    id: 'token-counter',
+    name: 'Token Counter',
+    category: TOOLS_CATEGORIES.PRODUCTIVITY,
+    description: 'Estimate token count for AI models',
+    shortDescription: 'Count tokens',
+  },
+  {
+    id: 'link-library',
+    name: 'Link Library',
+    category: TOOLS_CATEGORIES.REFERENCE,
+    description: 'Organize and manage your frequently used documentation links',
+    shortDescription: 'Manage links',
+  },
+  {
+    id: 'quick-search',
+    name: 'Quick Search',
+    category: TOOLS_CATEGORIES.REFERENCE,
+    description: 'Search Stack Overflow, GitHub, npm, and more without leaving this tool',
+    shortDescription: 'Quick search',
+  },
+  {
+    id: 'bulk-data-generator',
+    name: 'Bulk Data Generator',
+    category: TOOLS_CATEGORIES.TESTING,
+    description: 'Generate large amounts of realistic test data and export as JSON',
+    shortDescription: 'Generate bulk test data',
   },
 ] as const

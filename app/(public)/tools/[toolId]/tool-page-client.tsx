@@ -23,6 +23,7 @@ import {
   generatePassword,
   calculatePasswordStrength,
   PasswordGeneratorOptions,
+  generateBulkMockData,
 } from '@/lib/helpers'
 import { Check, Copy } from 'lucide-react'
 
@@ -347,6 +348,21 @@ export function ToolPageClient({ toolId }: ToolPageClientProps) {
 
       case 'password-generator':
         return <PasswordGeneratorTool />
+
+      case 'bulk-data-generator':
+        return <BulkDataGeneratorTool />
+
+      case 'prompt-templates':
+        return <PromptTemplatesTool />
+
+      case 'token-counter':
+        return <TokenCounterTool />
+
+      case 'link-library':
+        return <LinkLibraryTool />
+
+      case 'quick-search':
+        return <QuickSearchTool />
 
       default:
         return (
@@ -966,6 +982,400 @@ function PasswordGeneratorTool() {
           </div>
         </div>
       )}
+    </div>
+  )
+}
+
+function BulkDataGeneratorTool() {
+  const [count, setCount] = useState('10')
+  const [selectedCategories, setSelectedCategories] = useState<string[]>(['person', 'web'])
+  const [output, setOutput] = useState('')
+  const [loading, setLoading] = useState(false)
+
+  const categories = ['person', 'text', 'web', 'location', 'time', 'finance', 'miscellaneous']
+
+  const toggleCategory = (category: string) => {
+    if (selectedCategories.includes(category)) {
+      setSelectedCategories(selectedCategories.filter(c => c !== category))
+    } else {
+      setSelectedCategories([...selectedCategories, category])
+    }
+  }
+
+  const generateData = () => {
+    if (selectedCategories.length === 0) {
+      alert('Please select at least one category')
+      return
+    }
+    setLoading(true)
+    const data = generateBulkMockData(selectedCategories, parseInt(count) || 10)
+    setOutput(JSON.stringify(data, null, 2))
+    setLoading(false)
+  }
+
+  const downloadJSON = () => {
+    if (!output) {
+      alert('Please generate data first')
+      return
+    }
+    const dataBlob = new Blob([output], { type: 'application/json' })
+    const url = URL.createObjectURL(dataBlob)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = `bulk-data-${Date.now()}.json`
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    URL.revokeObjectURL(url)
+  }
+
+  return (
+    <div className="space-y-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div className="space-y-4">
+          <div>
+            <label className="block font-medium text-foreground mb-3">Number of Records</label>
+            <input
+              type="number"
+              min="1"
+              max="10000"
+              value={count}
+              onChange={(e) => setCount(e.target.value)}
+              className="input-base"
+            />
+          </div>
+
+          <div>
+            <label className="block font-medium text-foreground mb-3">Data Categories</label>
+            <div className="space-y-2">
+              {categories.map(category => (
+                <label key={category} className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={selectedCategories.includes(category)}
+                    onChange={() => toggleCategory(category)}
+                    className="w-4 h-4"
+                  />
+                  <span className="text-foreground capitalize">{category}</span>
+                </label>
+              ))}
+            </div>
+          </div>
+
+          <div className="flex gap-3">
+            <button
+              onClick={generateData}
+              disabled={loading}
+              className="btn-primary flex-1"
+            >
+              {loading ? 'Generating...' : 'Generate Data'}
+            </button>
+            <button
+              onClick={downloadJSON}
+              disabled={!output}
+              className="btn-secondary flex-1"
+            >
+              Download JSON
+            </button>
+          </div>
+        </div>
+
+        {output && (
+          <div>
+            <label className="block font-medium text-foreground mb-3">Generated Data Preview</label>
+            <textarea
+              value={output.substring(0, 500)}
+              readOnly
+              className="input-base h-64 font-mono text-sm bg-secondary mb-4"
+            />
+            <CopyButton text={output} />
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
+
+function PromptTemplatesTool() {
+  const [prompts, setPrompts] = useState<Array<{ id: string; title: string; content: string; category: string }>>([])
+  const [selectedPrompt, setSelectedPrompt] = useState<typeof prompts[0] | null>(null)
+  const [showForm, setShowForm] = useState(false)
+  const [title, setTitle] = useState('')
+  const [content, setContent] = useState('')
+  const [category, setCategory] = useState('development')
+
+  const savePrompt = () => {
+    if (!title || !content) {
+      alert('Please fill in all fields')
+      return
+    }
+    const newPrompt = {
+      id: Date.now().toString(),
+      title,
+      content,
+      category,
+    }
+    const updated = [...prompts, newPrompt]
+    setPrompts(updated)
+    localStorage.setItem('prompts', JSON.stringify(updated))
+    setTitle('')
+    setContent('')
+    setCategory('development')
+    setShowForm(false)
+  }
+
+  return (
+    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="space-y-4">
+        <button onClick={() => setShowForm(!showForm)} className="btn-primary w-full">
+          Add New Template
+        </button>
+
+        {showForm && (
+          <div className="card-base space-y-4">
+            <input
+              type="text"
+              placeholder="Template title"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              className="input-base"
+            />
+            <select value={category} onChange={(e) => setCategory(e.target.value)} className="input-base">
+              <option value="development">Development</option>
+              <option value="documentation">Documentation</option>
+              <option value="debugging">Debugging</option>
+              <option value="explanation">Explanation</option>
+            </select>
+            <textarea
+              placeholder="Template content..."
+              value={content}
+              onChange={(e) => setContent(e.target.value)}
+              className="input-base h-40"
+            />
+            <div className="flex gap-2">
+              <button onClick={savePrompt} className="btn-primary flex-1">
+                Save
+              </button>
+              <button onClick={() => setShowForm(false)} className="btn-secondary flex-1">
+                Cancel
+              </button>
+            </div>
+          </div>
+        )}
+
+        <div className="space-y-2 max-h-96 overflow-y-auto">
+          {prompts.map(prompt => (
+            <div
+              key={prompt.id}
+              onClick={() => setSelectedPrompt(prompt)}
+              className={`p-3 rounded-lg cursor-pointer transition-colors ${
+                selectedPrompt?.id === prompt.id
+                  ? 'bg-primary text-primary-foreground'
+                  : 'bg-secondary hover:bg-muted'
+              }`}
+            >
+              <p className="font-medium text-sm">{prompt.title}</p>
+              <p className="text-xs opacity-70">{prompt.category}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {selectedPrompt && (
+        <div className="lg:col-span-2">
+          <label className="block font-medium text-foreground mb-3">{selectedPrompt.title}</label>
+          <textarea
+            value={selectedPrompt.content}
+            readOnly
+            className="input-base h-64 font-mono text-sm bg-secondary mb-4"
+          />
+          <CopyButton text={selectedPrompt.content} />
+        </div>
+      )}
+    </div>
+  )
+}
+
+function TokenCounterTool() {
+  const [text, setText] = useState('')
+  const [tokenCount, setTokenCount] = useState(0)
+
+  const estimateTokens = (str: string) => {
+    const words = str.trim().split(/\s+/).length
+    const tokens = Math.ceil(words * 1.3)
+    setTokenCount(tokens)
+  }
+
+  return (
+    <div className="space-y-6">
+      <div>
+        <label className="block font-medium text-foreground mb-3">Paste your text</label>
+        <textarea
+          value={text}
+          onChange={(e) => {
+            setText(e.target.value)
+            estimateTokens(e.target.value)
+          }}
+          placeholder="Paste text here to estimate token count..."
+          className="input-base h-64 mb-4"
+        />
+      </div>
+
+      <div className="card-base p-6 flex items-center justify-between">
+        <p className="text-lg font-medium text-foreground">Estimated Token Count</p>
+        <p className="text-4xl font-bold text-primary">{tokenCount}</p>
+      </div>
+
+      <p className="text-sm text-muted-foreground">
+        Note: This is an approximation. Actual token count may vary based on the model and encoding method. Typically: ~1 token per 4 characters or ~1.3 tokens per word.
+      </p>
+    </div>
+  )
+}
+
+function LinkLibraryTool() {
+  const [links, setLinks] = useState<Array<{ id: string; title: string; url: string }>>([])
+  const [title, setTitle] = useState('')
+  const [url, setUrl] = useState('')
+
+  const addLink = () => {
+    if (!title || !url) {
+      alert('Please fill in all fields')
+      return
+    }
+    const newLink = {
+      id: Date.now().toString(),
+      title,
+      url,
+    }
+    const updated = [...links, newLink]
+    setLinks(updated)
+    localStorage.setItem('links', JSON.stringify(updated))
+    setTitle('')
+    setUrl('')
+  }
+
+  const removeLink = (id: string) => {
+    const updated = links.filter(l => l.id !== id)
+    setLinks(updated)
+    localStorage.setItem('links', JSON.stringify(updated))
+  }
+
+  return (
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <div className="space-y-4">
+        <div>
+          <label className="block font-medium text-foreground mb-2">Link Title</label>
+          <input
+            type="text"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            placeholder="e.g., React Documentation"
+            className="input-base mb-4"
+          />
+        </div>
+
+        <div>
+          <label className="block font-medium text-foreground mb-2">URL</label>
+          <input
+            type="url"
+            value={url}
+            onChange={(e) => setUrl(e.target.value)}
+            placeholder="https://example.com"
+            className="input-base mb-4"
+          />
+        </div>
+
+        <button onClick={addLink} className="btn-primary w-full">
+          Add Link
+        </button>
+      </div>
+
+      <div>
+        <label className="block font-medium text-foreground mb-3">Saved Links</label>
+        <div className="space-y-2 max-h-96 overflow-y-auto">
+          {links.map(link => (
+            <div key={link.id} className="p-3 bg-secondary rounded-lg flex items-start justify-between">
+              <div className="flex-1">
+                <p className="font-medium text-sm text-foreground">{link.title}</p>
+                <p className="text-xs text-muted-foreground truncate">{link.url}</p>
+              </div>
+              <button
+                onClick={() => removeLink(link.id)}
+                className="text-red-500 hover:text-red-700 text-sm"
+              >
+                Remove
+              </button>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function QuickSearchTool() {
+  const [query, setQuery] = useState('')
+  const [engine, setEngine] = useState('stackoverflow')
+
+  const searchEngines: Record<string, string> = {
+    stackoverflow: 'https://stackoverflow.com/search?q=',
+    github: 'https://github.com/search?q=',
+    npm: 'https://www.npmjs.com/search?q=',
+    mdn: 'https://developer.mozilla.org/en-US/search?q=',
+    google: 'https://google.com/search?q=',
+  }
+
+  const search = () => {
+    if (!query.trim()) {
+      alert('Please enter a search query')
+      return
+    }
+    const searchUrl = searchEngines[engine] + encodeURIComponent(query)
+    window.open(searchUrl, '_blank')
+  }
+
+  return (
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <div className="space-y-4">
+        <div>
+          <label className="block font-medium text-foreground mb-3">Search Engine</label>
+          <select value={engine} onChange={(e) => setEngine(e.target.value)} className="input-base">
+            <option value="stackoverflow">Stack Overflow</option>
+            <option value="github">GitHub</option>
+            <option value="npm">NPM Registry</option>
+            <option value="mdn">MDN Web Docs</option>
+            <option value="google">Google</option>
+          </select>
+        </div>
+
+        <div>
+          <label className="block font-medium text-foreground mb-3">Search Query</label>
+          <input
+            type="text"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            onKeyDown={(e) => e.key === 'Enter' && search()}
+            placeholder="Enter your search..."
+            className="input-base mb-4"
+          />
+        </div>
+
+        <button onClick={search} className="btn-primary w-full">
+          Search
+        </button>
+      </div>
+
+      <div className="card-base">
+        <p className="font-medium text-foreground mb-4">Quick Search Tips</p>
+        <ul className="space-y-2 text-sm text-muted-foreground">
+          <li>• Stack Overflow: Search for questions and solutions</li>
+          <li>• GitHub: Find repositories and code examples</li>
+          <li>• NPM: Discover and search npm packages</li>
+          <li>• MDN: Access comprehensive web documentation</li>
+          <li>• Google: General web search</li>
+        </ul>
+      </div>
     </div>
   )
 }
