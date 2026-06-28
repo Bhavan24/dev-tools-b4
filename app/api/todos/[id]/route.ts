@@ -27,7 +27,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
 
     const { text, completed, priority } = await request.json()
 
-    const todo = updateTodo(parseInt(id), userId, text, completed, priority)
+    const todo = await updateTodo(parseInt(id), userId, text, completed, priority)
     if (!todo) {
       return NextResponse.json({ error: 'Todo not found or unauthorized' }, { status: 404 })
     }
@@ -47,7 +47,7 @@ export async function DELETE(request: NextRequest, { params }: { params: Promise
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const success = deleteTodo(parseInt(id), userId)
+    const success = await deleteTodo(parseInt(id), userId)
     if (!success) {
       return NextResponse.json({ error: 'Todo not found or unauthorized' }, { status: 404 })
     }

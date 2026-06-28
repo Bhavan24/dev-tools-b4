@@ -30,7 +30,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
       return NextResponse.json({ error: 'Title and content required' }, { status: 400 })
     }
 
-    const note = updateNote(parseInt(id), userId, title, content, tags || [])
+    const note = await updateNote(parseInt(id), userId, title, content, tags || [])
     if (!note) {
       return NextResponse.json({ error: 'Note not found or unauthorized' }, { status: 404 })
     }
@@ -50,7 +50,7 @@ export async function DELETE(request: NextRequest, { params }: { params: Promise
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const success = deleteNote(parseInt(id), userId)
+    const success = await deleteNote(parseInt(id), userId)
     if (!success) {
       return NextResponse.json({ error: 'Note not found or unauthorized' }, { status: 404 })
     }

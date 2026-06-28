@@ -14,12 +14,12 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Password must be at least 6 characters' }, { status: 400 })
     }
 
-    if (getUserByEmail(email)) {
+    if (await getUserByEmail(email)) {
       return NextResponse.json({ error: 'Email already registered' }, { status: 409 })
     }
 
     const passwordHash = await hashPassword(password)
-    const user = createUser(email, passwordHash, name)
+    const user = await createUser(email, passwordHash, name)
 
     const token = signToken({ userId: user.id, email: user.email })
 

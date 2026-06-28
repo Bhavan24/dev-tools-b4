@@ -1,13 +1,13 @@
 'use client'
 
-import { useState, useMemo, useEffect } from 'react'
+import { useState, useMemo, useEffect, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { TOOLS, TOOLS_CATEGORIES, CATEGORY_INFO } from '@/lib/constants'
 import { ToolCard } from '@/components/tools/tool-card'
 import { Search } from 'lucide-react'
 import * as LucideIcons from 'lucide-react'
 
-export default function ToolsPage() {
+function ToolsContent() {
   const searchParams = useSearchParams()
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
@@ -127,5 +127,13 @@ export default function ToolsPage() {
         </div>
       )}
     </div>
+  )
+}
+
+export default function ToolsPage() {
+  return (
+    <Suspense fallback={<div className="container-main py-12">Loading tools...</div>}>
+      <ToolsContent />
+    </Suspense>
   )
 }

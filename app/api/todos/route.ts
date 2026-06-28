@@ -24,7 +24,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const todos = getTodosByUser(userId)
+    const todos = await getTodosByUser(userId)
     return NextResponse.json({ todos })
   } catch (error) {
     console.error('Get todos error:', error)
@@ -45,7 +45,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Text required' }, { status: 400 })
     }
 
-    const todo = createTodo(userId, text, priority || 'low')
+    const todo = await createTodo(userId, text, priority || 'low')
     return NextResponse.json({ todo })
   } catch (error) {
     console.error('Create todo error:', error)

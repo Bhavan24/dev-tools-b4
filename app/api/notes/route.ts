@@ -24,7 +24,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const notes = getNotesByUser(userId)
+    const notes = await getNotesByUser(userId)
     return NextResponse.json({ notes })
   } catch (error) {
     console.error('Get notes error:', error)
@@ -45,7 +45,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Title and content required' }, { status: 400 })
     }
 
-    const note = createNote(userId, title, content, tags || [])
+    const note = await createNote(userId, title, content, tags || [])
     return NextResponse.json({ note })
   } catch (error) {
     console.error('Create note error:', error)
