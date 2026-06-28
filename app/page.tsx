@@ -9,14 +9,10 @@ export default function Home() {
   const categories = Object.values(TOOLS_CATEGORIES)
   
   const categoryColors: Record<string, { bg: string; icon: string }> = {
-    utility: { bg: 'from-purple-500 to-purple-600', icon: '⚙️' },
-    json: { bg: 'from-cyan-500 to-cyan-600', icon: '{}' },
-    testing: { bg: 'from-amber-500 to-amber-600', icon: '🧪' },
-    text: { bg: 'from-pink-500 to-pink-600', icon: '✏️' },
-    time: { bg: 'from-green-500 to-green-600', icon: '⏱️' },
-    finance: { bg: 'from-violet-500 to-violet-600', icon: '💰' },
-    links: { bg: 'from-indigo-500 to-indigo-600', icon: '🔗' },
-    notes: { bg: 'from-blue-500 to-blue-600', icon: '📝' },
+    developer: { bg: 'from-blue-500 to-blue-600', icon: '💻' },
+    validation: { bg: 'from-purple-500 to-purple-600', icon: '✓' },
+    formatter: { bg: 'from-cyan-500 to-cyan-600', icon: '📋' },
+    converter: { bg: 'from-orange-500 to-orange-600', icon: '🔄' },
   }
 
   return (
@@ -55,7 +51,7 @@ export default function Home() {
           {/* Stats */}
           <div className="grid grid-cols-3 gap-6 pt-12 w-full max-w-2xl animate-fade-in" style={{ animationDelay: '0.3s' }}>
             <div className="text-center">
-              <p className="text-3xl font-bold text-foreground">100+</p>
+              <p className="text-3xl font-bold text-foreground">{TOOLS.length}+</p>
               <p className="text-muted-foreground text-sm">Tools Available</p>
             </div>
             <div className="text-center">
@@ -177,30 +173,12 @@ export default function Home() {
 
           <div className="text-center">
             <Link href="/tools" className="btn-primary inline-flex items-center gap-2 text-lg px-8 py-3 rounded-xl font-semibold shadow-lg hover:shadow-xl">
-              View All {TOOLS.length} Tools
+              View All Tools
               <ArrowRight size={20} />
             </Link>
           </div>
         </section>
 
-        {/* CTA Section */}
-        <section className="container-main py-20 md:py-32">
-          <div className="bg-gradient-to-r from-primary via-purple-500 to-pink-500 rounded-3xl p-12 md:p-16 text-white text-center shadow-2xl">
-            <h2 className="text-4xl md:text-5xl font-bold mb-6 text-balance">Ready to Boost Productivity?</h2>
-            <p className="text-lg text-white/90 mb-8 text-balance max-w-2xl mx-auto">
-              Create an account to save your favorite tools, build custom workflows, and unlock personalized features.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link href="/tools" className="bg-white text-primary font-semibold px-8 py-3 rounded-xl hover:bg-gray-100 transition-colors inline-flex items-center gap-2">
-                Start Using Now
-                <ArrowRight size={20} />
-              </Link>
-              <button className="bg-white/20 border border-white/40 text-white font-semibold px-8 py-3 rounded-xl hover:bg-white/30 transition-colors backdrop-blur">
-                Create Account
-              </button>
-            </div>
-          </div>
-        </section>
       </main>
       <Footer />
     </>

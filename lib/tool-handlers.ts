@@ -1,0 +1,1214 @@
+import { Buffer } from 'buffer'
+
+interface ToolHandler {
+  description: string
+  schema: {
+    type: string
+    properties: Record<string, any>
+    required?: string[]
+  }
+  handler: (input: any) => Promise<any>
+}
+
+export const toolHandlers: Record<string, ToolHandler> = {
+  'js-minifier': {
+    description: 'Minify JavaScript code',
+    schema: {
+      type: 'object',
+      properties: {
+        code: { type: 'string', description: 'JavaScript code to minify' },
+      },
+      required: ['code'],
+    },
+    handler: async (input) => {
+      const { code } = input
+      return minifyCode(code, 'js')
+    },
+  },
+
+  'js-beautifier': {
+    description: 'Beautify JavaScript code',
+    schema: {
+      type: 'object',
+      properties: {
+        code: { type: 'string', description: 'JavaScript code to beautify' },
+        indent: { type: 'number', description: 'Indentation spaces (default: 2)', default: 2 },
+      },
+      required: ['code'],
+    },
+    handler: async (input) => {
+      const { code, indent = 2 } = input
+      return beautifyCode(code, indent)
+    },
+  },
+
+  'css-minifier': {
+    description: 'Minify CSS code',
+    schema: {
+      type: 'object',
+      properties: {
+        code: { type: 'string', description: 'CSS code to minify' },
+      },
+      required: ['code'],
+    },
+    handler: async (input) => {
+      const { code } = input
+      return minifyCode(code, 'css')
+    },
+  },
+
+  'css-beautifier': {
+    description: 'Beautify CSS code',
+    schema: {
+      type: 'object',
+      properties: {
+        code: { type: 'string', description: 'CSS code to beautify' },
+        indent: { type: 'number', description: 'Indentation spaces (default: 2)', default: 2 },
+      },
+      required: ['code'],
+    },
+    handler: async (input) => {
+      const { code, indent = 2 } = input
+      return beautifyCode(code, indent)
+    },
+  },
+
+  'json-minifier': {
+    description: 'Minify JSON',
+    schema: {
+      type: 'object',
+      properties: {
+        json: { type: 'string', description: 'JSON string to minify' },
+      },
+      required: ['json'],
+    },
+    handler: async (input) => {
+      const { json } = input
+      try {
+        const parsed = JSON.parse(json)
+        return JSON.stringify(parsed)
+      } catch (e) {
+        throw new Error('Invalid JSON')
+      }
+    },
+  },
+
+  'json-beautifier': {
+    description: 'Beautify JSON',
+    schema: {
+      type: 'object',
+      properties: {
+        json: { type: 'string', description: 'JSON string to beautify' },
+        indent: { type: 'number', description: 'Indentation spaces (default: 2)', default: 2 },
+      },
+      required: ['json'],
+    },
+    handler: async (input) => {
+      const { json, indent = 2 } = input
+      try {
+        const parsed = JSON.parse(json)
+        return JSON.stringify(parsed, null, indent)
+      } catch (e) {
+        throw new Error('Invalid JSON')
+      }
+    },
+  },
+
+  'timestamp-converter': {
+    description: 'Convert between Unix timestamps and dates',
+    schema: {
+      type: 'object',
+      properties: {
+        input: { type: 'string', description: 'Unix timestamp or ISO date string' },
+      },
+      required: ['input'],
+    },
+    handler: async (input) => {
+      const { input: value } = input
+      const num = Number(value)
+      if (!isNaN(num) && num > 0) {
+        const date = new Date(num * 1000)
+        return {
+          unix: num,
+          iso: date.toISOString(),
+          readable: date.toLocaleString(),
+        }
+      }
+      try {
+        const date = new Date(value)
+        if (isNaN(date.getTime())) throw new Error('Invalid date')
+        return {
+          unix: Math.floor(date.getTime() / 1000),
+          iso: date.toISOString(),
+          readable: date.toLocaleString(),
+        }
+      } catch (e) {
+        throw new Error('Invalid timestamp or date')
+      }
+    },
+  },
+
+  'url-splitter': {
+    description: 'Parse and decompose URLs',
+    schema: {
+      type: 'object',
+      properties: {
+        url: { type: 'string', description: 'URL to parse' },
+      },
+      required: ['url'],
+    },
+    handler: async (input) => {
+      const { url } = input
+      try {
+        const parsed = new URL(url)
+        return {
+          protocol: parsed.protocol,
+          hostname: parsed.hostname,
+          port: parsed.port || 'default',
+          pathname: parsed.pathname,
+          search: parsed.search,
+          hash: parsed.hash,
+          origin: parsed.origin,
+          href: parsed.href,
+        }
+      } catch (e) {
+        throw new Error('Invalid URL')
+      }
+    },
+  },
+
+  'url-encoder-decoder': {
+    description: 'Encode and decode URLs',
+    schema: {
+      type: 'object',
+      properties: {
+        input: { type: 'string', description: 'Text to encode/decode' },
+        action: { type: 'string', enum: ['encode', 'decode'], description: 'Action to perform' },
+      },
+      required: ['input', 'action'],
+    },
+    handler: async (input) => {
+      const { input: value, action } = input
+      try {
+        if (action === 'encode') {
+          return encodeURIComponent(value)
+        } else {
+          return decodeURIComponent(value)
+        }
+      } catch (e) {
+        throw new Error('Invalid input for URL operation')
+      }
+    },
+  },
+
+  'html-encoder-decoder': {
+    description: 'Encode and decode HTML entities',
+    schema: {
+      type: 'object',
+      properties: {
+        input: { type: 'string', description: 'Text to encode/decode' },
+        action: { type: 'string', enum: ['encode', 'decode'], description: 'Action to perform' },
+      },
+      required: ['input', 'action'],
+    },
+    handler: async (input) => {
+      const { input: value, action } = input
+      const htmlEntities: Record<string, string> = {
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#39;',
+      }
+      if (action === 'encode') {
+        return value.replace(/[&<>"']/g, (char) => htmlEntities[char])
+      } else {
+        return value
+          .replace(/&amp;/g, '&')
+          .replace(/&lt;/g, '<')
+          .replace(/&gt;/g, '>')
+          .replace(/&quot;/g, '"')
+          .replace(/&#39;/g, "'")
+      }
+    },
+  },
+
+  'base64-encoder': {
+    description: 'Encode text to Base64',
+    schema: {
+      type: 'object',
+      properties: {
+        text: { type: 'string', description: 'Text to encode' },
+      },
+      required: ['text'],
+    },
+    handler: async (input) => {
+      const { text } = input
+      return Buffer.from(text).toString('base64')
+    },
+  },
+
+  'base64-decoder': {
+    description: 'Decode Base64 text',
+    schema: {
+      type: 'object',
+      properties: {
+        base64: { type: 'string', description: 'Base64 string to decode' },
+      },
+      required: ['base64'],
+    },
+    handler: async (input) => {
+      const { base64 } = input
+      try {
+        return Buffer.from(base64, 'base64').toString('utf-8')
+      } catch (e) {
+        throw new Error('Invalid Base64 string')
+      }
+    },
+  },
+
+  'jwt-decoder': {
+    description: 'Decode JWT tokens',
+    schema: {
+      type: 'object',
+      properties: {
+        token: { type: 'string', description: 'JWT token to decode' },
+      },
+      required: ['token'],
+    },
+    handler: async (input) => {
+      const { token } = input
+      const parts = token.split('.')
+      if (parts.length !== 3) throw new Error('Invalid JWT format')
+      try {
+        const header = JSON.parse(Buffer.from(parts[0], 'base64').toString())
+        const payload = JSON.parse(Buffer.from(parts[1], 'base64').toString())
+        return {
+          header,
+          payload,
+          signature: parts[2],
+        }
+      } catch (e) {
+        throw new Error('Failed to decode JWT')
+      }
+    },
+  },
+
+  'mime-type-checker': {
+    description: 'Check MIME type by file extension',
+    schema: {
+      type: 'object',
+      properties: {
+        filename: { type: 'string', description: 'Filename to check' },
+      },
+      required: ['filename'],
+    },
+    handler: async (input) => {
+      const { filename } = input
+      const mimeTypes: Record<string, string> = {
+        'json': 'application/json',
+        'xml': 'application/xml',
+        'html': 'text/html',
+        'css': 'text/css',
+        'js': 'application/javascript',
+        'txt': 'text/plain',
+        'pdf': 'application/pdf',
+        'png': 'image/png',
+        'jpg': 'image/jpeg',
+        'jpeg': 'image/jpeg',
+        'gif': 'image/gif',
+        'svg': 'image/svg+xml',
+        'mp4': 'video/mp4',
+        'mp3': 'audio/mpeg',
+        'zip': 'application/zip',
+        'yaml': 'application/yaml',
+        'yml': 'application/yaml',
+        'csv': 'text/csv',
+      }
+      const ext = filename.split('.').pop()?.toLowerCase() || ''
+      return mimeTypes[ext] || 'application/octet-stream'
+    },
+  },
+
+  'xml-string-escaper': {
+    description: 'Escape special characters in XML strings',
+    schema: {
+      type: 'object',
+      properties: {
+        input: { type: 'string', description: 'Text to escape' },
+        action: { type: 'string', enum: ['escape', 'unescape'], description: 'Action' },
+      },
+      required: ['input', 'action'],
+    },
+    handler: async (input) => {
+      const { input: value, action } = input
+      if (action === 'escape') {
+        return value
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;')
+          .replace(/'/g, '&apos;')
+      } else {
+        return value
+          .replace(/&apos;/g, "'")
+          .replace(/&quot;/g, '"')
+          .replace(/&gt;/g, '>')
+          .replace(/&lt;/g, '<')
+          .replace(/&amp;/g, '&')
+      }
+    },
+  },
+
+  'js-string-escaper': {
+    description: 'Escape JavaScript strings',
+    schema: {
+      type: 'object',
+      properties: {
+        input: { type: 'string', description: 'Text to escape' },
+      },
+      required: ['input'],
+    },
+    handler: async (input) => {
+      const { input: value } = input
+      return JSON.stringify(value).slice(1, -1)
+    },
+  },
+
+  'regex-parser': {
+    description: 'Test regular expressions',
+    schema: {
+      type: 'object',
+      properties: {
+        pattern: { type: 'string', description: 'Regex pattern' },
+        flags: { type: 'string', description: 'Regex flags (g, i, m, etc.)', default: '' },
+        testString: { type: 'string', description: 'String to test' },
+      },
+      required: ['pattern', 'testString'],
+    },
+    handler: async (input) => {
+      const { pattern, flags = '', testString } = input
+      try {
+        const regex = new RegExp(pattern, flags)
+        const matches = testString.match(regex)
+        return {
+          isValid: true,
+          matches: matches || [],
+          hasMatch: regex.test(testString),
+        }
+      } catch (e) {
+        throw new Error('Invalid regex pattern')
+      }
+    },
+  },
+
+  'yaml-validator': {
+    description: 'Validate YAML syntax',
+    schema: {
+      type: 'object',
+      properties: {
+        yaml: { type: 'string', description: 'YAML content to validate' },
+      },
+      required: ['yaml'],
+    },
+    handler: async (input) => {
+      const { yaml } = input
+      try {
+        const jsYaml = await import('js-yaml')
+        jsYaml.load(yaml)
+        return { isValid: true, message: 'Valid YAML' }
+      } catch (e: any) {
+        throw new Error(`Invalid YAML: ${e.message}`)
+      }
+    },
+  },
+
+  'js-validator': {
+    description: 'Validate JavaScript code',
+    schema: {
+      type: 'object',
+      properties: {
+        code: { type: 'string', description: 'JavaScript code to validate' },
+      },
+      required: ['code'],
+    },
+    handler: async (input) => {
+      const { code } = input
+      try {
+        new Function(code)
+        return { isValid: true, message: 'Valid JavaScript' }
+      } catch (e: any) {
+        throw new Error(`Invalid JavaScript: ${e.message}`)
+      }
+    },
+  },
+
+  'json-formatter': {
+    description: 'Format JSON with indentation',
+    schema: {
+      type: 'object',
+      properties: {
+        json: { type: 'string', description: 'JSON to format' },
+        indent: { type: 'number', description: 'Indent spaces', default: 2 },
+      },
+      required: ['json'],
+    },
+    handler: async (input) => {
+      const { json, indent = 2 } = input
+      try {
+        const parsed = JSON.parse(json)
+        return JSON.stringify(parsed, null, indent)
+      } catch (e) {
+        throw new Error('Invalid JSON')
+      }
+    },
+  },
+
+  'xml-formatter': {
+    description: 'Format XML with indentation',
+    schema: {
+      type: 'object',
+      properties: {
+        xml: { type: 'string', description: 'XML to format' },
+        indent: { type: 'number', description: 'Indent spaces', default: 2 },
+      },
+      required: ['xml'],
+    },
+    handler: async (input) => {
+      const { xml, indent = 2 } = input
+      return formatXml(xml, indent)
+    },
+  },
+
+  'sql-formatter': {
+    description: 'Format SQL queries',
+    schema: {
+      type: 'object',
+      properties: {
+        sql: { type: 'string', description: 'SQL to format' },
+      },
+      required: ['sql'],
+    },
+    handler: async (input) => {
+      const { sql } = input
+      return formatSql(sql)
+    },
+  },
+
+  'html-formatter': {
+    description: 'Format HTML with indentation',
+    schema: {
+      type: 'object',
+      properties: {
+        html: { type: 'string', description: 'HTML to format' },
+        indent: { type: 'number', description: 'Indent spaces', default: 2 },
+      },
+      required: ['html'],
+    },
+    handler: async (input) => {
+      const { html, indent = 2 } = input
+      return formatHtml(html, indent)
+    },
+  },
+
+  'html-beautifier': {
+    description: 'Beautify HTML code',
+    schema: {
+      type: 'object',
+      properties: {
+        html: { type: 'string', description: 'HTML to beautify' },
+      },
+      required: ['html'],
+    },
+    handler: async (input) => {
+      const { html } = input
+      return formatHtml(html, 2)
+    },
+  },
+
+  'json-to-java': {
+    description: 'Convert JSON to Java POJO',
+    schema: {
+      type: 'object',
+      properties: {
+        json: { type: 'string', description: 'JSON to convert' },
+        className: { type: 'string', description: 'Class name', default: 'Data' },
+      },
+      required: ['json'],
+    },
+    handler: async (input) => {
+      const { json, className = 'Data' } = input
+      try {
+        const obj = JSON.parse(json)
+        return generateJavaClass(obj, className)
+      } catch (e) {
+        throw new Error('Invalid JSON')
+      }
+    },
+  },
+
+  'json-to-xml': {
+    description: 'Convert JSON to XML',
+    schema: {
+      type: 'object',
+      properties: {
+        json: { type: 'string', description: 'JSON to convert' },
+        rootElement: { type: 'string', description: 'Root element name', default: 'root' },
+      },
+      required: ['json'],
+    },
+    handler: async (input) => {
+      const { json, rootElement = 'root' } = input
+      try {
+        const obj = JSON.parse(json)
+        return jsonToXml(obj, rootElement)
+      } catch (e) {
+        throw new Error('Invalid JSON')
+      }
+    },
+  },
+
+  'json-to-php': {
+    description: 'Convert JSON to PHP array',
+    schema: {
+      type: 'object',
+      properties: {
+        json: { type: 'string', description: 'JSON to convert' },
+      },
+      required: ['json'],
+    },
+    handler: async (input) => {
+      const { json } = input
+      try {
+        const obj = JSON.parse(json)
+        return generatePhpArray(obj)
+      } catch (e) {
+        throw new Error('Invalid JSON')
+      }
+    },
+  },
+
+  'json-to-csharp': {
+    description: 'Convert JSON to C# classes',
+    schema: {
+      type: 'object',
+      properties: {
+        json: { type: 'string', description: 'JSON to convert' },
+        className: { type: 'string', description: 'Class name', default: 'Data' },
+      },
+      required: ['json'],
+    },
+    handler: async (input) => {
+      const { json, className = 'Data' } = input
+      try {
+        const obj = JSON.parse(json)
+        return generateCSharpClass(obj, className)
+      } catch (e) {
+        throw new Error('Invalid JSON')
+      }
+    },
+  },
+
+  'xml-to-yaml': {
+    description: 'Convert XML to YAML',
+    schema: {
+      type: 'object',
+      properties: {
+        xml: { type: 'string', description: 'XML to convert' },
+      },
+      required: ['xml'],
+    },
+    handler: async (input) => {
+      const { xml } = input
+      try {
+        const obj = xmlToJson(xml)
+        const jsYaml = await import('js-yaml')
+        return jsYaml.dump(obj, { lineWidth: -1 })
+      } catch (e) {
+        throw new Error('Invalid XML or conversion failed')
+      }
+    },
+  },
+
+  'xml-to-json': {
+    description: 'Convert XML to JSON',
+    schema: {
+      type: 'object',
+      properties: {
+        xml: { type: 'string', description: 'XML to convert' },
+      },
+      required: ['xml'],
+    },
+    handler: async (input) => {
+      const { xml } = input
+      try {
+        const obj = xmlToJson(xml)
+        return JSON.stringify(obj, null, 2)
+      } catch (e) {
+        throw new Error('Invalid XML')
+      }
+    },
+  },
+
+  'ini-to-json': {
+    description: 'Convert INI to JSON',
+    schema: {
+      type: 'object',
+      properties: {
+        ini: { type: 'string', description: 'INI content to convert' },
+      },
+      required: ['ini'],
+    },
+    handler: async (input) => {
+      const { ini } = input
+      return JSON.stringify(parseIni(ini), null, 2)
+    },
+  },
+
+  'ini-to-xml': {
+    description: 'Convert INI to XML',
+    schema: {
+      type: 'object',
+      properties: {
+        ini: { type: 'string', description: 'INI content to convert' },
+      },
+      required: ['ini'],
+    },
+    handler: async (input) => {
+      const { ini } = input
+      const obj = parseIni(ini)
+      return jsonToXml(obj, 'config')
+    },
+  },
+
+  'ini-to-yaml': {
+    description: 'Convert INI to YAML',
+    schema: {
+      type: 'object',
+      properties: {
+        ini: { type: 'string', description: 'INI content to convert' },
+      },
+      required: ['ini'],
+    },
+    handler: async (input) => {
+      const { ini } = input
+      const obj = parseIni(ini)
+      const jsYaml = await import('js-yaml')
+      return jsYaml.dump(obj, { lineWidth: -1 })
+    },
+  },
+
+  'csv-to-json': {
+    description: 'Convert CSV to JSON',
+    schema: {
+      type: 'object',
+      properties: {
+        csv: { type: 'string', description: 'CSV content to convert' },
+        hasHeader: { type: 'boolean', description: 'First row is header', default: true },
+      },
+      required: ['csv'],
+    },
+    handler: async (input) => {
+      const { csv, hasHeader = true } = input
+      const lines = csv.trim().split('\n')
+      if (lines.length === 0) throw new Error('Empty CSV')
+
+      const rows = lines.map((line) => parseCSVLine(line))
+      const result = hasHeader
+        ? rows.slice(1).map((row) => {
+            const obj: Record<string, any> = {}
+            rows[0].forEach((header: string, i: number) => {
+              obj[header] = row[i]
+            })
+            return obj
+          })
+        : rows
+
+      return JSON.stringify(result, null, 2)
+    },
+  },
+
+  'csv-to-xml': {
+    description: 'Convert CSV to XML',
+    schema: {
+      type: 'object',
+      properties: {
+        csv: { type: 'string', description: 'CSV content to convert' },
+      },
+      required: ['csv'],
+    },
+    handler: async (input) => {
+      const { csv } = input
+      const lines = csv.trim().split('\n')
+      if (lines.length === 0) throw new Error('Empty CSV')
+
+      const headers = parseCSVLine(lines[0])
+      let xml = '<?xml version="1.0" encoding="UTF-8"?>\n<rows>\n'
+
+      for (let i = 1; i < lines.length; i++) {
+        const values = parseCSVLine(lines[i])
+        xml += '  <row>\n'
+        headers.forEach((header: string, idx: number) => {
+          xml += `    <${header}>${escapeXml(values[idx] || '')}</${header}>\n`
+        })
+        xml += '  </row>\n'
+      }
+      xml += '</rows>'
+      return xml
+    },
+  },
+
+  'csv-to-yaml': {
+    description: 'Convert CSV to YAML',
+    schema: {
+      type: 'object',
+      properties: {
+        csv: { type: 'string', description: 'CSV content to convert' },
+      },
+      required: ['csv'],
+    },
+    handler: async (input) => {
+      const { csv } = input
+      const lines = csv.trim().split('\n')
+      if (lines.length === 0) throw new Error('Empty CSV')
+
+      const headers = parseCSVLine(lines[0])
+      const rows = []
+
+      for (let i = 1; i < lines.length; i++) {
+        const values = parseCSVLine(lines[i])
+        const obj: Record<string, any> = {}
+        headers.forEach((header: string, idx: number) => {
+          obj[header] = values[idx]
+        })
+        rows.push(obj)
+      }
+
+      const jsYaml = await import('js-yaml')
+      return jsYaml.dump(rows, { lineWidth: -1 })
+    },
+  },
+
+  'csv-to-sql': {
+    description: 'Convert CSV to SQL INSERT',
+    schema: {
+      type: 'object',
+      properties: {
+        csv: { type: 'string', description: 'CSV content to convert' },
+        tableName: { type: 'string', description: 'Table name', default: 'table1' },
+      },
+      required: ['csv'],
+    },
+    handler: async (input) => {
+      const { csv, tableName = 'table1' } = input
+      const lines = csv.trim().split('\n')
+      if (lines.length === 0) throw new Error('Empty CSV')
+
+      const headers = parseCSVLine(lines[0])
+      let sql = ''
+
+      for (let i = 1; i < lines.length; i++) {
+        const values = parseCSVLine(lines[i])
+        const cols = headers.map((h: string) => h).join(', ')
+        const vals = values.map((v: string) => `'${v.replace(/'/g, "''")}'`).join(', ')
+        sql += `INSERT INTO ${tableName} (${cols}) VALUES (${vals});\n`
+      }
+
+      return sql.trim()
+    },
+  },
+
+  'yaml-to-json': {
+    description: 'Convert YAML to JSON',
+    schema: {
+      type: 'object',
+      properties: {
+        yaml: { type: 'string', description: 'YAML to convert' },
+      },
+      required: ['yaml'],
+    },
+    handler: async (input) => {
+      const { yaml } = input
+      try {
+        const jsYaml = await import('js-yaml')
+        const obj = jsYaml.load(yaml)
+        return JSON.stringify(obj, null, 2)
+      } catch (e) {
+        throw new Error('Invalid YAML')
+      }
+    },
+  },
+
+  'json-to-yaml': {
+    description: 'Convert JSON to YAML',
+    schema: {
+      type: 'object',
+      properties: {
+        json: { type: 'string', description: 'JSON to convert' },
+      },
+      required: ['json'],
+    },
+    handler: async (input) => {
+      const { json } = input
+      try {
+        const obj = JSON.parse(json)
+        const jsYaml = await import('js-yaml')
+        return jsYaml.dump(obj, { lineWidth: -1 })
+      } catch (e) {
+        throw new Error('Invalid JSON')
+      }
+    },
+  },
+
+  'rgb-to-hex': {
+    description: 'Convert RGB to HEX',
+    schema: {
+      type: 'object',
+      properties: {
+        r: { type: 'number', description: 'Red value (0-255)' },
+        g: { type: 'number', description: 'Green value (0-255)' },
+        b: { type: 'number', description: 'Blue value (0-255)' },
+      },
+      required: ['r', 'g', 'b'],
+    },
+    handler: async (input) => {
+      const { r, g, b } = input
+      const toHex = (n: number) => {
+        const hex = Math.max(0, Math.min(255, n)).toString(16)
+        return hex.length === 1 ? '0' + hex : hex
+      }
+      return `#${toHex(r)}${toHex(g)}${toHex(b)}`.toUpperCase()
+    },
+  },
+
+  'hex-to-rgb': {
+    description: 'Convert HEX to RGB',
+    schema: {
+      type: 'object',
+      properties: {
+        hex: { type: 'string', description: 'HEX color code' },
+      },
+      required: ['hex'],
+    },
+    handler: async (input) => {
+      const { hex } = input
+      const cleanHex = hex.replace('#', '').toLowerCase()
+      if (!/^[0-9a-f]{6}$/.test(cleanHex)) throw new Error('Invalid HEX color')
+
+      const r = parseInt(cleanHex.substring(0, 2), 16)
+      const g = parseInt(cleanHex.substring(2, 4), 16)
+      const b = parseInt(cleanHex.substring(4, 6), 16)
+
+      return { r, g, b, rgb: `rgb(${r}, ${g}, ${b})` }
+    },
+  },
+
+  'idn-converter': {
+    description: 'Convert between IDN and Punycode',
+    schema: {
+      type: 'object',
+      properties: {
+        input: { type: 'string', description: 'Domain to convert' },
+        action: { type: 'string', enum: ['toAscii', 'toUnicode'], description: 'Conversion direction' },
+      },
+      required: ['input', 'action'],
+    },
+    handler: async (input) => {
+      const { input: domain, action } = input
+      if (action === 'toAscii') {
+        return encodeURIComponent(domain).replace(/%/g, '-')
+      } else {
+        return decodeURIComponent(domain.replace(/-/g, '%'))
+      }
+    },
+  },
+}
+
+// Helper functions
+function minifyCode(code: string, type: 'js' | 'css'): string {
+  return code
+    .replace(/\/\*[\s\S]*?\*\//g, '')
+    .replace(/\/\/.*/g, '')
+    .replace(/\s+/g, ' ')
+    .replace(/\s*([{}():;,])\s*/g, '$1')
+    .trim()
+}
+
+function beautifyCode(code: string, indent: number): string {
+  const spaces = ' '.repeat(indent)
+  let result = ''
+  let level = 0
+  let inString = false
+  let stringChar = ''
+
+  for (let i = 0; i < code.length; i++) {
+    const char = code[i]
+    const nextChar = code[i + 1]
+
+    if ((char === '"' || char === "'") && code[i - 1] !== '\\') {
+      inString = !inString
+      stringChar = char
+    }
+
+    if (!inString) {
+      if (char === '{' || char === '[' || char === '(') {
+        result += char
+        if (nextChar && nextChar !== ';' && nextChar !== ',') {
+          level++
+          result += '\n' + spaces.repeat(level)
+        }
+      } else if (char === '}' || char === ']' || char === ')') {
+        level = Math.max(0, level - 1)
+        if (result.endsWith(' ') || result.endsWith('\n' + spaces.repeat(level))) {
+          result = result.trimEnd()
+        }
+        result += '\n' + spaces.repeat(level) + char
+        if (nextChar !== ';' && nextChar !== ',' && nextChar !== '}') {
+          result += '\n' + spaces.repeat(level)
+        }
+      } else if (char === ';' || char === ',') {
+        result += char
+        if (nextChar && nextChar !== '\n') {
+          result += '\n' + spaces.repeat(level)
+        }
+      } else {
+        result += char
+      }
+    } else {
+      result += char
+    }
+  }
+
+  return result.trim()
+}
+
+function formatXml(xml: string, indent: number): string {
+  const spaces = ' '.repeat(indent)
+  let level = 0
+  let result = ''
+  let inTag = false
+  let tag = ''
+
+  for (let i = 0; i < xml.length; i++) {
+    const char = xml[i]
+
+    if (char === '<') {
+      inTag = true
+      if (tag.trim()) {
+        result += tag.trim() + '\n'
+        tag = ''
+      }
+      tag = char
+    } else if (char === '>') {
+      tag += char
+      inTag = false
+
+      const isClosing = tag.includes('</')
+      const isSelfClosing = tag.includes('/>')
+
+      if (isClosing) {
+        level = Math.max(0, level - 1)
+        result += spaces.repeat(level) + tag + '\n'
+      } else {
+        result += spaces.repeat(level) + tag + '\n'
+        if (!isSelfClosing) {
+          level++
+        }
+      }
+      tag = ''
+    } else if (inTag) {
+      tag += char
+    } else if (char.trim()) {
+      tag += char
+    }
+  }
+
+  return result.trim()
+}
+
+function formatSql(sql: string): string {
+  const keywords = ['SELECT', 'FROM', 'WHERE', 'AND', 'OR', 'JOIN', 'LEFT', 'RIGHT', 'INNER', 'OUTER', 'ON', 'GROUP', 'BY', 'ORDER', 'LIMIT', 'OFFSET', 'INSERT', 'INTO', 'VALUES', 'UPDATE', 'SET', 'DELETE', 'CREATE', 'TABLE', 'ALTER', 'DROP']
+  let result = sql.toUpperCase()
+
+  keywords.forEach((kw) => {
+    result = result.replace(new RegExp(`\\b${kw}\\b`, 'gi'), `\n${kw}`)
+  })
+
+  return result.trim()
+}
+
+function formatHtml(html: string, indent: number): string {
+  const spaces = ' '.repeat(indent)
+  let level = 0
+  let result = ''
+  let inTag = false
+  let tag = ''
+
+  for (let i = 0; i < html.length; i++) {
+    const char = html[i]
+
+    if (char === '<') {
+      inTag = true
+      if (tag.trim()) {
+        result += tag.trim() + '\n' + spaces.repeat(level)
+      }
+      tag = char
+    } else if (char === '>') {
+      tag += char
+      inTag = false
+
+      if (tag.includes('</')) {
+        level = Math.max(0, level - 1)
+        result = result.trimEnd() + '\n' + spaces.repeat(level)
+      }
+
+      result += tag
+      tag = ''
+
+      if (!tag.includes('/>')) {
+        result += '\n' + spaces.repeat(level)
+      }
+
+      if (!tag.includes('</') && !tag.includes('/>')) {
+        level++
+      }
+    } else if (inTag) {
+      tag += char
+    } else if (char.trim()) {
+      tag += char
+    }
+  }
+
+  return result.trim()
+}
+
+function generateJavaClass(obj: any, className: string): string {
+  let code = `public class ${className} {\n`
+
+  Object.entries(obj).forEach(([key, value]) => {
+    const type = typeof value === 'number' ? 'int' : typeof value === 'boolean' ? 'boolean' : 'String'
+    code += `  private ${type} ${key};\n`
+  })
+
+  code += `\n  public ${className}() {}\n\n`
+
+  Object.entries(obj).forEach(([key]) => {
+    const getter = 'get' + key.charAt(0).toUpperCase() + key.slice(1)
+    code += `  public ${typeof obj[key] === 'number' ? 'int' : typeof obj[key] === 'boolean' ? 'boolean' : 'String'} ${getter}() {\n    return this.${key};\n  }\n\n`
+  })
+
+  code += '}\n'
+  return code
+}
+
+function jsonToXml(obj: any, rootName: string): string {
+  let xml = `<?xml version="1.0" encoding="UTF-8"?>\n<${rootName}>\n`
+
+  Object.entries(obj).forEach(([key, value]) => {
+    if (typeof value === 'object' && value !== null) {
+      xml += `  <${key}>\n`
+      Object.entries(value).forEach(([k, v]) => {
+        xml += `    <${k}>${escapeXml(String(v))}</${k}>\n`
+      })
+      xml += `  </${key}>\n`
+    } else {
+      xml += `  <${key}>${escapeXml(String(value))}</${key}>\n`
+    }
+  })
+
+  xml += `</${rootName}>`
+  return xml
+}
+
+function generatePhpArray(obj: any): string {
+  let php = '$data = array(\n'
+
+  Object.entries(obj).forEach(([key, value]) => {
+    php += `  '${key}' => '${String(value).replace(/'/g, "\\'")}'`
+    php += ',\n'
+  })
+
+  php += ');\n'
+  return php
+}
+
+function generateCSharpClass(obj: any, className: string): string {
+  let code = `public class ${className}\n{\n`
+
+  Object.entries(obj).forEach(([key, value]) => {
+    const type = typeof value === 'number' ? 'int' : typeof value === 'boolean' ? 'bool' : 'string'
+    const propName = key.charAt(0).toUpperCase() + key.slice(1)
+    code += `  public ${type} ${propName} { get; set; }\n`
+  })
+
+  code += '}\n'
+  return code
+}
+
+function xmlToJson(xml: string): any {
+  const regex = /<([^\s/>]+)(?:\s[^>]*)?>([^<]*)<\/\1>|<([^\s/>]+)(?:\s[^>]*)?\/>/g
+  const result: any = {}
+  let match
+
+  while ((match = regex.exec(xml)) !== null) {
+    const tagName = match[1] || match[3]
+    const content = match[2] || ''
+    result[tagName] = content || null
+  }
+
+  return result || { raw: xml }
+}
+
+function parseIni(ini: string): Record<string, any> {
+  const result: Record<string, any> = {}
+  const lines = ini.split('\n')
+
+  for (const line of lines) {
+    const trimmed = line.trim()
+    if (trimmed && !trimmed.startsWith(';') && !trimmed.startsWith('#')) {
+      const [key, ...valueParts] = trimmed.split('=')
+      if (key && valueParts.length > 0) {
+        result[key.trim()] = valueParts.join('=').trim()
+      }
+    }
+  }
+
+  return result
+}
+
+function parseCSVLine(line: string): string[] {
+  const result: string[] = []
+  let current = ''
+  let inQuotes = false
+
+  for (let i = 0; i < line.length; i++) {
+    const char = line[i]
+    const nextChar = line[i + 1]
+
+    if (char === '"') {
+      if (inQuotes && nextChar === '"') {
+        current += '"'
+        i++
+      } else {
+        inQuotes = !inQuotes
+      }
+    } else if (char === ',' && !inQuotes) {
+      result.push(current)
+      current = ''
+    } else {
+      current += char
+    }
+  }
+
+  result.push(current)
+  return result
+}
+
+function escapeXml(str: string): string {
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&apos;')
+}
