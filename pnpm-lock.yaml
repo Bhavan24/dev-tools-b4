@@ -23,6 +23,9 @@ importers:
       '@vercel/mcp-adapter':
         specifier: ^0.3.2
         version: 0.3.2
+      chance:
+        specifier: ^1.1.11
+        version: 1.1.13
       class-variance-authority:
         specifier: ^0.7.1
         version: 0.7.1
@@ -750,6 +753,9 @@ packages:
   chalk@5.6.2:
     resolution: {integrity: sha512-7NzBL0rN6fMUW+f7A6Io4h40qQlG+xGmtMxfbnH/K7TAtt8JQWVQK+6g0UXKMeVJoyV5EkkNsErQ8pVD3bLHbA==}
     engines: {node: ^12.17.0 || ^14.13 || >=16.0.0}
+
+  chance@1.1.13:
+    resolution: {integrity: sha512-V6lQCljcLznE7tUYUM9EOAnnKXbctE6j/rdQkYOHIWbfGQbrzTsAXNW9CdU5XCo4ArXQCj/rb6HgxPlmGJcaUg==}
 
   class-variance-authority@0.7.1:
     resolution: {integrity: sha512-Ka+9Trutv7G8M6WT6SeiRWz792K5qEqIGEGzXKhAE6xOWAY6pPH8U+9IY3oCMv6kqTmLsv7Xh/2w2RigkePMsg==}
@@ -2578,6 +2584,8 @@ snapshots:
   caniuse-lite@1.0.30001799: {}
 
   chalk@5.6.2: {}
+
+  chance@1.1.13: {}
 
   class-variance-authority@0.7.1:
     dependencies:

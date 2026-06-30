@@ -604,4 +604,11 @@ export const TOOLS = [
     description: 'Generate strong and secure passwords with customizable options',
     shortDescription: 'Generate passwords',
   },
+  {
+    id: 'mock-data-generator',
+    name: 'Mock Data Generator',
+    category: TOOLS_CATEGORIES.DEVELOPER,
+    description: 'Generate realistic mock data for testing across multiple categories (Person, Text, Web, Location, Time, Finance, Miscellaneous)',
+    shortDescription: 'Generate mock test data',
+  },
 ] as const

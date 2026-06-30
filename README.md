@@ -21,7 +21,7 @@ A comprehensive collection of **80+ free developer and AI-powered tools** for de
 
 ## 📁 Tool Categories
 
-### Developer Tools (31 tools)
+### Developer Tools (32 tools)
 
 | Tool | Status | Description |
 |------|--------|-------------|
@@ -48,6 +48,7 @@ A comprehensive collection of **80+ free developer and AI-powered tools** for de
 | **UUID Generator** | ✅ Built | Generate UUID v4 identifiers for your applications |
 | **Hash Generator** | ✅ Built | Generate cryptographic hashes (MD5, SHA1, SHA256, SHA512) |
 | **Password Generator** | ✅ Built | Generate strong and secure passwords with custom options |
+| **Mock Data Generator** | ✅ Built | Generate realistic test data across multiple categories (Person, Text, Web, Location, Time, Finance, Miscellaneous) |
 | **Code Cleaner** | 🏗️ Coming Soon | Remove comments and unnecessary whitespace from code |
 | **Diff Checker** | 🏗️ Coming Soon | Compare two texts and highlight differences |
 | **SVG Viewer** | 🏗️ Coming Soon | View and edit SVG code with live preview |
@@ -126,8 +127,8 @@ A comprehensive collection of **80+ free developer and AI-powered tools** for de
 
 ## 📊 Stats
 
-- **Total Tools**: 80
-- **Built & Ready**: 50 ✅
+- **Total Tools**: 81
+- **Built & Ready**: 51 ✅
 - **Coming Soon**: 30 🏗️
 - **Categories**: 5 (Developer, Validation, Formatter, Converter, AI Tools)
 

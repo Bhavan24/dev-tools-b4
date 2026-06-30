@@ -1156,6 +1156,92 @@ export const toolHandlers: Record<string, ToolHandler> = {
       return { password, length, hasUppercase: uppercase, hasLowercase: lowercase, hasNumbers: numbers, hasSymbols: symbols }
     },
   },
+
+  'mock-data-generator': {
+    description: 'Generate realistic mock data for testing',
+    schema: {
+      type: 'object',
+      properties: {
+        category: { type: 'string', description: 'Data category: person, text, web, location, time, finance, miscellaneous (default: person)', default: 'person' },
+      },
+      required: [],
+    },
+    handler: async (input) => {
+      const { category = 'person' } = input
+      const Chance = require('chance')
+      const chance = new Chance()
+
+      const mockData: Record<string, Record<string, any>> = {
+        person: {
+          namePrefix: chance.prefix(),
+          firstName: chance.first(),
+          lastName: chance.last(),
+          fullName: chance.name(),
+          gender: chance.gender(),
+          age: chance.age(),
+          birthDate: chance.birthday(),
+          phone: chance.phone(),
+          profession: chance.profession(),
+        },
+        text: {
+          word: chance.word(),
+          sentence: chance.sentence(),
+          paragraph: chance.paragraph(),
+          randomString: chance.string({ length: 20 }),
+          syllable: chance.syllable(),
+        },
+        web: {
+          email: chance.email(),
+          domain: chance.domain(),
+          url: chance.url(),
+          ipAddress: chance.ip(),
+          hexColor: chance.color(),
+          company: chance.company(),
+          twitterHandle: chance.twitter(),
+          securePassword: chance.string({ length: 12, alpha: true, numeric: true, symbols: true }),
+        },
+        location: {
+          address: chance.address(),
+          street: chance.street(),
+          city: chance.city(),
+          state: chance.state(),
+          country: chance.country({ full: true }),
+          postalCode: chance.zip(),
+          latitude: chance.latitude(),
+          longitude: chance.longitude(),
+        },
+        time: {
+          dateString: chance.date({ string: true }),
+          unixTimestamp: Math.floor(Math.random() * 1000000000),
+          year: chance.year(),
+          month: chance.month(),
+          hour: Math.floor(Math.random() * 24),
+          minute: Math.floor(Math.random() * 60),
+          second: Math.floor(Math.random() * 60),
+        },
+        finance: {
+          creditCard: chance.cc(),
+          currency: chance.currency(),
+          amount: Math.round(chance.floating({ min: 10, max: 10000, fixed: 2 }) * 100) / 100,
+          accountNumber: chance.string({ length: 10, numeric: true }),
+        },
+        miscellaneous: {
+          uuid: chance.guid(),
+          md5Hash: chance.md5(),
+          hashValue: chance.hash(),
+          androidId: chance.android_id(),
+          appleToken: chance.apple_token(),
+        },
+      }
+
+      const categoryData = mockData[category]
+      if (!categoryData) {
+        throw new Error(`Invalid category. Use: ${Object.keys(mockData).join(', ')}`)
+      }
+
+      return categoryData
+    },
+  },
 }
 
 // Helper functions

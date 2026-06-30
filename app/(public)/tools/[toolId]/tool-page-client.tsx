@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { TOOLS } from '@/lib/constants'
 import { Loader2, AlertCircle } from 'lucide-react'
+import { MockDataGenerator } from '@/components/tools/mock-data-generator'
 
 interface ToolPageClientProps {
   toolId: string
@@ -26,7 +27,7 @@ export function ToolPageClient({ toolId }: ToolPageClientProps) {
     )
   }
 
-  if (tool.comingSoon) {
+  if ('comingSoon' in tool && tool.comingSoon) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="card-base max-w-md text-center">
@@ -35,6 +36,18 @@ export function ToolPageClient({ toolId }: ToolPageClientProps) {
           <p className="text-muted-foreground mb-6">{tool.description}</p>
           <p className="text-primary font-semibold">Coming Soon</p>
         </div>
+      </div>
+    )
+  }
+
+  if (toolId === 'mock-data-generator') {
+    return (
+      <div className="max-w-4xl">
+        <div className="mb-8">
+          <h2 className="text-2xl font-bold text-foreground">{tool.name}</h2>
+          <p className="text-sm text-muted-foreground">{tool.description}</p>
+        </div>
+        <MockDataGenerator toolId={toolId} />
       </div>
     )
   }
