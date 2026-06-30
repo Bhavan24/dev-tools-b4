@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo, useEffect } from 'react'
+import { Suspense, useState, useMemo, useEffect } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { Search } from 'lucide-react'
 import { TOOLS, TOOLS_CATEGORIES, CATEGORY_INFO } from '@/lib/constants'
@@ -10,7 +10,7 @@ import { Footer } from '@/components/layout/footer'
 import { usePinnedTools } from '@/hooks/use-pinned-tools'
 import * as LucideIcons from 'lucide-react'
 
-export default function HomePage() {
+function HomePageContent() {
   const searchParams = useSearchParams()
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
@@ -156,5 +156,13 @@ export default function HomePage() {
       </main>
       <Footer />
     </>
+  )
+}
+
+export default function HomePage() {
+  return (
+    <Suspense fallback={null}>
+      <HomePageContent />
+    </Suspense>
   )
 }

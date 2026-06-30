@@ -1,9 +1,10 @@
 'use client'
 
+import { Suspense } from 'react'
 import { useEffect } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 
-export default function ToolsPage() {
+function ToolsPageContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
 
@@ -19,4 +20,12 @@ export default function ToolsPage() {
 
   // Show nothing while redirecting
   return null
+}
+
+export default function ToolsPage() {
+  return (
+    <Suspense fallback={null}>
+      <ToolsPageContent />
+    </Suspense>
+  )
 }
