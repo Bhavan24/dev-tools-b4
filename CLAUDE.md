@@ -32,6 +32,9 @@ pnpm run lint
 
 # Type-check with TypeScript
 pnpm tsc --noEmit
+
+# Type-check and lint together (recommended before committing)
+pnpm run lint && pnpm tsc --noEmit
 ```
 
 ## Architecture & Key Concepts
@@ -76,11 +79,13 @@ Each tool has a corresponding handler in `tool-handlers.ts` with:
 - **`POST /api/tools/[toolId]`** — Execute a specific tool
   - Body: tool-specific input object matching the handler schema
   - Response: `{ result: any }` or `{ error: string }`
+  - Input validation uses Zod schemas defined in handlers
 
 - **`POST /api/mcp`** — MCP protocol endpoint
   - Supports `tools/list` method (returns all tools with schemas)
   - Supports `tools/call` method (execute tool by name)
   - Used by Claude via `@vercel/mcp-adapter`
+  - Automatically converts handler JSON schemas to Zod validation
 
 ### Frontend Patterns
 
@@ -93,10 +98,16 @@ Each tool has a corresponding handler in `tool-handlers.ts` with:
 - **TypeScript** — Strict mode, paths alias `@/*` maps to project root
 - **Tailwind CSS 4** — With PostCSS plugin
 - **Next.js 16** — App Router, server components by default, dynamic imports for MCP
+- **Zod** — Schema validation for MCP handler inputs (v4.4.3)
 
 ## Adding a New Tool
 
 **CRITICAL: When adding, updating, or removing tools, you MUST update both the code AND the README.md file simultaneously.**
+
+### Key Requirements
+
+- **MCP Support**: All new tool implementations MUST work as an API with MCP (Model Context Protocol) support, following the same patterns as existing tools. Tools must include a handler in `tool-handlers.ts` with proper schema definition so they are automatically exposed via `/api/mcp`.
+- **Documentation Sync**: Any update to current tools or their behavior MUST be reflected in README.md simultaneously with code changes. This keeps the tool catalog and user-facing documentation in sync with the actual implementation.
 
 ### Implementation Steps
 
@@ -159,6 +170,28 @@ See `README.md` § "🛠️ Development Rules" for the checklist.
 The tool becomes immediately available at `/tools/my-tool` and in the MCP server at `/api/mcp`.
 
 ## Tool Implementation Patterns
+
+### Schema Validation
+
+Tool handlers receive input that has been validated against the JSON Schema defined in the handler. The schema must:
+- Have complete `properties` object listing all input fields
+- Include `required` array specifying mandatory fields
+- Include `description` for each property to explain what it accepts
+
+Example:
+```ts
+schema: {
+  type: 'object',
+  properties: {
+    input: { type: 'string', description: 'The text to process' },
+    format: { type: 'string', enum: ['json', 'yaml'], description: 'Output format' },
+  },
+  required: ['input', 'format'],
+  additionalProperties: false,
+}
+```
+
+The MCP endpoint validates inputs using these schemas before calling handlers. Handlers assume input is valid after schema validation.
 
 ### Error Handling
 
@@ -388,12 +421,13 @@ No handler needed—just define in constants:
 
 ### Do's ✅
 
+- **Implement with MCP support** — All tools must have a handler in `tool-handlers.ts` with complete schema definition for MCP exposure
 - Keep handlers simple and focused on their core function
 - Provide clear, actionable error messages
 - Test edge cases thoroughly
 - Document all inputs thoroughly in schema with descriptions
 - Return consistent JSON objects
-- **Always update README simultaneously with code changes**
+- **Always update README.md simultaneously with code changes** — Keep tool catalog, statistics, and descriptions in sync
 - Use helper functions for complex logic
 - Use descriptive variable names
 - Follow existing patterns in tool-handlers.ts
@@ -410,10 +444,6 @@ No handler needed—just define in constants:
 - Don't make tools do too much — keep them focused
 
 ## Styling
-
-- **Tailwind 4 with custom utilities** — See `globals.css` for theme variables and custom classes like `btn-primary`, `btn-secondary`, `card-base`, `input-base`, `container-main`
-- **Responsive** — Mobile-first design with `sm:`, `md:`, `lg:` breakpoints
-- **Icons** — lucide-react 1.21.0 (import as `<IconName />` or dynamically via `LucideIcons[name]`)
 
 - **Tailwind 4 with custom utilities** — See `globals.css` for theme variables and custom classes like `btn-primary`, `btn-secondary`, `card-base`, `input-base`, `container-main`
 - **Responsive** — Mobile-first design with `sm:`, `md:`, `lg:` breakpoints

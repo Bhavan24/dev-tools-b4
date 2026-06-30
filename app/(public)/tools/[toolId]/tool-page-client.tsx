@@ -11,6 +11,10 @@ import { CsvOptionsConverterTool } from '@/components/tools/csv-options-converte
 import { ColorTools } from '@/components/tools/color-tools'
 import { GeneratorTools } from '@/components/tools/generator-tools'
 import { SpecialtyTools } from '@/components/tools/specialty-tools'
+import { CodeTools } from '@/components/tools/code-tools'
+import { ValidationTools } from '@/components/tools/validation-tools'
+import { ConverterTools } from '@/components/tools/converter-tools'
+import { ApiTesterTool } from '@/components/tools/api-tester-tool'
 
 interface ToolPageClientProps {
   toolId: string
@@ -43,6 +47,12 @@ const CUSTOM_TOOL_REGISTRY: Record<string, (id: string) => React.ReactElement> =
   'jwt-decoder': (id) => <SpecialtyTools toolId={id} />,
   'text-case-converter': (id) => <SpecialtyTools toolId={id} />,
   'regex-parser': (id) => <SpecialtyTools toolId={id} />,
+  'code-cleaner': (id) => <CodeTools toolId={id} />,
+  'diff-checker': (id) => <CodeTools toolId={id} />,
+  'html-validator': (id) => <ValidationTools toolId={id} />,
+  'redirection-checker': (id) => <ValidationTools toolId={id} />,
+  'currency-converter': (id) => <ConverterTools toolId={id} />,
+  'rest-api-tester': (id) => <ApiTesterTool toolId={id} />,
 }
 
 const SINGLE_LINE_TOOLS = new Set(['timestamp-converter', 'url-splitter', 'mime-type-checker'])

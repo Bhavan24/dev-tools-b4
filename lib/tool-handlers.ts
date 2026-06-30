@@ -789,11 +789,11 @@ export const toolHandlers: Record<string, ToolHandler> = {
       const lines = csv.trim().split('\n')
       if (lines.length === 0) throw new Error('Empty CSV')
 
-      const rows = lines.map((line) => parseCSVLine(line))
+      const rows = lines.map((line: string) => parseCSVLine(line))
       const result = hasHeader
-        ? rows.slice(1).map((row) => {
+        ? rows.slice(1).map((row: string[]) => {
             const obj: Record<string, any> = {}
-            rows[0].forEach((header: string, i: number) => {
+            rows[0]!.forEach((header: string, i: number) => {
               obj[header] = row[i]
             })
             return obj
@@ -818,11 +818,11 @@ export const toolHandlers: Record<string, ToolHandler> = {
       const lines = csv.trim().split('\n')
       if (lines.length === 0) throw new Error('Empty CSV')
 
-      const headers = parseCSVLine(lines[0])
+      const headers = parseCSVLine(lines[0]!)
       let xml = '<?xml version="1.0" encoding="UTF-8"?>\n<rows>\n'
 
       for (let i = 1; i < lines.length; i++) {
-        const values = parseCSVLine(lines[i])
+        const values = parseCSVLine(lines[i]!)
         xml += '  <row>\n'
         headers.forEach((header: string, idx: number) => {
           xml += `    <${header}>${escapeXml(values[idx] || '')}</${header}>\n`
@@ -848,11 +848,11 @@ export const toolHandlers: Record<string, ToolHandler> = {
       const lines = csv.trim().split('\n')
       if (lines.length === 0) throw new Error('Empty CSV')
 
-      const headers = parseCSVLine(lines[0])
-      const rows = []
+      const headers = parseCSVLine(lines[0]!)
+      const rows: Record<string, any>[] = []
 
       for (let i = 1; i < lines.length; i++) {
-        const values = parseCSVLine(lines[i])
+        const values = parseCSVLine(lines[i]!)
         const obj: Record<string, any> = {}
         headers.forEach((header: string, idx: number) => {
           obj[header] = values[idx]
@@ -1042,7 +1042,7 @@ export const toolHandlers: Record<string, ToolHandler> = {
           result.converted = text.charAt(0).toUpperCase() + text.slice(1).toLowerCase()
           break
         case 'camelCase':
-          result.converted = text.replace(/[\s_-]+(.)/g, (_, char: string) => char.toUpperCase()).replace(/^(.)/, (match: string) => match.toLowerCase())
+          result.converted = text.replace(/[\s_-]+(.)/g, (_: string, char: string) => char.toUpperCase()).replace(/^(.)/, (match: string) => match.toLowerCase())
           break
         case 'snake_case':
           result.converted = text.replace(/([a-z])([A-Z])/g, '$1_$2').replace(/[\s-]+/g, '_').toLowerCase()
@@ -1242,6 +1242,119 @@ export const toolHandlers: Record<string, ToolHandler> = {
       return categoryData
     },
   },
+
+  'code-cleaner': {
+    description: 'Remove comments and unnecessary whitespace from code',
+    schema: {
+      type: 'object',
+      properties: {
+        code: { type: 'string', description: 'Code to clean' },
+        language: { type: 'string', description: 'Language: js, css, html, py, java (default: js)', default: 'js' },
+      },
+      required: ['code'],
+    },
+    handler: async (input) => {
+      const { code, language = 'js' } = input
+      return cleanCode(code, language)
+    },
+  },
+
+  'diff-checker': {
+    description: 'Compare two texts and highlight differences',
+    schema: {
+      type: 'object',
+      properties: {
+        text1: { type: 'string', description: 'First text to compare' },
+        text2: { type: 'string', description: 'Second text to compare' },
+      },
+      required: ['text1', 'text2'],
+    },
+    handler: async (input) => {
+      const { text1, text2 } = input
+      const lines1 = text1.split('\n')
+      const lines2 = text2.split('\n')
+      const diff = computeDiff(lines1, lines2)
+
+      return {
+        text1_lines: lines1.length,
+        text2_lines: lines2.length,
+        diff,
+        similarity: calculateSimilarity(text1, text2),
+      }
+    },
+  },
+
+  'html-validator': {
+    description: 'Validate HTML markup and check for errors',
+    schema: {
+      type: 'object',
+      properties: {
+        html: { type: 'string', description: 'HTML to validate' },
+      },
+      required: ['html'],
+    },
+    handler: async (input) => {
+      const { html } = input
+      const errors = validateHtml(html)
+
+      return {
+        isValid: errors.length === 0,
+        errorCount: errors.length,
+        errors,
+      }
+    },
+  },
+
+  'redirection-checker': {
+    description: 'Follow HTTP redirects and check final URL',
+    schema: {
+      type: 'object',
+      properties: {
+        url: { type: 'string', description: 'URL to check for redirects' },
+        maxRedirects: { type: 'number', description: 'Maximum redirects to follow (default: 10)', default: 10 },
+      },
+      required: ['url'],
+    },
+    handler: async (input) => {
+      const { url, maxRedirects = 10 } = input
+      return checkRedirects(url, maxRedirects)
+    },
+  },
+
+  'currency-converter': {
+    description: 'Convert between currencies with real-time exchange rates',
+    schema: {
+      type: 'object',
+      properties: {
+        amount: { type: 'number', description: 'Amount to convert' },
+        from: { type: 'string', description: 'Source currency code (e.g., USD, EUR, GBP)' },
+        to: { type: 'string', description: 'Target currency code (e.g., USD, EUR, GBP)' },
+      },
+      required: ['amount', 'from', 'to'],
+    },
+    handler: async (input) => {
+      const { amount, from, to } = input
+      return convertCurrency(amount, from.toUpperCase(), to.toUpperCase())
+    },
+  },
+
+  'rest-api-tester': {
+    description: 'Test REST APIs with custom headers and request body',
+    schema: {
+      type: 'object',
+      properties: {
+        url: { type: 'string', description: 'API endpoint URL' },
+        method: { type: 'string', description: 'HTTP method (GET, POST, PUT, DELETE, PATCH)', default: 'GET' },
+        headers: { type: 'string', description: 'JSON string of headers (e.g., {"Authorization": "Bearer token"})', default: '{}' },
+        body: { type: 'string', description: 'Request body as JSON string (for POST/PUT/PATCH)', default: '' },
+      },
+      required: ['url'],
+    },
+    handler: async (input) => {
+      const { url, method = 'GET', headers = '{}', body = '' } = input
+      return testRestApi(url, method, headers, body)
+    },
+  },
 }
 
 // Helper functions
@@ -1262,7 +1375,7 @@ function beautifyCode(code: string, indent: number): string {
   let stringChar = ''
 
   for (let i = 0; i < code.length; i++) {
-    const char = code[i]
+    const char: string = code[i]!
     const nextChar = code[i + 1]
 
     if ((char === '"' || char === "'") && code[i - 1] !== '\\') {
@@ -1531,4 +1644,218 @@ function escapeXml(str: string): string {
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&apos;')
+}
+
+function cleanCode(code: string, language: string): string {
+  let cleaned = code
+
+  if (language === 'js') {
+    cleaned = cleaned
+      .replace(/\/\*[\s\S]*?\*\//g, '')
+      .replace(/\/\/.*/g, '')
+  } else if (language === 'css') {
+    cleaned = cleaned
+      .replace(/\/\*[\s\S]*?\*\//g, '')
+  } else if (language === 'html') {
+    cleaned = cleaned
+      .replace(/<!--[\s\S]*?-->/g, '')
+  } else if (language === 'py') {
+    cleaned = cleaned
+      .replace(/#.*/g, '')
+      .replace(/'''[\s\S]*?'''/g, '')
+      .replace(/"""[\s\S]*?"""/g, '')
+  } else if (language === 'java') {
+    cleaned = cleaned
+      .replace(/\/\*[\s\S]*?\*\//g, '')
+      .replace(/\/\/.*/g, '')
+  }
+
+  cleaned = cleaned
+    .replace(/^\s*[\r\n]/gm, '')
+    .replace(/\s+/g, ' ')
+    .trim()
+
+  return cleaned
+}
+
+function computeDiff(lines1: string[], lines2: string[]): Array<{ type: string; lineNum: number; content: string }> {
+  const diff: Array<{ type: string; lineNum: number; content: string }> = []
+  const maxLines = Math.max(lines1.length, lines2.length)
+
+  for (let i = 0; i < maxLines; i++) {
+    const line1 = lines1[i] || ''
+    const line2 = lines2[i] || ''
+
+    if (line1 !== line2) {
+      if (line1) diff.push({ type: 'removed', lineNum: i + 1, content: line1 })
+      if (line2) diff.push({ type: 'added', lineNum: i + 1, content: line2 })
+    }
+  }
+
+  return diff
+}
+
+function calculateSimilarity(text1: string, text2: string): number {
+  const len1 = text1.length
+  const len2 = text2.length
+  const maxLen = Math.max(len1, len2)
+  if (maxLen === 0) return 100
+
+  let matches = 0
+  for (let i = 0; i < Math.min(len1, len2); i++) {
+    if (text1[i] === text2[i]) matches++
+  }
+
+  return Math.round((matches / maxLen) * 100)
+}
+
+function validateHtml(html: string): Array<{ line: number; message: string }> {
+  const errors: Array<{ line: number; message: string }> = []
+  const lines = html.split('\n')
+  const tagStack: string[] = []
+  const selfClosing = ['br', 'hr', 'img', 'input', 'link', 'meta', 'area', 'base', 'col', 'embed', 'source', 'track', 'wbr']
+
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i]!
+    const tagMatches = line.match(/<\/?([a-zA-Z][a-zA-Z0-9]*)[^>]*>/g) || []
+
+    for (const match of tagMatches) {
+      if (match.startsWith('</')) {
+        const tagName = match.slice(2, -1).trim().toLowerCase()
+        if (tagStack.length === 0 || tagStack[tagStack.length - 1] !== tagName) {
+          errors.push({ line: i + 1, message: `Unexpected closing tag: ${match}` })
+        } else {
+          tagStack.pop()
+        }
+      } else if (!match.endsWith('/>')) {
+        const tagMatch = match.match(/<([a-zA-Z][a-zA-Z0-9]*)/i)
+        if (tagMatch) {
+          const tagName = tagMatch[1]!.toLowerCase()
+          if (!selfClosing.includes(tagName)) {
+            tagStack.push(tagName)
+          }
+        }
+      }
+    }
+  }
+
+  if (tagStack.length > 0) {
+    errors.push({ line: lines.length, message: `Unclosed tags: ${tagStack.join(', ')}` })
+  }
+
+  return errors
+}
+
+async function checkRedirects(url: string, maxRedirects: number): Promise<any> {
+  const chain = []
+  let currentUrl = url
+  let redirectCount = 0
+
+  try {
+    while (redirectCount < maxRedirects) {
+      const response = await fetch(currentUrl, {
+        redirect: 'manual',
+        headers: { 'User-Agent': 'Mozilla/5.0' },
+      })
+
+      chain.push({
+        url: currentUrl,
+        status: response.status,
+        statusText: response.statusText,
+      })
+
+      const location = response.headers.get('location')
+      if (!location || response.status < 300 || response.status >= 400) {
+        break
+      }
+
+      currentUrl = new URL(location, currentUrl).toString()
+      redirectCount++
+    }
+  } catch (error: any) {
+    throw new Error(`Failed to check redirects: ${error.message}`)
+  }
+
+  return {
+    finalUrl: currentUrl,
+    redirectCount,
+    chain,
+    isRedirected: chain.length > 1,
+  }
+}
+
+async function convertCurrency(amount: number, from: string, to: string): Promise<any> {
+  try {
+    const response = await fetch(`https://api.exchangerate-api.com/v4/latest/${from}`)
+
+    if (!response.ok) {
+      throw new Error(`Currency API error: ${response.status}`)
+    }
+
+    const data = await response.json()
+
+    if (!data.rates[to]) {
+      throw new Error(`Unknown currency: ${to}`)
+    }
+
+    const rate = data.rates[to]
+    const converted = amount * rate
+
+    return {
+      amount,
+      from,
+      to,
+      rate: parseFloat(rate.toFixed(6)),
+      converted: parseFloat(converted.toFixed(2)),
+      timestamp: new Date().toISOString(),
+    }
+  } catch (error: any) {
+    throw new Error(`Currency conversion failed: ${error.message}`)
+  }
+}
+
+async function testRestApi(url: string, method: string, headersStr: string, bodyStr: string): Promise<any> {
+  try {
+    let headers: Record<string, string> = {}
+    try {
+      headers = JSON.parse(headersStr || '{}')
+    } catch {
+      throw new Error('Invalid headers JSON')
+    }
+
+    const options: RequestInit = {
+      method: method.toUpperCase(),
+      headers,
+    }
+
+    if (bodyStr && (method.toUpperCase() === 'POST' || method.toUpperCase() === 'PUT' || method.toUpperCase() === 'PATCH')) {
+      try {
+        JSON.parse(bodyStr)
+        options.body = bodyStr
+        headers['Content-Type'] = 'application/json'
+      } catch {
+        throw new Error('Invalid request body JSON')
+      }
+    }
+
+    const response = await fetch(url, options)
+    const responseBody = await response.text()
+
+    let parsedBody
+    try {
+      parsedBody = JSON.parse(responseBody)
+    } catch {
+      parsedBody = responseBody
+    }
+
+    return {
+      status: response.status,
+      statusText: response.statusText,
+      headers: Object.fromEntries(response.headers.entries()),
+      body: parsedBody,
+      size: responseBody.length,
+    }
+  } catch (error: any) {
+    throw new Error(`API request failed: ${error.message}`)
+  }
 }

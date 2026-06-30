@@ -40,9 +40,8 @@ export const TOOLS = [
     id: 'rest-api-tester',
     name: 'REST API Tester',
     category: TOOLS_CATEGORIES.DEVELOPER,
-    description: 'Test REST APIs with custom headers and body',
+    description: 'Test REST APIs with custom headers, authentication, and request body',
     shortDescription: 'Test REST APIs',
-    comingSoon: true,
   },
   {
     id: 'js-minifier',
@@ -128,7 +127,6 @@ export const TOOLS = [
     category: TOOLS_CATEGORIES.DEVELOPER,
     description: 'Remove comments and unnecessary whitespace from code',
     shortDescription: 'Clean code',
-    comingSoon: true,
   },
   {
     id: 'diff-checker',
@@ -136,7 +134,6 @@ export const TOOLS = [
     category: TOOLS_CATEGORIES.DEVELOPER,
     description: 'Compare two texts and highlight differences',
     shortDescription: 'Check differences',
-    comingSoon: true,
   },
   {
     id: 'url-encoder-decoder',
@@ -241,7 +238,6 @@ export const TOOLS = [
     category: TOOLS_CATEGORIES.VALIDATION,
     description: 'Validate HTML markup and check for errors',
     shortDescription: 'Validate HTML',
-    comingSoon: true,
   },
   {
     id: 'redirection-checker',
@@ -249,7 +245,6 @@ export const TOOLS = [
     category: TOOLS_CATEGORIES.VALIDATION,
     description: 'Follow HTTP redirects and check final URL',
     shortDescription: 'Check redirects',
-    comingSoon: true,
   },
   {
     id: 'link-checker',
@@ -595,7 +590,6 @@ export const TOOLS = [
     category: TOOLS_CATEGORIES.CONVERTER,
     description: 'Convert between different currencies with real-time exchange rates',
     shortDescription: 'Convert currency',
-    comingSoon: true,
   },
   {
     id: 'password-generator',

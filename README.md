@@ -6,6 +6,46 @@ A comprehensive collection of **80+ free developer and AI-powered tools** for de
 
 ---
 
+## 🤖 MCP Server Integration
+
+This application includes a **Model Context Protocol (MCP) server** that exposes all 80+ tools to Claude AI and other MCP-compatible applications.
+
+### What is MCP?
+MCP is a standardized protocol that allows AI models like Claude to discover and execute tools through a unified interface.
+
+### How to Use with Claude
+- **Access**: All tools are available via `/api/mcp` endpoint
+- **Authentication**: Public access - no API keys required
+- **Integration**: Connect Claude to this MCP server to use any tool programmatically
+- **Methods**: 
+  - `tools/list` - Get all available tools with schemas
+  - `tools/call` - Execute any tool with parameters
+
+### Benefits
+- ✅ Use any of our 80+ tools directly from Claude
+- ✅ Automate complex workflows with AI-powered tool execution
+- ✅ Chain multiple tools together for powerful transformations
+- ✅ Access rich JSON schemas for each tool's capabilities
+
+### Quick Start
+```bash
+# List all available tools
+curl -X POST https://dev-tools-b4.vercel.app/api/mcp \
+  -H "Content-Type: application/json" \
+  -d '{"method":"tools/list"}'
+
+# Call a tool via MCP
+curl -X POST https://dev-tools-b4.vercel.app/api/mcp \
+  -H "Content-Type: application/json" \
+  -d '{
+    "method":"tools/call",
+    "name":"json-beautifier",
+    "arguments":{"json":"{\"key\":\"value\"}","indent":2}
+  }'
+```
+
+---
+
 ## 🚀 Features
 
 - **80+ Tools** across multiple categories
@@ -49,10 +89,10 @@ A comprehensive collection of **80+ free developer and AI-powered tools** for de
 | **Hash Generator** | ✅ Built | Generate cryptographic hashes (MD5, SHA1, SHA256, SHA512) |
 | **Password Generator** | ✅ Built | Generate strong and secure passwords with custom options |
 | **Mock Data Generator** | ✅ Built | Generate realistic test data across multiple categories (Person, Text, Web, Location, Time, Finance, Miscellaneous) |
-| **Code Cleaner** | 🏗️ Coming Soon | Remove comments and unnecessary whitespace from code |
-| **Diff Checker** | 🏗️ Coming Soon | Compare two texts and highlight differences |
+| **Code Cleaner** | ✅ Built | Remove comments and unnecessary whitespace from code |
+| **Diff Checker** | ✅ Built | Compare two texts and highlight differences |
 | **SVG Viewer** | 🏗️ Coming Soon | View and edit SVG code with live preview |
-| **REST API Tester** | 🏗️ Coming Soon | Test REST APIs with custom headers and body |
+| **REST API Tester** | ✅ Built | Test REST APIs with custom headers, authentication, and request body |
 | **HAR Viewer** | 🏗️ Coming Soon | View and analyze HTTP Archive (HAR) files |
 | **HAR Sanitizer** | 🏗️ Coming Soon | Remove sensitive data from HAR files |
 
@@ -65,8 +105,8 @@ A comprehensive collection of **80+ free developer and AI-powered tools** for de
 | **JavaScript Validator** | ✅ Built | Validate JavaScript syntax |
 | **JSON Path Evaluator** | 🏗️ Coming Soon | Test JSONPath queries |
 | **XPath Evaluator** | 🏗️ Coming Soon | Test and debug XPath expressions |
-| **HTML Validator** | 🏗️ Coming Soon | Validate HTML5 markup |
-| **Redirection Checker** | 🏗️ Coming Soon | Check URL redirects and chains |
+| **HTML Validator** | ✅ Built | Validate HTML5 markup and detect syntax errors |
+| **Redirection Checker** | ✅ Built | Follow HTTP redirects and check final URL |
 | **Link Checker** | 🏗️ Coming Soon | Validate links in documents |
 | **JSONPath Finder** | 🏗️ Coming Soon | Find and extract JSONPath values |
 
@@ -103,7 +143,7 @@ A comprehensive collection of **80+ free developer and AI-powered tools** for de
 | **HEX to RGB** | ✅ Built | Convert HEX color values to RGB format |
 | **IDN Converter** | ✅ Built | Convert between Unicode and Punycode domains |
 | **Unit Converter** | ✅ Built | Convert between different units (length, weight, temperature) |
-| **Currency Converter** | 🏗️ Coming Soon | Convert between different currencies with real-time rates |
+| **Currency Converter** | ✅ Built | Convert between different currencies with real-time exchange rates |
 | **JSON to Protobuf** | 🏗️ Coming Soon | Convert JSON schema to Protocol Buffers |
 | **XML to XSD** | 🏗️ Coming Soon | Generate XSD schema from XML |
 | **SQL to MongoDB** | 🏗️ Coming Soon | Convert SQL queries to MongoDB aggregation |
@@ -128,8 +168,8 @@ A comprehensive collection of **80+ free developer and AI-powered tools** for de
 ## 📊 Stats
 
 - **Total Tools**: 81
-- **Built & Ready**: 51 ✅
-- **Coming Soon**: 30 🏗️
+- **Built & Ready**: 56 ✅
+- **Coming Soon**: 25 🏗️
 - **Categories**: 5 (Developer, Validation, Formatter, Converter, AI Tools)
 
 ---
