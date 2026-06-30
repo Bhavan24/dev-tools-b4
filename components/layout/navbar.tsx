@@ -34,17 +34,12 @@ export function Navbar() {
       <div className="container-main flex items-center justify-between py-4">
         <Link href="/" className="flex items-center gap-2 font-bold text-xl text-primary">
           <Code2 size={24} />
-          <span className="hidden sm:inline">DevTools</span>
+          <span className="hidden sm:inline">AI Developer Tools</span>
         </Link>
 
         {/* Desktop Menu */}
         <div className="hidden md:flex items-center gap-8">
-          <Link
-            href="/tools"
-            className="text-foreground transition-colors hover:text-primary"
-          >
-            Tools
-          </Link>
+          {/* Navigation menu can be extended here */}
         </div>
 
         {/* Right Section */}
@@ -74,14 +69,6 @@ export function Navbar() {
       {isOpen && (
         <div className="md:hidden border-t border-border bg-card animate-in fade-in slide-in-from-top duration-200">
           <div className="container-main py-4 flex flex-col gap-4">
-            <Link
-              href="/tools"
-              className="text-foreground transition-colors hover:text-primary"
-              onClick={() => setIsOpen(false)}
-            >
-              Tools
-            </Link>
-
             {/* Mobile Theme Toggle */}
             {mounted && (
               <button

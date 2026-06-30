@@ -1,139 +1,22 @@
 'use client'
 
-import { useState, useMemo, useEffect, Suspense } from 'react'
-import { useSearchParams } from 'next/navigation'
-import { TOOLS, TOOLS_CATEGORIES, CATEGORY_INFO } from '@/lib/constants'
-import { ToolCard } from '@/components/tools/tool-card'
-import { Search } from 'lucide-react'
-import * as LucideIcons from 'lucide-react'
-
-function ToolsContent() {
-  const searchParams = useSearchParams()
-  const [searchQuery, setSearchQuery] = useState('')
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
-
-  useEffect(() => {
-    const categoryParam = searchParams.get('category')
-    if (categoryParam) {
-      setSelectedCategory(categoryParam)
-    }
-  }, [searchParams])
-
-  const filteredTools = useMemo(() => {
-    return TOOLS.filter((tool) => {
-      const matchesSearch =
-        tool.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        tool.description.toLowerCase().includes(searchQuery.toLowerCase())
-      const matchesCategory =
-        !selectedCategory || tool.category === selectedCategory
-
-      return matchesSearch && matchesCategory
-    })
-  }, [searchQuery, selectedCategory])
-
-  const categories = Object.values(TOOLS_CATEGORIES)
-
-  return (
-    <div className="container-main py-12 md:py-16">
-      {/* Header */}
-      <div className="mb-16">
-        <h1 className="text-5xl md:text-6xl font-bold mb-4 text-balance">
-          All Tools
-        </h1>
-        <p className="text-lg md:text-xl text-muted-foreground text-balance">
-          Browse our collection of {TOOLS.length}+ free developer utilities. All tools work instantly, no signup required.
-        </p>
-      </div>
-
-      {/* Search Bar */}
-      <div className="mb-12">
-        <div className="relative max-w-2xl">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground" size={20} />
-          <input
-            type="text"
-            placeholder="Search tools by name or function..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="input-base pl-12 py-4 text-base rounded-2xl shadow-sm focus:shadow-md"
-          />
-        </div>
-      </div>
-
-      {/* Category Filter */}
-      <div className="mb-16">
-        <p className="text-sm font-semibold text-muted-foreground mb-4">FILTER BY CATEGORY</p>
-        <div className="flex flex-wrap gap-3">
-          <button
-            onClick={() => setSelectedCategory(null)}
-            className={`px-4 py-2 rounded-full font-medium transition-all duration-200 text-sm ${
-              selectedCategory === null
-                ? 'bg-primary text-primary-foreground shadow-lg'
-                : 'bg-secondary text-foreground hover:bg-muted'
-            }`}
-          >
-            All Tools
-          </button>
-          {categories.map((category) => {
-            const info = CATEGORY_INFO[category]
-            return (
-              <button
-                key={category}
-                onClick={() => setSelectedCategory(category)}
-                className={`px-4 py-2 rounded-full font-medium transition-all duration-200 text-sm ${
-                  selectedCategory === category
-                    ? 'bg-primary text-primary-foreground shadow-lg'
-                    : 'bg-secondary text-foreground hover:bg-muted'
-                }`}
-              >
-                {info.name}
-              </button>
-            )
-          })}
-        </div>
-      </div>
-
-      {/* Tools Grid */}
-      {filteredTools.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredTools.map((tool) => {
-            const iconName = CATEGORY_INFO[tool.category].icon as keyof typeof LucideIcons
-            const Icon = LucideIcons[iconName] as React.ComponentType<{ size: number }>
-            return (
-              <ToolCard
-                key={tool.id}
-                id={tool.id}
-                name={tool.name}
-                description={tool.description}
-                icon={Icon}
-                category={tool.category}
-              />
-            )
-          })}
-        </div>
-      ) : (
-        <div className="text-center py-16">
-          <p className="text-lg text-muted-foreground mb-4">
-            No tools found matching your search.
-          </p>
-          <button
-            onClick={() => {
-              setSearchQuery('')
-              setSelectedCategory(null)
-            }}
-            className="btn-primary"
-          >
-            Clear Filters
-          </button>
-        </div>
-      )}
-    </div>
-  )
-}
+import { useEffect } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 
 export default function ToolsPage() {
-  return (
-    <Suspense fallback={<div className="container-main py-12">Loading tools...</div>}>
-      <ToolsContent />
-    </Suspense>
-  )
+  const router = useRouter()
+  const searchParams = useSearchParams()
+
+  useEffect(() => {
+    // Redirect to home and preserve category filter if present
+    const category = searchParams.get('category')
+    if (category) {
+      router.replace(`/?category=${category}`)
+    } else {
+      router.replace('/')
+    }
+  }, [router, searchParams])
+
+  // Show nothing while redirecting
+  return null
 }

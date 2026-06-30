@@ -3,24 +3,34 @@ export const TOOLS_CATEGORIES = {
   VALIDATION: 'validation',
   FORMATTER: 'formatter',
   CONVERTER: 'converter',
+  AI_TOOLS: 'ai-tools',
 } as const
 
 export const CATEGORY_INFO = {
   [TOOLS_CATEGORIES.DEVELOPER]: {
     name: 'Developer Tools',
     description: 'Essential utilities for development and debugging',
+    icon: 'Code',
   },
   [TOOLS_CATEGORIES.VALIDATION]: {
     name: 'Validation Tools',
     description: 'Validate and parse code and data formats',
+    icon: 'CheckCircle',
   },
   [TOOLS_CATEGORIES.FORMATTER]: {
     name: 'Formatter Tools',
     description: 'Format and beautify code and data',
+    icon: 'Wand2',
   },
   [TOOLS_CATEGORIES.CONVERTER]: {
     name: 'Converter Tools',
     description: 'Convert between different formats and encodings',
+    icon: 'Zap',
+  },
+  [TOOLS_CATEGORIES.AI_TOOLS]: {
+    name: 'AI Tools',
+    description: 'AI-powered utilities for enhanced productivity',
+    icon: 'Sparkles',
   },
 } as const
 
@@ -118,6 +128,7 @@ export const TOOLS = [
     category: TOOLS_CATEGORIES.DEVELOPER,
     description: 'Remove comments and unnecessary whitespace from code',
     shortDescription: 'Clean code',
+    comingSoon: true,
   },
   {
     id: 'diff-checker',
@@ -125,6 +136,7 @@ export const TOOLS = [
     category: TOOLS_CATEGORIES.DEVELOPER,
     description: 'Compare two texts and highlight differences',
     shortDescription: 'Check differences',
+    comingSoon: true,
   },
   {
     id: 'url-encoder-decoder',
@@ -182,6 +194,7 @@ export const TOOLS = [
     category: TOOLS_CATEGORIES.DEVELOPER,
     description: 'View and edit SVG code with live preview',
     shortDescription: 'View SVG',
+    comingSoon: true,
   },
   {
     id: 'jwt-decoder',
@@ -428,6 +441,7 @@ export const TOOLS = [
     category: TOOLS_CATEGORIES.CONVERTER,
     description: 'Convert image files to Data URI format',
     shortDescription: 'Image to Data URI',
+    comingSoon: true,
   },
   {
     id: 'data-uri-to-image',
@@ -435,6 +449,7 @@ export const TOOLS = [
     category: TOOLS_CATEGORIES.CONVERTER,
     description: 'Convert Data URI back to downloadable image',
     shortDescription: 'Data URI to Image',
+    comingSoon: true,
   },
   {
     id: 'yaml-to-json',
@@ -470,5 +485,123 @@ export const TOOLS = [
     category: TOOLS_CATEGORIES.CONVERTER,
     description: 'Convert between Unicode and Punycode domain names',
     shortDescription: 'Convert IDN',
+  },
+
+  // AI Tools
+  {
+    id: 'chatbot-builder',
+    name: 'Chatbot Builder',
+    category: TOOLS_CATEGORIES.AI_TOOLS,
+    description: 'Create intelligent conversational AI chatbots with custom training data',
+    shortDescription: 'Build AI chatbots',
+    comingSoon: true,
+  },
+  {
+    id: 'workflow-builder',
+    name: 'Workflow Builder',
+    category: TOOLS_CATEGORIES.AI_TOOLS,
+    description: 'Design and automate complex AI-powered workflows with visual editor',
+    shortDescription: 'Build AI workflows',
+    comingSoon: true,
+  },
+  {
+    id: 'researcher-agent',
+    name: 'Researcher Agent',
+    category: TOOLS_CATEGORIES.AI_TOOLS,
+    description: 'AI-powered research assistant for deep analysis and information gathering',
+    shortDescription: 'AI research assistant',
+    comingSoon: true,
+  },
+  {
+    id: 'code-generator',
+    name: 'Code Generator',
+    category: TOOLS_CATEGORIES.AI_TOOLS,
+    description: 'Generate production-ready code from natural language descriptions',
+    shortDescription: 'Generate code with AI',
+    comingSoon: true,
+  },
+  {
+    id: 'content-summarizer',
+    name: 'Content Summarizer',
+    category: TOOLS_CATEGORIES.AI_TOOLS,
+    description: 'Automatically summarize long documents, articles, and transcripts',
+    shortDescription: 'Summarize content',
+    comingSoon: true,
+  },
+  {
+    id: 'sentiment-analyzer',
+    name: 'Sentiment Analyzer',
+    category: TOOLS_CATEGORIES.AI_TOOLS,
+    description: 'Analyze sentiment and emotion from text data with AI',
+    shortDescription: 'Analyze sentiment',
+    comingSoon: true,
+  },
+  {
+    id: 'image-analyzer',
+    name: 'Image Analyzer',
+    category: TOOLS_CATEGORIES.AI_TOOLS,
+    description: 'Extract insights and descriptions from images using AI vision',
+    shortDescription: 'Analyze images',
+    comingSoon: true,
+  },
+  {
+    id: 'data-insights',
+    name: 'Data Insights',
+    category: TOOLS_CATEGORIES.AI_TOOLS,
+    description: 'Gain AI-powered insights from datasets with automated analysis',
+    shortDescription: 'AI data insights',
+    comingSoon: true,
+  },
+
+  // Additional Developer Tools
+  {
+    id: 'public-ip-lookup',
+    name: 'Public IP Lookup',
+    category: TOOLS_CATEGORIES.DEVELOPER,
+    description: 'Get your public IP address instantly with geolocation details',
+    shortDescription: 'Find your public IP',
+  },
+  {
+    id: 'text-case-converter',
+    name: 'Text Case Converter',
+    category: TOOLS_CATEGORIES.DEVELOPER,
+    description: 'Convert text between different cases (uppercase, lowercase, camelCase, snake_case, etc.)',
+    shortDescription: 'Convert text case',
+  },
+  {
+    id: 'unit-converter',
+    name: 'Unit Converter',
+    category: TOOLS_CATEGORIES.CONVERTER,
+    description: 'Convert between different units of measurement (length, weight, temperature, etc.)',
+    shortDescription: 'Convert units',
+  },
+  {
+    id: 'uuid-generator',
+    name: 'UUID Generator',
+    category: TOOLS_CATEGORIES.DEVELOPER,
+    description: 'Generate UUID v4 identifiers for your applications',
+    shortDescription: 'Generate UUIDs',
+  },
+  {
+    id: 'hash-generator',
+    name: 'Hash Generator',
+    category: TOOLS_CATEGORIES.DEVELOPER,
+    description: 'Generate cryptographic hashes (MD5, SHA1, SHA256, SHA512) from text',
+    shortDescription: 'Generate hashes',
+  },
+  {
+    id: 'currency-converter',
+    name: 'Currency Converter',
+    category: TOOLS_CATEGORIES.CONVERTER,
+    description: 'Convert between different currencies with real-time exchange rates',
+    shortDescription: 'Convert currency',
+    comingSoon: true,
+  },
+  {
+    id: 'password-generator',
+    name: 'Password Generator',
+    category: TOOLS_CATEGORIES.DEVELOPER,
+    description: 'Generate strong and secure passwords with customizable options',
+    shortDescription: 'Generate passwords',
   },
 ] as const

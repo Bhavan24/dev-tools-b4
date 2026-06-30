@@ -1,4 +1,5 @@
 import { Buffer } from 'buffer'
+import { generateMockData, rgbToHex, hexToRgb, rgbToHsl, hexToHsl, hslToRgb, hslToHex } from './helpers'
 
 interface ToolHandler {
   description: string
@@ -111,6 +112,23 @@ export const toolHandlers: Record<string, ToolHandler> = {
       } catch (e) {
         throw new Error('Invalid JSON')
       }
+    },
+  },
+
+  'json-generator': {
+    description: 'Generate valid JSON with random data',
+    schema: {
+      type: 'object',
+      properties: {
+        type: { type: 'string', description: 'Data type: person, product, todo, note (default: person)' },
+        count: { type: 'number', description: 'Number of records to generate (default: 10)', default: 10 },
+      },
+      required: ['type'],
+    },
+    handler: async (input) => {
+      const { type, count = 10 } = input
+      const data = generateMockData(type, count)
+      return JSON.stringify(data, null, 2)
     },
   },
 
@@ -290,6 +308,64 @@ export const toolHandlers: Record<string, ToolHandler> = {
         }
       } catch (e) {
         throw new Error('Failed to decode JWT')
+      }
+    },
+  },
+
+  'color-code-picker': {
+    description: 'Convert between HEX, RGB, and HSL color formats',
+    schema: {
+      type: 'object',
+      properties: {
+        color: { type: 'string', description: 'Color code (HEX, RGB, or HSL format)' },
+        to: { type: 'string', description: 'Target format: hex, rgb, hsl' },
+      },
+      required: ['color', 'to'],
+    },
+    handler: async (input) => {
+      const { color, to } = input
+      const trimmed = color.trim()
+      const result: Record<string, any> = { original: color }
+
+      try {
+        if (trimmed.startsWith('#')) {
+          const hex = trimmed
+          result.hex = hex
+          const rgb = hexToRgb(hex)
+          if (rgb) {
+            result.rgb = `rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`
+            const hsl = rgbToHsl(rgb.r, rgb.g, rgb.b)
+            result.hsl = `hsl(${Math.round(hsl.h)}, ${Math.round(hsl.s)}%, ${Math.round(hsl.l)}%)`
+          }
+        } else if (trimmed.startsWith('rgb')) {
+          const match = trimmed.match(/\d+/g)
+          if (match && match.length >= 3) {
+            const r = parseInt(match[0])
+            const g = parseInt(match[1])
+            const b = parseInt(match[2])
+            result.rgb = `rgb(${r}, ${g}, ${b})`
+            result.hex = rgbToHex(r, g, b)
+            const hsl = rgbToHsl(r, g, b)
+            result.hsl = `hsl(${Math.round(hsl.h)}, ${Math.round(hsl.s)}%, ${Math.round(hsl.l)}%)`
+          }
+        } else if (trimmed.startsWith('hsl')) {
+          const match = trimmed.match(/\d+/g)
+          if (match && match.length >= 3) {
+            const h = parseInt(match[0])
+            const s = parseInt(match[1])
+            const l = parseInt(match[2])
+            const rgb = hslToRgb(h, s, l)
+            result.hsl = `hsl(${h}, ${s}%, ${l}%)`
+            result.rgb = `rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`
+            result.hex = hslToHex(h, s, l)
+          }
+        } else {
+          throw new Error('Invalid color format. Use HEX (#fff), RGB (255,255,255), or HSL (0,0%,100%)')
+        }
+
+        return result
+      } catch (e) {
+        throw new Error('Invalid color format')
       }
     },
   },
@@ -920,6 +996,164 @@ export const toolHandlers: Record<string, ToolHandler> = {
       } else {
         return decodeURIComponent(domain.replace(/-/g, '%'))
       }
+    },
+  },
+
+  'public-ip-lookup': {
+    description: 'Get your public IP address',
+    schema: {
+      type: 'object',
+      properties: {},
+      required: [],
+    },
+    handler: async () => {
+      try {
+        const response = await fetch('https://api.ipify.org?format=json')
+        const data = await response.json()
+        return { ip: data.ip, message: `Your public IP address is: ${data.ip}` }
+      } catch (error) {
+        throw new Error('Failed to fetch public IP address')
+      }
+    },
+  },
+
+  'text-case-converter': {
+    description: 'Convert text between different cases',
+    schema: {
+      type: 'object',
+      properties: {
+        text: { type: 'string', description: 'Text to convert' },
+        case: { type: 'string', description: 'Target case: uppercase, lowercase, capitalize, camelCase, snake_case, kebab-case, PascalCase' },
+      },
+      required: ['text', 'case'],
+    },
+    handler: async (input) => {
+      const { text, case: targetCase } = input
+      const result: Record<string, any> = { original: text }
+
+      switch (targetCase) {
+        case 'uppercase':
+          result.converted = text.toUpperCase()
+          break
+        case 'lowercase':
+          result.converted = text.toLowerCase()
+          break
+        case 'capitalize':
+          result.converted = text.charAt(0).toUpperCase() + text.slice(1).toLowerCase()
+          break
+        case 'camelCase':
+          result.converted = text.replace(/[\s_-]+(.)/g, (_, char: string) => char.toUpperCase()).replace(/^(.)/, (match: string) => match.toLowerCase())
+          break
+        case 'snake_case':
+          result.converted = text.replace(/([a-z])([A-Z])/g, '$1_$2').replace(/[\s-]+/g, '_').toLowerCase()
+          break
+        case 'kebab-case':
+          result.converted = text.replace(/([a-z])([A-Z])/g, '$1-$2').replace(/[\s_]+/g, '-').toLowerCase()
+          break
+        case 'PascalCase':
+          result.converted = text.split(/[\s_-]+/).map((word: string) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join('')
+          break
+        default:
+          throw new Error('Invalid case type')
+      }
+      return result
+    },
+  },
+
+  'unit-converter': {
+    description: 'Convert between different units of measurement',
+    schema: {
+      type: 'object',
+      properties: {
+        value: { type: 'number', description: 'Value to convert' },
+        fromUnit: { type: 'string', description: 'Source unit (m, km, ft, mi, kg, lb, g, oz, C, F)' },
+        toUnit: { type: 'string', description: 'Target unit' },
+      },
+      required: ['value', 'fromUnit', 'toUnit'],
+    },
+    handler: async (input) => {
+      const { value, fromUnit, toUnit } = input
+      const conversions: Record<string, Record<string, any>> = {
+        m: { km: 0.001, ft: 3.28084, mi: 0.000621371 },
+        km: { m: 1000, ft: 3280.84, mi: 0.621371 },
+        ft: { m: 0.3048, km: 0.0003048, mi: 0.000189394 },
+        mi: { m: 1609.34, km: 1.60934, ft: 5280 },
+        kg: { lb: 2.20462, g: 1000, oz: 35.274 },
+        lb: { kg: 0.453592, g: 453.592, oz: 16 },
+        g: { kg: 0.001, lb: 0.00220462, oz: 0.035274 },
+        oz: { kg: 0.0283495, lb: 0.0625, g: 28.3495 },
+      }
+      if (!conversions[fromUnit]) throw new Error(`Unknown unit: ${fromUnit}`)
+      const conversion = conversions[fromUnit][toUnit]
+      if (!conversion) throw new Error(`Cannot convert from ${fromUnit} to ${toUnit}`)
+      const converted = value * conversion
+      return { original: `${value} ${fromUnit}`, converted: `${converted.toFixed(4)} ${toUnit}`, value: parseFloat(converted.toFixed(4)) }
+    },
+  },
+
+  'uuid-generator': {
+    description: 'Generate UUID v4 identifiers',
+    schema: {
+      type: 'object',
+      properties: {
+        count: { type: 'number', description: 'Number of UUIDs to generate (default: 1, max: 100)', default: 1 },
+      },
+      required: [],
+    },
+    handler: async (input) => {
+      const { count = 1 } = input
+      const limit = Math.min(Math.max(count, 1), 100)
+      const generateUUID = () => 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c: string) => { const r = (Math.random() * 16) | 0; const v = c === 'x' ? r : (r & 0x3) | 0x8; return v.toString(16) })
+      const uuids = Array.from({ length: limit }, generateUUID)
+      return { count: uuids.length, uuids }
+    },
+  },
+
+  'hash-generator': {
+    description: 'Generate cryptographic hashes from text',
+    schema: {
+      type: 'object',
+      properties: {
+        text: { type: 'string', description: 'Text to hash' },
+        algorithm: { type: 'string', description: 'Hash algorithm: md5, sha1, sha256, sha512' },
+      },
+      required: ['text', 'algorithm'],
+    },
+    handler: async (input) => {
+      const { text, algorithm } = input
+      const crypto = require('crypto')
+      const validAlgorithms = ['md5', 'sha1', 'sha256', 'sha512']
+      if (!validAlgorithms.includes(algorithm)) throw new Error(`Invalid algorithm. Use: ${validAlgorithms.join(', ')}`)
+      const hash = crypto.createHash(algorithm).update(text).digest('hex')
+      return { text, algorithm, hash }
+    },
+  },
+
+  'password-generator': {
+    description: 'Generate strong and secure passwords',
+    schema: {
+      type: 'object',
+      properties: {
+        length: { type: 'number', description: 'Password length (8-128, default: 16)', default: 16 },
+        uppercase: { type: 'boolean', description: 'Include uppercase letters', default: true },
+        lowercase: { type: 'boolean', description: 'Include lowercase letters', default: true },
+        numbers: { type: 'boolean', description: 'Include numbers', default: true },
+        symbols: { type: 'boolean', description: 'Include symbols', default: true },
+      },
+      required: [],
+    },
+    handler: async (input) => {
+      const { length = 16, uppercase = true, lowercase = true, numbers = true, symbols = true } = input
+      if (length < 8 || length > 128) throw new Error('Password length must be between 8 and 128')
+      let chars = ''
+      if (uppercase) chars += 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+      if (lowercase) chars += 'abcdefghijklmnopqrstuvwxyz'
+      if (numbers) chars += '0123456789'
+      if (symbols) chars += '!@#$%^&*()_+-=[]{}|;:,.<>?'
+      if (!chars) throw new Error('At least one character type must be selected')
+      let password = ''
+      for (let i = 0; i < length; i++) password += chars.charAt(Math.floor(Math.random() * chars.length))
+      return { password, length, hasUppercase: uppercase, hasLowercase: lowercase, hasNumbers: numbers, hasSymbols: symbols }
     },
   },
 }

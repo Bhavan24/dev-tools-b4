@@ -10,10 +10,10 @@ const geistMono = Geist_Mono({
 })
 
 export const metadata: Metadata = {
-  title: 'DevTools - Free Developer Utilities',
-  description: 'Comprehensive collection of free developer tools including JSON formatters, text utilities, data generators, timestamp converters, and more.',
+  title: 'AI Developer Tools',
+  description: 'Free, powerful AI developer tools for every developer. Use instantly, no signup required.',
   generator: 'v0.app',
-  keywords: 'developer tools, JSON formatter, timestamp converter, text utilities, free tools, web tools',
+  keywords: 'AI developer tools, JSON formatter, timestamp converter, text utilities, free tools, web tools',
   icons: {
     icon: [
       {
