@@ -2,7 +2,7 @@
 
 A comprehensive collection of **80+ free developer and AI-powered tools** for developers and creators. All tools are instant, require no signup, and work completely in your browser.
 
-**Made by Bhavan** | [Visit Live](https://dev-tools-b4.vercel.app)
+[Visit Live](ai-developer-tools.vercel.app/)
 
 ---
 
@@ -354,8 +354,3 @@ This ensures the documentation stays accurate and in sync with the codebase.
 **Made by Bhavan**
 
 Built with love for developers who want quick, powerful utilities without the hassle.
-
----
-
-**Last Updated**: June 2026
-**Status**: Active Development 🚀
