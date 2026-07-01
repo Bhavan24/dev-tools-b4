@@ -12,24 +12,14 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: 'AI Developer Tools',
   description: 'Free, powerful AI developer tools for every developer. Use instantly, no signup required.',
-  generator: 'v0.app',
   keywords: 'AI developer tools, JSON formatter, timestamp converter, text utilities, free tools, web tools',
   icons: {
     icon: [
       {
-        url: '/icon-light-32x32.png',
-        media: '(prefers-color-scheme: light)',
-      },
-      {
-        url: '/icon-dark-32x32.png',
-        media: '(prefers-color-scheme: dark)',
-      },
-      {
-        url: '/icon.svg',
-        type: 'image/svg+xml',
-      },
+        url: '/favicon.ico',
+        type: 'image/x-icon',
+      }
     ],
-    apple: '/apple-icon.png',
   },
 }
 
