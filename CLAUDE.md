@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-**dev-tools-b4** is a Next.js 16 web application that provides **80+ free developer tools** organized by category (Developer, Validation, Formatter, Converter, AI Tools). The site features a catalog interface for browsing tools, and integrates with an MCP (Model Context Protocol) server for tool availability via Claude API.
+**ai-developer-tools** is a Next.js 16 web application that provides **80+ free developer tools** organized by category (Developer, Validation, Formatter, Converter, AI Tools). The site features a catalog interface for browsing tools, and integrates with an MCP (Model Context Protocol) server for tool availability via Claude API.
 
 The app is built with v0, uses React 19, Tailwind CSS 4, and is deployed automatically on merge to `main`.
 
@@ -475,7 +475,7 @@ v0 project: https://v0.app/chat/projects/prj_ZIv3DDVpyezX1FJHY0Gu5kBttIpT
 
 - Deployed on Vercel; auto-deploys on push to `main`
 - MCP adapter enabled via `@vercel/mcp-adapter` dependency for Claude API integration
-- Live site: https://dev-tools-b4.vercel.app
+- Live site: https://ai-developer-tools.vercel.app
 
 ## Documentation & Reference
 

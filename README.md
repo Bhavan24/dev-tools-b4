@@ -30,12 +30,12 @@ MCP is a standardized protocol that allows AI models like Claude to discover and
 ### Quick Start
 ```bash
 # List all available tools
-curl -X POST https://dev-tools-b4.vercel.app/api/mcp \
+curl -X POST https://ai-developer-tools.vercel.app/api/mcp \
   -H "Content-Type: application/json" \
   -d '{"method":"tools/list"}'
 
 # Call a tool via MCP
-curl -X POST https://dev-tools-b4.vercel.app/api/mcp \
+curl -X POST https://ai-developer-tools.vercel.app/api/mcp \
   -H "Content-Type: application/json" \
   -d '{
     "method":"tools/call",
@@ -61,7 +61,7 @@ curl -X POST https://dev-tools-b4.vercel.app/api/mcp \
 
 ## 📁 Tool Categories
 
-### Developer Tools (32 tools)
+### Developer Tools (33 tools)
 
 | Tool | Status | Description |
 |------|--------|-------------|
@@ -91,6 +91,7 @@ curl -X POST https://dev-tools-b4.vercel.app/api/mcp \
 | **Mock Data Generator** | ✅ Built | Generate realistic test data across multiple categories (Person, Text, Web, Location, Time, Finance, Miscellaneous) |
 | **Code Cleaner** | ✅ Built | Remove comments and unnecessary whitespace from code |
 | **Diff Checker** | ✅ Built | Compare two texts and highlight differences |
+| **Notes** | ✅ Built | Simple text notes with local storage persistence |
 | **SVG Viewer** | 🏗️ Coming Soon | View and edit SVG code with live preview |
 | **REST API Tester** | ✅ Built | Test REST APIs with custom headers, authentication, and request body |
 | **HAR Viewer** | 🏗️ Coming Soon | View and analyze HTTP Archive (HAR) files |
@@ -167,8 +168,8 @@ curl -X POST https://dev-tools-b4.vercel.app/api/mcp \
 
 ## 📊 Stats
 
-- **Total Tools**: 81
-- **Built & Ready**: 56 ✅
+- **Total Tools**: 82
+- **Built & Ready**: 57 ✅
 - **Coming Soon**: 25 🏗️
 - **Categories**: 5 (Developer, Validation, Formatter, Converter, AI Tools)
 

@@ -15,6 +15,7 @@ import { CodeTools } from '@/components/tools/code-tools'
 import { ValidationTools } from '@/components/tools/validation-tools'
 import { ConverterTools } from '@/components/tools/converter-tools'
 import { ApiTesterTool } from '@/components/tools/api-tester-tool'
+import { NotesTool } from '@/components/tools/notes-tool'
 
 interface ToolPageClientProps {
   toolId: string
@@ -53,6 +54,7 @@ const CUSTOM_TOOL_REGISTRY: Record<string, (id: string) => React.ReactElement> =
   'redirection-checker': (id) => <ValidationTools toolId={id} />,
   'currency-converter': (id) => <ConverterTools toolId={id} />,
   'rest-api-tester': (id) => <ApiTesterTool toolId={id} />,
+  'notes': (id) => <NotesTool toolId={id} />,
 }
 
 const SINGLE_LINE_TOOLS = new Set(['timestamp-converter', 'url-splitter', 'mime-type-checker'])
@@ -95,10 +97,10 @@ export function ToolPageClient({ toolId }: ToolPageClientProps) {
   if (customFactory) {
     return (
       <div className="max-w-4xl">
-        <div className="mb-8">
+        {/* <div className="mb-8">
           <h2 className="text-2xl font-bold text-foreground">{tool.name}</h2>
           <p className="text-sm text-muted-foreground">{tool.description}</p>
-        </div>
+        </div> */}
         {customFactory(toolId)}
       </div>
     )
@@ -166,10 +168,10 @@ export function ToolPageClient({ toolId }: ToolPageClientProps) {
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
       {/* Input Section */}
       <div className="space-y-4">
-        <div>
+        {/* <div>
           <h2 className="text-xl font-bold text-foreground">{tool.name}</h2>
           <p className="text-sm text-muted-foreground">{tool.description}</p>
-        </div>
+        </div> */}
 
         <div>
           {NO_INPUT_TOOLS.has(toolId) ? (

@@ -2,7 +2,7 @@
 
 import { Suspense, useState, useMemo, useEffect } from 'react'
 import { useSearchParams } from 'next/navigation'
-import { Search } from 'lucide-react'
+import { Search, ChevronDown } from 'lucide-react'
 import { TOOLS, TOOLS_CATEGORIES, CATEGORY_INFO } from '@/lib/constants'
 import { ToolCard } from '@/components/tools/tool-card'
 import { Navbar } from '@/components/layout/navbar'
@@ -14,6 +14,9 @@ function HomePageContent() {
   const searchParams = useSearchParams()
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
+  const [copiedEndpoint, setCopiedEndpoint] = useState(false)
+  const [copiedCode, setCopiedCode] = useState(false)
+  const [mcpOpen, setMcpOpen] = useState(false)
   const { pinnedIds, togglePin, isPinned, isHydrated } = usePinnedTools()
 
   useEffect(() => {
@@ -22,6 +25,29 @@ function HomePageContent() {
       setSelectedCategory(categoryParam)
     }
   }, [searchParams])
+
+  const mcpEndpoint = typeof window !== 'undefined'
+    ? `${window.location.origin}/api/mcp`
+    : 'https://ai-developer-tools.vercel.app/api/mcp'
+
+  const handleCopyEndpoint = () => {
+    navigator.clipboard.writeText(mcpEndpoint)
+    setCopiedEndpoint(true)
+    setTimeout(() => setCopiedEndpoint(false), 2000)
+  }
+
+  const handleCopyCode = () => {
+    const code = `{
+  "mcpServers": {
+    "dev-tools": {
+      "url": "${mcpEndpoint}"
+    }
+  }
+}`
+    navigator.clipboard.writeText(code)
+    setCopiedCode(true)
+    setTimeout(() => setCopiedCode(false), 2000)
+  }
 
   const filteredTools = useMemo(() => {
     return TOOLS.filter((tool) => {
@@ -49,6 +75,62 @@ function HomePageContent() {
     <>
       <Navbar />
       <main className="container-main py-8 md:py-12">
+        {/* MCP Setup Accordion */}
+        <div className="mb-8 border border-border rounded-lg">
+          <button
+            onClick={() => setMcpOpen(!mcpOpen)}
+            className="w-full flex items-center justify-between p-4 hover:bg-muted/50 transition-colors"
+          >
+            <span className="text-sm font-semibold text-foreground">MCP Endpoint Setup</span>
+            <ChevronDown
+              size={18}
+              className={`text-muted-foreground transition-transform duration-200 ${mcpOpen ? 'rotate-180' : ''}`}
+            />
+          </button>
+
+          {mcpOpen && (
+            <div className="border-t border-border px-4 py-4 space-y-4 bg-muted/30">
+              {/* MCP Endpoint */}
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2">Endpoint</p>
+                <div className="flex items-center gap-2 bg-background rounded border border-border p-3">
+                  <code className="flex-1 text-xs md:text-sm text-foreground font-mono break-all">
+                    {mcpEndpoint}
+                  </code>
+                  <button
+                    onClick={handleCopyEndpoint}
+                    className="px-2 py-1 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors bg-muted rounded hover:bg-muted/80 whitespace-nowrap"
+                  >
+                    {copiedEndpoint ? 'Copied' : 'Copy'}
+                  </button>
+                </div>
+              </div>
+
+              {/* Configuration */}
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2">Configuration</p>
+                <div className="relative bg-slate-900 text-slate-100 rounded-lg overflow-hidden text-xs md:text-sm">
+                  <pre className="p-3 font-mono overflow-x-auto">
+                    {`{
+  "mcpServers": {
+    "dev-tools": {
+      "url": "${mcpEndpoint}"
+    }
+  }
+}`}
+                  </pre>
+                  <button
+                    onClick={handleCopyCode}
+                    className="absolute top-2 right-2 px-2 py-1 text-xs font-medium text-slate-100 bg-slate-800 rounded hover:bg-slate-700 transition-colors"
+                  >
+                    {copiedCode ? 'Copied' : 'Copy'}
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+
         {/* Search and Filter Section */}
         <div className="mb-12 space-y-6">
           {/* Search Bar */}
@@ -112,6 +194,7 @@ function HomePageContent() {
                     category={tool.category}
                     isPinned={isPinned(tool.id)}
                     onTogglePin={handleTogglePin}
+                    comingSoon={(tool as any).comingSoon}
                   />
                 )
               })}
@@ -135,6 +218,7 @@ function HomePageContent() {
                   category={tool.category}
                   isPinned={isPinned(tool.id)}
                   onTogglePin={handleTogglePin}
+                  comingSoon={(tool as any).comingSoon}
                 />
               )
             })}

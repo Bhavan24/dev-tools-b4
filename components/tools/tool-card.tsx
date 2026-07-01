@@ -11,6 +11,7 @@ interface ToolCardProps {
   category?: string
   isPinned?: boolean
   onTogglePin?: (e: React.MouseEvent, id: string) => void
+  comingSoon?: boolean
 }
 
 const categoryGradients: Record<string, string> = {
@@ -20,7 +21,7 @@ const categoryGradients: Record<string, string> = {
   converter: 'from-orange-500 to-orange-600',
 }
 
-export function ToolCard({ id, name, description, icon: Icon, category = 'developer', isPinned, onTogglePin }: ToolCardProps) {
+export function ToolCard({ id, name, description, icon: Icon, category = 'developer', isPinned, onTogglePin, comingSoon = false }: ToolCardProps) {
   const gradient = categoryGradients[category] || 'from-blue-500 to-blue-600'
   const categoryInfo = CATEGORY_INFO[category as keyof typeof CATEGORY_INFO]
 
@@ -51,9 +52,16 @@ export function ToolCard({ id, name, description, icon: Icon, category = 'develo
 
           {/* Title and Category */}
           <div className="mb-2 flex-1">
-            <h3 className="font-bold text-base text-foreground group-hover:text-primary transition-colors line-clamp-2">
-              {name}
-            </h3>
+            <div className="flex items-start gap-2">
+              <h3 className="font-bold text-base text-foreground group-hover:text-primary transition-colors line-clamp-2">
+                {name}
+              </h3>
+              {comingSoon && (
+                <span className="text-xs font-semibold bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300 px-2 py-1 rounded whitespace-nowrap mt-0.5">
+                  Coming Soon
+                </span>
+              )}
+            </div>
           </div>
 
           {/* Description */}

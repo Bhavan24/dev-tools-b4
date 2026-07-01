@@ -6,6 +6,15 @@ export const TOOLS_CATEGORIES = {
   AI_TOOLS: 'ai-tools',
 } as const
 
+export interface Tool {
+  id: string
+  name: string
+  category: typeof TOOLS_CATEGORIES[keyof typeof TOOLS_CATEGORIES]
+  description: string
+  shortDescription: string
+  comingSoon?: boolean
+}
+
 export const CATEGORY_INFO = {
   [TOOLS_CATEGORIES.DEVELOPER]: {
     name: 'Developer Tools',
@@ -605,4 +614,11 @@ export const TOOLS = [
     description: 'Generate realistic mock data for testing across multiple categories (Person, Text, Web, Location, Time, Finance, Miscellaneous)',
     shortDescription: 'Generate mock test data',
   },
-] as const
+  {
+    id: 'notes',
+    name: 'Notes',
+    category: TOOLS_CATEGORIES.DEVELOPER,
+    description: 'Simple text notes that persist in your browser using local storage',
+    shortDescription: 'Save notes locally',
+  },
+] as const satisfies Tool[]
