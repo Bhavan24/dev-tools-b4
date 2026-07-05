@@ -8,28 +8,22 @@ A comprehensive collection of **80+ free developer and AI-powered tools** for de
 
 ## 🤖 MCP Server Integration
 
-This application includes a **Model Context Protocol (MCP) server** that exposes all 80+ tools to Claude AI and other MCP-compatible applications.
+This application includes a **Model Context Protocol (MCP) server** that exposes tools to Claude AI and other MCP-compatible applications.
 
 ### What is MCP?
 MCP is a standardized protocol that allows AI models like Claude to discover and execute tools through a unified interface.
 
 ### How to Use with Claude
-- **Access**: All tools are available via `/api/mcp` endpoint
+- **Access**: MCP-enabled tools are available via `/api/mcp` endpoint
 - **Authentication**: Public access - no API keys required
-- **Integration**: Connect Claude to this MCP server to use any tool programmatically
+- **Integration**: Connect Claude to this MCP server to use any supported tool programmatically
 - **Methods**: 
-  - `tools/list` - Get all available tools with schemas
-  - `tools/call` - Execute any tool with parameters
-
-### Benefits
-- ✅ Use any of our 80+ tools directly from Claude
-- ✅ Automate complex workflows with AI-powered tool execution
-- ✅ Chain multiple tools together for powerful transformations
-- ✅ Access rich JSON schemas for each tool's capabilities
+  - `tools/list` - Get all MCP-enabled tools with schemas
+  - `tools/call` - Execute any MCP-enabled tool with parameters
 
 ### Quick Start
 ```bash
-# List all available tools
+# List all available MCP tools
 curl -X POST https://ai-developer-tools.vercel.app/api/mcp \
   -H "Content-Type: application/json" \
   -d '{"method":"tools/list"}'
@@ -49,128 +43,133 @@ curl -X POST https://ai-developer-tools.vercel.app/api/mcp \
 ## 🚀 Features
 
 - **80+ Tools** across multiple categories
+- **57 MCP-Enabled Tools** callable by Claude AI via `/api/mcp`
 - **Pinnable Tools** - Pin your frequently used tools for quick access
 - **Search & Filter** - Find tools by name, description, or category
 - **AI Tools** - Coming soon (8 AI-powered utilities in development)
 - **Dark Mode** - Full light/dark theme support
 - **No Signup Required** - Works instantly in your browser
-- **MCP Server** - Tools exposed via Model Context Protocol for Claude integration
 - **Fully Responsive** - Works perfectly on mobile, tablet, and desktop
 
 ---
 
 ## 📁 Tool Categories
 
+> **MCP column key:** `✅` = callable via `/api/mcp` · `—` = browser-only or coming soon
+
 ### Developer Tools (33 tools)
 
-| Tool | Status | Description |
-|------|--------|-------------|
-| **JavaScript Minifier** | ✅ Built | Minify JavaScript code to reduce file size |
-| **JavaScript Beautifier** | ✅ Built | Format and beautify JavaScript code |
-| **CSS Minifier** | ✅ Built | Minify CSS code to reduce file size |
-| **CSS Beautifier** | ✅ Built | Format and beautify CSS code |
-| **JSON Minifier** | ✅ Built | Minify JSON to reduce file size |
-| **JSON Beautifier** | ✅ Built | Format and beautify JSON data |
-| **JSON Generator** | ✅ Built | Generate valid JSON with random mock data |
-| **Timestamp Converter** | ✅ Built | Convert between Unix timestamps and readable dates |
-| **Color Code Picker** | ✅ Built | Convert between HEX, RGB, and HSL color formats |
-| **URL Splitter** | ✅ Built | Parse and decompose URLs into components |
-| **URL Encoder/Decoder** | ✅ Built | Encode and decode URLs and special characters |
-| **MIME Type Checker** | ✅ Built | Identify MIME types by file extension |
-| **HTML Encoder/Decoder** | ✅ Built | Encode and decode HTML entities |
-| **JavaScript String Escaper** | ✅ Built | Escape special characters in JavaScript strings |
-| **Base64 Encoder** | ✅ Built | Encode data to Base64 format |
-| **Base64 Decoder** | ✅ Built | Decode Base64 encoded data |
-| **JWT Decoder** | ✅ Built | Decode and inspect JWT tokens |
-| **XML String Escaper** | ✅ Built | Escape special characters in XML strings |
-| **Public IP Lookup** | ✅ Built | Get your public IP address instantly with geolocation |
-| **Text Case Converter** | ✅ Built | Convert text between different cases (uppercase, camelCase, snake_case, etc.) |
-| **UUID Generator** | ✅ Built | Generate UUID v4 identifiers for your applications |
-| **Hash Generator** | ✅ Built | Generate cryptographic hashes (MD5, SHA1, SHA256, SHA512) |
-| **Password Generator** | ✅ Built | Generate strong and secure passwords with custom options |
-| **Mock Data Generator** | ✅ Built | Generate realistic test data across multiple categories (Person, Text, Web, Location, Time, Finance, Miscellaneous) |
-| **Code Cleaner** | ✅ Built | Remove comments and unnecessary whitespace from code |
-| **Diff Checker** | ✅ Built | Compare two texts and highlight differences |
-| **Notes** | ✅ Built | Simple text notes with local storage persistence |
-| **SVG Viewer** | 🏗️ Coming Soon | View and edit SVG code with live preview |
-| **REST API Tester** | ✅ Built | Test REST APIs with custom headers, authentication, and request body |
-| **HAR Viewer** | 🏗️ Coming Soon | View and analyze HTTP Archive (HAR) files |
-| **HAR Sanitizer** | 🏗️ Coming Soon | Remove sensitive data from HAR files |
+| Tool | Status | MCP | Description |
+|------|--------|-----|-------------|
+| **JavaScript Minifier** | ✅ Built | ✅ | Minify JavaScript code to reduce file size |
+| **JavaScript Beautifier** | ✅ Built | ✅ | Format and beautify JavaScript code |
+| **CSS Minifier** | ✅ Built | ✅ | Minify CSS code to reduce file size |
+| **CSS Beautifier** | ✅ Built | ✅ | Format and beautify CSS code |
+| **JSON Minifier** | ✅ Built | ✅ | Minify JSON to reduce file size |
+| **JSON Beautifier** | ✅ Built | ✅ | Format and beautify JSON data |
+| **JSON Generator** | ✅ Built | ✅ | Generate valid JSON with random mock data |
+| **Timestamp Converter** | ✅ Built | ✅ | Convert between Unix timestamps and readable dates |
+| **Color Code Picker** | ✅ Built | ✅ | Convert between HEX, RGB, and HSL color formats |
+| **URL Splitter** | ✅ Built | ✅ | Parse and decompose URLs into components |
+| **URL Encoder/Decoder** | ✅ Built | ✅ | Encode and decode URLs and special characters |
+| **MIME Type Checker** | ✅ Built | ✅ | Identify MIME types by file extension |
+| **HTML Encoder/Decoder** | ✅ Built | ✅ | Encode and decode HTML entities |
+| **JavaScript String Escaper** | ✅ Built | ✅ | Escape special characters in JavaScript strings |
+| **Base64 Encoder** | ✅ Built | ✅ | Encode data to Base64 format |
+| **Base64 Decoder** | ✅ Built | ✅ | Decode Base64 encoded data |
+| **JWT Decoder** | ✅ Built | ✅ | Decode and inspect JWT tokens |
+| **XML String Escaper** | ✅ Built | ✅ | Escape special characters in XML strings |
+| **Public IP Lookup** | ✅ Built | ✅ | Get your public IP address instantly with geolocation |
+| **Text Case Converter** | ✅ Built | ✅ | Convert text between different cases (uppercase, camelCase, snake_case, etc.) |
+| **UUID Generator** | ✅ Built | ✅ | Generate UUID v4 identifiers for your applications |
+| **Hash Generator** | ✅ Built | ✅ | Generate cryptographic hashes (MD5, SHA1, SHA256, SHA512) |
+| **Password Generator** | ✅ Built | ✅ | Generate strong and secure passwords with custom options |
+| **Mock Data Generator** | ✅ Built | ✅ | Generate realistic test data across multiple categories (Person, Text, Web, Location, Time, Finance, Miscellaneous) |
+| **Code Cleaner** | ✅ Built | ✅ | Remove comments and unnecessary whitespace from code |
+| **Diff Checker** | ✅ Built | ✅ | Compare two texts and highlight differences |
+| **QR Code Generator** | ✅ Built | ✅ | Generate QR codes from any text or URL instantly |
+| **REST API Tester** | ✅ Built | ✅ | Test REST APIs with custom headers, authentication, and request body |
+| **Notes** | ✅ Built | — | Simple text notes with local storage persistence (browser-only) |
+| **Favicon Generator** | ✅ Built | — | Upload an image and generate favicons in all standard sizes + .ico + ZIP (browser-only) |
+| **SVG Viewer** | 🏗️ Coming Soon | — | View and edit SVG code with live preview |
+| **HAR Viewer** | 🏗️ Coming Soon | — | View and analyze HTTP Archive (HAR) files |
+| **HAR Sanitizer** | 🏗️ Coming Soon | — | Remove sensitive data from HAR files |
 
 ### Validation Tools (9 tools)
 
-| Tool | Status | Description |
-|------|--------|-------------|
-| **Regex Parser** | ✅ Built | Test and debug regular expressions |
-| **YAML Validator** | ✅ Built | Validate YAML syntax and structure |
-| **JavaScript Validator** | ✅ Built | Validate JavaScript syntax |
-| **JSON Path Evaluator** | 🏗️ Coming Soon | Test JSONPath queries |
-| **XPath Evaluator** | 🏗️ Coming Soon | Test and debug XPath expressions |
-| **HTML Validator** | ✅ Built | Validate HTML5 markup and detect syntax errors |
-| **Redirection Checker** | ✅ Built | Follow HTTP redirects and check final URL |
-| **Link Checker** | 🏗️ Coming Soon | Validate links in documents |
-| **JSONPath Finder** | 🏗️ Coming Soon | Find and extract JSONPath values |
+| Tool | Status | MCP | Description |
+|------|--------|-----|-------------|
+| **Regex Parser** | ✅ Built | ✅ | Test and debug regular expressions |
+| **YAML Validator** | ✅ Built | ✅ | Validate YAML syntax and structure |
+| **JavaScript Validator** | ✅ Built | ✅ | Validate JavaScript syntax |
+| **HTML Validator** | ✅ Built | ✅ | Validate HTML5 markup and detect syntax errors |
+| **Redirection Checker** | ✅ Built | ✅ | Follow HTTP redirects and check final URL |
+| **JSON Path Evaluator** | 🏗️ Coming Soon | — | Test JSONPath queries |
+| **XPath Evaluator** | 🏗️ Coming Soon | — | Test and debug XPath expressions |
+| **Link Checker** | 🏗️ Coming Soon | — | Validate links in documents |
+| **JSONPath Finder** | 🏗️ Coming Soon | — | Find and extract JSONPath values |
 
 ### Formatter Tools (5 tools)
 
-| Tool | Status | Description |
-|------|--------|-------------|
-| **JSON Formatter** | ✅ Built | Format and validate JSON with custom indentation |
-| **XML Formatter** | ✅ Built | Format and pretty-print XML |
-| **SQL Formatter** | ✅ Built | Format SQL queries with proper indentation |
-| **HTML Formatter** | ✅ Built | Format and beautify HTML markup |
-| **HTML Beautifier** | ✅ Built | Alias to HTML Formatter with preset options |
+| Tool | Status | MCP | Description |
+|------|--------|-----|-------------|
+| **JSON Formatter** | ✅ Built | ✅ | Format and validate JSON with custom indentation |
+| **XML Formatter** | ✅ Built | ✅ | Format and pretty-print XML |
+| **SQL Formatter** | ✅ Built | ✅ | Format SQL queries with proper indentation |
+| **HTML Formatter** | ✅ Built | ✅ | Format and beautify HTML markup |
+| **HTML Beautifier** | ✅ Built | ✅ | Alias to HTML Formatter with preset options |
 
 ### Converter Tools (29 tools)
 
-| Tool | Status | Description |
-|------|--------|-------------|
-| **JSON to Java** | ✅ Built | Generate Java POJO classes from JSON |
-| **JSON to XML** | ✅ Built | Convert JSON to XML format |
-| **JSON to PHP** | ✅ Built | Generate PHP array syntax from JSON |
-| **JSON to C#** | ✅ Built | Generate C# classes from JSON |
-| **XML to YAML** | ✅ Built | Convert XML to YAML format |
-| **XML to JSON** | ✅ Built | Convert XML to JSON format |
-| **INI to JSON** | ✅ Built | Convert INI configuration to JSON |
-| **INI to XML** | ✅ Built | Convert INI to XML format |
-| **INI to YAML** | ✅ Built | Convert INI to YAML format |
-| **CSV to JSON** | ✅ Built | Convert CSV data to JSON |
-| **CSV to XML** | ✅ Built | Convert CSV to XML format |
-| **CSV to YAML** | ✅ Built | Convert CSV to YAML format |
-| **CSV to SQL** | ✅ Built | Generate SQL INSERT statements from CSV |
-| **YAML to JSON** | ✅ Built | Convert YAML to JSON format |
-| **JSON to YAML** | ✅ Built | Convert JSON to YAML format |
-| **RGB to HEX** | ✅ Built | Convert RGB color values to HEX format |
-| **HEX to RGB** | ✅ Built | Convert HEX color values to RGB format |
-| **IDN Converter** | ✅ Built | Convert between Unicode and Punycode domains |
-| **Unit Converter** | ✅ Built | Convert between different units (length, weight, temperature) |
-| **Currency Converter** | ✅ Built | Convert between different currencies with real-time exchange rates |
-| **JSON to Protobuf** | 🏗️ Coming Soon | Convert JSON schema to Protocol Buffers |
-| **XML to XSD** | 🏗️ Coming Soon | Generate XSD schema from XML |
-| **SQL to MongoDB** | 🏗️ Coming Soon | Convert SQL queries to MongoDB aggregation |
-| **Image to Data URI** | 🏗️ Coming Soon | Convert image files to Data URI format |
-| **Data URI to Image** | 🏗️ Coming Soon | Convert Data URI back to downloadable image |
+| Tool | Status | MCP | Description |
+|------|--------|-----|-------------|
+| **JSON to Java** | ✅ Built | ✅ | Generate Java POJO classes from JSON |
+| **JSON to XML** | ✅ Built | ✅ | Convert JSON to XML format |
+| **JSON to PHP** | ✅ Built | ✅ | Generate PHP array syntax from JSON |
+| **JSON to C#** | ✅ Built | ✅ | Generate C# classes from JSON |
+| **XML to YAML** | ✅ Built | ✅ | Convert XML to YAML format |
+| **XML to JSON** | ✅ Built | ✅ | Convert XML to JSON format |
+| **INI to JSON** | ✅ Built | ✅ | Convert INI configuration to JSON |
+| **INI to XML** | ✅ Built | ✅ | Convert INI to XML format |
+| **INI to YAML** | ✅ Built | ✅ | Convert INI to YAML format |
+| **CSV to JSON** | ✅ Built | ✅ | Convert CSV data to JSON |
+| **CSV to XML** | ✅ Built | ✅ | Convert CSV to XML format |
+| **CSV to YAML** | ✅ Built | ✅ | Convert CSV to YAML format |
+| **CSV to SQL** | ✅ Built | ✅ | Generate SQL INSERT statements from CSV |
+| **YAML to JSON** | ✅ Built | ✅ | Convert YAML to JSON format |
+| **JSON to YAML** | ✅ Built | ✅ | Convert JSON to YAML format |
+| **RGB to HEX** | ✅ Built | ✅ | Convert RGB color values to HEX format |
+| **HEX to RGB** | ✅ Built | ✅ | Convert HEX color values to RGB format |
+| **IDN Converter** | ✅ Built | ✅ | Convert between Unicode and Punycode domains |
+| **Unit Converter** | ✅ Built | ✅ | Convert between different units (length, weight, temperature) |
+| **Currency Converter** | ✅ Built | ✅ | Convert between different currencies with real-time exchange rates |
+| **JSON to Protobuf** | 🏗️ Coming Soon | — | Convert JSON schema to Protocol Buffers |
+| **XML to XSD** | 🏗️ Coming Soon | — | Generate XSD schema from XML |
+| **SQL to MongoDB** | 🏗️ Coming Soon | — | Convert SQL queries to MongoDB aggregation |
+| **Image to Data URI** | 🏗️ Coming Soon | — | Convert image files to Data URI format |
+| **Data URI to Image** | 🏗️ Coming Soon | — | Convert Data URI back to downloadable image |
 
 ### AI Tools (8 tools - Coming Soon)
 
-| Tool | Status | Description |
-|------|--------|-------------|
-| **Chatbot Builder** | 🏗️ Coming Soon | Create intelligent conversational AI chatbots with custom training data |
-| **Workflow Builder** | 🏗️ Coming Soon | Design and automate complex AI-powered workflows with visual editor |
-| **Researcher Agent** | 🏗️ Coming Soon | AI-powered research assistant for deep analysis and information gathering |
-| **Code Generator** | 🏗️ Coming Soon | Generate production-ready code from natural language descriptions |
-| **Content Summarizer** | 🏗️ Coming Soon | Automatically summarize long documents, articles, and transcripts |
-| **Sentiment Analyzer** | 🏗️ Coming Soon | Analyze sentiment and emotion from text data with AI |
-| **Image Analyzer** | 🏗️ Coming Soon | Extract insights and descriptions from images using AI vision |
-| **Data Insights** | 🏗️ Coming Soon | Gain AI-powered insights from datasets with automated analysis |
+| Tool | Status | MCP | Description |
+|------|--------|-----|-------------|
+| **Chatbot Builder** | 🏗️ Coming Soon | — | Create intelligent conversational AI chatbots with custom training data |
+| **Workflow Builder** | 🏗️ Coming Soon | — | Design and automate complex AI-powered workflows with visual editor |
+| **Researcher Agent** | 🏗️ Coming Soon | — | AI-powered research assistant for deep analysis and information gathering |
+| **Code Generator** | 🏗️ Coming Soon | — | Generate production-ready code from natural language descriptions |
+| **Content Summarizer** | 🏗️ Coming Soon | — | Automatically summarize long documents, articles, and transcripts |
+| **Sentiment Analyzer** | 🏗️ Coming Soon | — | Analyze sentiment and emotion from text data with AI |
+| **Image Analyzer** | 🏗️ Coming Soon | — | Extract insights and descriptions from images using AI vision |
+| **Data Insights** | 🏗️ Coming Soon | — | Gain AI-powered insights from datasets with automated analysis |
 
 ---
 
 ## 📊 Stats
 
-- **Total Tools**: 82
-- **Built & Ready**: 57 ✅
+- **Total Tools**: 84
+- **Built & Ready**: 59 ✅
 - **Coming Soon**: 25 🏗️
+- **MCP Enabled**: 57 ✅ (callable via `/api/mcp`)
 - **Categories**: 5 (Developer, Validation, Formatter, Converter, AI Tools)
 
 ---
@@ -182,6 +181,8 @@ curl -X POST https://ai-developer-tools.vercel.app/api/mcp \
 | ✅ | Built and fully functional | Use it now! |
 | 🏗️ | Coming soon - in development | Check back soon |
 | 🚧 | Planned - scheduled for development | Watch this space |
+
+**MCP column:** `✅` = tool is callable via the `/api/mcp` endpoint · `—` = browser-only feature or not yet built
 
 ---
 
@@ -246,9 +247,10 @@ pnpm run lint
 - **Large Screen**: 4-column grid
 
 ### MCP Integration
-- All tools are exposed via the `/api/mcp` endpoint
-- Claude AI can access and use any tool through the MCP server
-- Perfect for AI-powered automation and integration
+- 57 tools are exposed via the `/api/mcp` endpoint
+- Claude AI can access and use any MCP-enabled tool programmatically
+- Perfect for AI-powered automation and chaining tools together
+- Browser-only tools (Notes, Favicon Generator, QR Scanner) are not available via MCP
 
 ---
 
@@ -371,14 +373,18 @@ This ensures the documentation stays accurate and in sync with the codebase.
    ```
 
 3. **`README.md` - Update:**
-   - **Tool table** - Add row to appropriate category table
-   - **Statistics** - Update tool counts (Total, Built & Ready, Coming Soon)
+   - **Tool table** - Add row to appropriate category table with MCP column (`✅` if handler exists, `—` if browser-only or coming soon)
+   - **Statistics** - Update tool counts (Total, Built & Ready, Coming Soon, MCP Enabled)
    - **Description** - Update feature list if adding new capability
 
 #### Status Indicators:
 
 - `✅ Built` - Tool is fully implemented and working
 - `🏗️ Coming Soon` - Tool is planned but not yet built
+
+#### MCP Column:
+- `✅` - Tool has a server-side handler in `tool-handlers.ts` and is callable via `/api/mcp`
+- `—` - Tool is browser-only (e.g. uses Canvas, camera, localStorage) or not yet built
 
 ---
 

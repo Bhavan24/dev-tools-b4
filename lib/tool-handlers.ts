@@ -1,5 +1,6 @@
 import { Buffer } from 'buffer'
 import { generateMockData, rgbToHex, hexToRgb, rgbToHsl, hexToHsl, hslToRgb, hslToHex } from './helpers'
+import QRCode from 'qrcode'
 
 interface ToolHandler {
   description: string
@@ -1353,6 +1354,60 @@ export const toolHandlers: Record<string, ToolHandler> = {
     handler: async (input) => {
       const { url, method = 'GET', headers = '{}', body = '' } = input
       return testRestApi(url, method, headers, body)
+    },
+  },
+
+  'qr-code-generator': {
+    description: 'Generate a QR code from text or URL',
+    schema: {
+      type: 'object',
+      properties: {
+        text: { type: 'string', description: 'Text or URL to encode in the QR code' },
+        size: { type: 'number', description: 'Size of the QR code in pixels (default: 256)', default: 256 },
+        errorCorrectionLevel: {
+          type: 'string',
+          enum: ['L', 'M', 'Q', 'H'],
+          description: 'Error correction level: L (7%), M (15%), Q (25%), H (30%)',
+          default: 'M',
+        },
+      },
+      required: ['text'],
+    },
+    handler: async (input) => {
+      const { text, size = 256, errorCorrectionLevel = 'M' } = input
+      if (!text || text.trim().length === 0) {
+        throw new Error('Text cannot be empty')
+      }
+      const dataUrl = await QRCode.toDataURL(text, {
+        width: size,
+        errorCorrectionLevel,
+        margin: 1,
+      })
+      return { dataUrl, text, size, errorCorrectionLevel }
+    },
+  },
+
+  'favicon-generator': {
+    description: 'Generate favicon sizes from an uploaded image',
+    schema: {
+      type: 'object',
+      properties: {
+        imageBase64: { type: 'string', description: 'Base64-encoded image (PNG, JPEG, JPG, or WebP)' },
+        mimeType: { type: 'string', description: 'MIME type of the image (image/png, image/jpeg, image/webp)' },
+      },
+      required: ['imageBase64', 'mimeType'],
+    },
+    handler: async (input) => {
+      const { imageBase64, mimeType } = input
+      const allowed = ['image/png', 'image/jpeg', 'image/jpg', 'image/webp']
+      if (!allowed.includes(mimeType)) {
+        throw new Error('Unsupported image type. Use PNG, JPEG, JPG, or WebP.')
+      }
+      return {
+        imageBase64,
+        mimeType,
+        message: 'Image received. Use the browser UI to download favicon sizes.',
+      }
     },
   },
 }

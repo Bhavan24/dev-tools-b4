@@ -621,4 +621,18 @@ export const TOOLS = [
     description: 'Simple text notes that persist in your browser using local storage',
     shortDescription: 'Save notes locally',
   },
+  {
+    id: 'qr-code-generator',
+    name: 'QR Code Generator',
+    category: TOOLS_CATEGORIES.DEVELOPER,
+    description: 'Generate QR codes from any text, URL, or data instantly',
+    shortDescription: 'Generate QR codes',
+  },
+  {
+    id: 'favicon-generator',
+    name: 'Favicon Generator',
+    category: TOOLS_CATEGORIES.DEVELOPER,
+    description: 'Upload a PNG, JPEG, JPG, or WebP image and generate favicons in all standard sizes',
+    shortDescription: 'Generate favicons from image',
+  },
 ] as const satisfies Tool[]
