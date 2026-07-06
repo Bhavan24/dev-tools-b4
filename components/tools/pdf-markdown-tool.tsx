@@ -3,6 +3,7 @@
 import { useState, useRef } from 'react'
 import { Loader2, AlertCircle, Download, Upload, Copy, Check, FileText, FileCode } from 'lucide-react'
 import { marked } from 'marked'
+import DOMPurify from 'dompurify'
 
 interface PdfMarkdownToolProps {
   toolId: string
@@ -56,12 +57,11 @@ function PdfToMarkdownPanel() {
     setLoading(true)
     setFileName(file.name)
     try {
-      const arrayBuffer = await file.arrayBuffer()
-      const base64 = btoa(String.fromCharCode(...new Uint8Array(arrayBuffer)))
+      const form = new FormData()
+      form.append('file', file)
       const response = await fetch('/api/tools/pdf-to-markdown', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ pdfBase64: base64 }),
+        body: form,
       })
       if (!response.ok) {
         const err = await response.json()
@@ -175,96 +175,111 @@ function PdfToMarkdownPanel() {
 
 function MarkdownToPdfPanel() {
   const [markdown, setMarkdown] = useState('')
-  const [preview, setPreview] = useState(false)
+  const [pdfUrl, setPdfUrl] = useState<string | null>(null)
+  const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
 
   const getHtml = (): string => {
     try {
-      return marked.parse(markdown) as string
+      const raw = marked.parse(markdown) as string
+      return DOMPurify.sanitize(raw)
     } catch {
       return ''
     }
   }
 
-  const downloadPdf = () => {
+  const generatePdf = async () => {
     if (!markdown.trim()) { setError('Please enter some Markdown first.'); return }
     setError('')
-    const html = getHtml()
-    const printWindow = window.open('', '_blank')
-    if (!printWindow) { setError('Popup blocked — please allow popups and try again.'); return }
-    printWindow.document.write(`<!DOCTYPE html>
-<html>
-<head>
-<meta charset="utf-8">
-<title>Markdown Export</title>
-<style>
-  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; max-width: 800px; margin: 40px auto; padding: 0 20px; line-height: 1.6; color: #222; }
-  h1,h2,h3,h4,h5,h6 { margin-top: 1.5em; margin-bottom: 0.5em; }
-  pre { background: #f4f4f4; padding: 1em; border-radius: 6px; overflow-x: auto; }
-  code { background: #f4f4f4; padding: 0.2em 0.4em; border-radius: 4px; font-size: 0.9em; }
-  pre code { background: none; padding: 0; }
-  blockquote { border-left: 4px solid #ccc; margin: 0; padding-left: 1em; color: #555; }
-  table { border-collapse: collapse; width: 100%; }
-  th,td { border: 1px solid #ddd; padding: 8px 12px; }
-  th { background: #f4f4f4; }
-  img { max-width: 100%; }
-  a { color: #0066cc; }
-</style>
-</head>
-<body>${html}</body>
-</html>`)
-    printWindow.document.close()
-    printWindow.focus()
-    setTimeout(() => { printWindow.print(); printWindow.close() }, 300)
+    setLoading(true)
+    // Revoke previous blob URL before generating a new one
+    if (pdfUrl) { URL.revokeObjectURL(pdfUrl); setPdfUrl(null) }
+    try {
+      const response = await fetch('/api/tools/markdown-to-pdf', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ markdown, filename: 'document' }),
+      })
+      if (!response.ok) {
+        const err = await response.json()
+        throw new Error(err.error || 'PDF generation failed')
+      }
+      const blob = await response.blob()
+      setPdfUrl(URL.createObjectURL(blob))
+    } catch (err: any) {
+      setError(err.message)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const downloadPdf = () => {
+    if (!pdfUrl) return
+    const a = document.createElement('a')
+    a.href = pdfUrl
+    a.download = 'document.pdf'
+    a.click()
   }
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-      <div className="space-y-4">
-        <div>
-          <label className="block font-medium text-foreground mb-2">Markdown source</label>
-          <textarea
-            value={markdown}
-            onChange={(e) => { setMarkdown(e.target.value); setError('') }}
-            placeholder={'# My Document\n\nWrite your **Markdown** here...\n\n## Section\n\nSome paragraph text.'}
-            className="input-base h-80 font-mono text-sm resize-none"
-          />
-        </div>
-        {error && <ErrorBanner message={error} />}
-        <div className="flex gap-2">
+    <div className="space-y-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div className="space-y-4">
+          <div>
+            <label className="block font-medium text-foreground mb-2">Markdown source</label>
+            <textarea
+              value={markdown}
+              onChange={(e) => { setMarkdown(e.target.value); setError(''); setPdfUrl(null) }}
+              placeholder={'# My Document\n\nWrite your **Markdown** here...\n\n## Section\n\nSome paragraph text.'}
+              className="input-base h-80 font-mono text-sm resize-none"
+            />
+          </div>
+          {error && <ErrorBanner message={error} />}
           <button
-            onClick={() => setPreview((p) => !p)}
-            className="btn-secondary flex-1"
+            onClick={generatePdf}
+            disabled={!markdown.trim() || loading}
+            className="btn-primary w-full flex items-center justify-center gap-2"
           >
-            {preview ? 'Hide Preview' : 'Preview'}
-          </button>
-          <button
-            onClick={downloadPdf}
-            disabled={!markdown.trim()}
-            className="btn-primary flex-1 flex items-center justify-center gap-2"
-          >
-            <Download size={16} />Print / Save PDF
+            {loading ? (
+              <><Loader2 size={16} className="animate-spin" />Generating…</>
+            ) : (
+              <><FileText size={16} />Generate PDF</>
+            )}
           </button>
         </div>
-        <p className="text-xs text-muted-foreground">
-          Opens the browser print dialog — choose "Save as PDF" to download.
-        </p>
+
+        <div className="space-y-3">
+          <label className="block font-medium text-foreground">Markdown preview</label>
+          {markdown.trim() ? (
+            <div
+              className="bg-background border border-border rounded-xl p-5 max-h-96 overflow-auto prose prose-sm"
+              dangerouslySetInnerHTML={{ __html: getHtml() }}
+            />
+          ) : (
+            <div className="bg-secondary rounded-xl h-72 flex flex-col items-center justify-center gap-3 text-muted-foreground">
+              <FileText size={40} className="opacity-30" />
+              <p className="text-sm">Rendered preview appears here as you type</p>
+            </div>
+          )}
+        </div>
       </div>
 
-      <div className="space-y-3">
-        <label className="block font-medium text-foreground">Preview</label>
-        {preview && markdown.trim() ? (
-          <div
-            className="bg-background border border-border rounded-xl p-5 max-h-96 overflow-auto prose prose-sm"
-            dangerouslySetInnerHTML={{ __html: getHtml() }}
-          />
-        ) : (
-          <div className="bg-secondary rounded-xl h-72 flex flex-col items-center justify-center gap-3 text-muted-foreground">
-            <FileText size={40} className="opacity-30" />
-            <p className="text-sm">{preview ? 'Nothing to preview yet' : 'Click Preview to see rendered output'}</p>
+      {pdfUrl && (
+        <div className="space-y-3">
+          <div className="flex items-center justify-between">
+            <label className="block font-medium text-foreground">PDF preview</label>
+            <button onClick={downloadPdf} className="btn-secondary flex items-center gap-2 text-sm">
+              <Download size={15} />Download PDF
+            </button>
           </div>
-        )}
-      </div>
+          <iframe
+            src={pdfUrl}
+            className="w-full rounded-xl border border-border"
+            style={{ height: '600px' }}
+            title="PDF preview"
+          />
+        </div>
+      )}
     </div>
   )
 }

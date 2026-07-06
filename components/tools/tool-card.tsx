@@ -32,22 +32,33 @@ export function ToolCard({ id, name, description, icon: Icon, category = 'develo
   }
 
   return (
-    <div className="relative h-full">
-      <Link href={`/tools/${id}`} className="h-full block">
-        <div className="group bg-white/70 dark:bg-slate-800/70 backdrop-blur border border-white/30 dark:border-white/10 rounded-xl p-5 shadow-md hover:shadow-lg transition-all duration-300 hover:border-primary/50 cursor-pointer h-full flex flex-col">
-          {/* Pin Button - Always Visible */}
-          {onTogglePin && (
-            <button
-              onClick={handlePinClick}
-              className="absolute top-3 right-3 z-20 p-1.5 rounded-lg bg-white/80 dark:bg-slate-700/80 hover:bg-white dark:hover:bg-slate-600 text-muted-foreground hover:text-primary transition-all"
-              title={isPinned ? 'Unpin tool' : 'Pin tool'}
-            >
-              {isPinned ? <PinOff size={18} className="text-yellow-500" /> : <Pin size={18} />}
-            </button>
-          )}
+    <div className="relative h-full group">
+      {/* MCP badge - outside the card link to avoid nested <a> */}
+      {!comingSoon && mcpEnabled && (
+        <Link
+          href={`/mcp#${id}`}
+          className="absolute top-3 left-3 z-20 text-xs font-semibold bg-violet-100 dark:bg-violet-900/40 text-violet-700 dark:text-violet-300 px-2 py-1 rounded whitespace-nowrap hover:bg-violet-200 dark:hover:bg-violet-800/60 transition-colors"
+          title="Available via MCP"
+        >
+          MCP
+        </Link>
+      )}
 
+      {/* Pin Button - outside the card link to avoid nested interactive elements */}
+      {onTogglePin && (
+        <button
+          onClick={handlePinClick}
+          className="absolute top-3 right-3 z-20 p-1.5 rounded-lg bg-white/80 dark:bg-slate-700/80 hover:bg-white dark:hover:bg-slate-600 text-muted-foreground hover:text-primary transition-all"
+          title={isPinned ? 'Unpin tool' : 'Pin tool'}
+        >
+          {isPinned ? <PinOff size={18} className="text-yellow-500" /> : <Pin size={18} />}
+        </button>
+      )}
+
+      <Link href={`/tools/${id}`} className="h-full block">
+        <div className="bg-white/70 dark:bg-slate-800/70 backdrop-blur border border-white/30 dark:border-white/10 rounded-xl p-5 shadow-md hover:shadow-lg transition-all duration-300 hover:border-primary/50 cursor-pointer h-full flex flex-col">
           {/* Icon */}
-          <div className={`p-2.5 rounded-lg bg-linear-to-br ${gradient} w-fit mb-3 group-hover:scale-110 transition-transform`}>
+          <div className={`p-2.5 rounded-lg bg-linear-to-br ${gradient} w-fit mb-3 group-hover:scale-110 transition-transform ${!comingSoon && mcpEnabled ? 'mt-6' : ''}`}>
             <Icon size={24} className="text-white" />
           </div>
 
@@ -61,16 +72,6 @@ export function ToolCard({ id, name, description, icon: Icon, category = 'develo
                 <span className="text-xs font-semibold bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300 px-2 py-1 rounded whitespace-nowrap mt-0.5">
                   Coming Soon
                 </span>
-              )}
-              {!comingSoon && mcpEnabled && (
-                <Link
-                  href={`/mcp#${id}`}
-                  onClick={(e) => e.stopPropagation()}
-                  className="text-xs font-semibold bg-violet-100 dark:bg-violet-900/40 text-violet-700 dark:text-violet-300 px-2 py-1 rounded whitespace-nowrap mt-0.5 hover:bg-violet-200 dark:hover:bg-violet-800/60 transition-colors"
-                  title="Available via MCP"
-                >
-                  MCP
-                </Link>
               )}
             </div>
           </div>
