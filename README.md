@@ -119,7 +119,7 @@ curl -X POST https://ai-developer-tools.vercel.app/api/mcp \
 | **HTML Formatter** | ✅ Built | ✅ | Format and beautify HTML markup |
 | **HTML Beautifier** | ✅ Built | ✅ | Alias to HTML Formatter with preset options |
 
-### Converter Tools (29 tools)
+### Converter Tools (33 tools)
 
 | Tool | Status | MCP | Description |
 |------|--------|-----|-------------|
@@ -148,6 +148,10 @@ curl -X POST https://ai-developer-tools.vercel.app/api/mcp \
 | **SQL to MongoDB** | 🏗️ Coming Soon | — | Convert SQL queries to MongoDB aggregation |
 | **Image to Data URI** | 🏗️ Coming Soon | — | Convert image files to Data URI format |
 | **Data URI to Image** | 🏗️ Coming Soon | — | Convert Data URI back to downloadable image |
+| **PDF / Markdown Converter** | ✅ Built | ✅ | Convert PDF files to Markdown, or Markdown source to a styled PDF |
+| **DOCX to Markdown** | 🏗️ Coming Soon | — | Convert Microsoft Word (.docx) documents to Markdown |
+| **HTML to Markdown** | 🏗️ Coming Soon | — | Convert HTML pages or snippets to clean Markdown |
+| **EPUB to Markdown** | 🏗️ Coming Soon | — | Extract and convert EPUB e-book content to Markdown |
 
 ### AI Tools (8 tools - Coming Soon)
 
@@ -166,10 +170,10 @@ curl -X POST https://ai-developer-tools.vercel.app/api/mcp \
 
 ## 📊 Stats
 
-- **Total Tools**: 84
-- **Built & Ready**: 59 ✅
-- **Coming Soon**: 25 🏗️
-- **MCP Enabled**: 57 ✅ (callable via `/api/mcp`)
+- **Total Tools**: 88
+- **Built & Ready**: 60 ✅
+- **Coming Soon**: 28 🏗️
+- **MCP Enabled**: 58 ✅ (callable via `/api/mcp`)
 - **Categories**: 5 (Developer, Validation, Formatter, Converter, AI Tools)
 
 ---

@@ -42,13 +42,17 @@ pnpm run lint && pnpm tsc --noEmit
 ### Directory Structure
 
 - **`app/`** — Next.js App Router with two main sections:
-  - `app/page.tsx` — Landing page with hero, category grid, featured tools
+  - `app/page.tsx` — Landing page (server component); delegates rendering to `app/home-client.tsx`
+  - `app/home-client.tsx` — Client component with search, category filter, pinned tools, and tool grid
   - `app/(public)/tools/` — Tools listing and individual tool pages
+  - `app/(public)/mcp/` — MCP API docs page (`page.tsx` server component + `mcp-copy-button.tsx` client component)
   - `app/api/` — Backend endpoints for tool execution and MCP protocol
 
 - **`lib/`** — Core logic:
   - `constants.ts` — Tool definitions (TOOLS array) and category info (TOOLS_CATEGORIES, CATEGORY_INFO)
   - `tool-handlers.ts` — Tool execution logic with handler pattern (description, schema, handler function)
+  - `mcp-tools.ts` — MCP tool metadata and utilities
+  - `pdf-server.ts` — Server-side PDF/document-to-Markdown conversion logic
   - `utils.ts` — UI utility functions
   - `helpers.ts` — General helpers
 
@@ -89,9 +93,12 @@ Each tool has a corresponding handler in `tool-handlers.ts` with:
 
 ### Frontend Patterns
 
-- **Page filtering** — `/tools` page uses `useSearchParams` to read `?category=X` and filters TOOLS array client-side
+- **Home page split** — `app/page.tsx` is a server component that fetches MCP tool IDs and passes them as props to `app/home-client.tsx` (the client component with search/filter/pinning UI)
+- **Page filtering** — Home and `/tools` pages use `useSearchParams` to read `?category=X` and filter TOOLS array client-side
 - **Dynamic tool pages** — `/tools/[toolId]` looks up tool in TOOLS array, renders `ToolPageClient` (client component that calls `/api/tools/[toolId]`)
+- **MCP Docs page** — `/mcp` is a static server-rendered page listing all MCP-enabled tools with their schemas, parameter types, and copy-ready curl examples
 - **Icons** — Tool category icons are dynamically loaded from lucide-react by name stored in CATEGORY_INFO
+- **Navbar** — Includes a "MCP Docs" link (`/mcp`) in the desktop nav and mobile menu
 
 ### Configuration
 
@@ -316,11 +323,13 @@ Before committing a new or updated tool:
 - Test all case conversion types
 ```
 
+**Commit authorship**: Never add a `Co-Authored-By:` trailer (or any Claude/AI attribution) to commit messages. Commits should be authored solely by the human developer.
+
 ## Tool Categories & Patterns
 
 ### Developer Tools
 **Purpose**: Code utilities, encoders/decoders, converters, ID generators
-**Examples**: JSON beautifier, UUID generator, Hash generator, Text case converter
+**Examples**: JSON beautifier, UUID generator, Hash generator, Text case converter, QR Code Generator, Favicon Generator
 **Icon**: Code
 
 ### Validation Tools
@@ -335,8 +344,10 @@ Before committing a new or updated tool:
 
 ### Converter Tools
 **Purpose**: Format conversion between different data types
-**Examples**: JSON to XML, CSV to JSON, Unit converter
+**Examples**: JSON to XML, CSV to JSON, Unit converter, PDF/DOCX/HTML/EPUB to Markdown
 **Icon**: Zap
+
+> **Document-to-Markdown tools** (`pdf-to-markdown`, `docx-to-markdown`, `html-to-markdown`, `epub-to-markdown`) use server-side processing in `lib/pdf-server.ts`. These are heavier than typical handlers — they process file uploads or URLs rather than plain text inputs.
 
 ### AI Tools
 **Purpose**: AI-powered utilities
@@ -442,6 +453,7 @@ No handler needed—just define in constants:
 - Don't forget required fields in JSON schema
 - Don't change existing tool behavior without discussion
 - Don't make tools do too much — keep them focused
+- **Never add `Co-Authored-By:` or any AI attribution to commit messages** — commits are authored by the human developer only
 
 ## Styling
 
@@ -489,3 +501,7 @@ When you modify the tool system:
 - Code changes go to `lib/constants.ts` and `lib/tool-handlers.ts`
 - Documentation updates go to `README.md` simultaneously (see "Adding a New Tool" section above)
 - This CLAUDE.md should only be updated for architectural changes or new code patterns
+
+### Using This File as Context
+
+**Always read CLAUDE.md first** before scanning the codebase from scratch. This file is the authoritative source for architecture, directory structure, patterns, and conventions. For tool inventory and counts, defer to `README.md`. Only fall back to file-system exploration when CLAUDE.md does not cover a specific detail.

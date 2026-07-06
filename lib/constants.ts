@@ -491,6 +491,39 @@ export const TOOLS = [
     shortDescription: 'Convert IDN',
   },
 
+  // Document Converter Tools
+  {
+    id: 'pdf-to-markdown',
+    name: 'PDF / Markdown Converter',
+    category: TOOLS_CATEGORIES.CONVERTER,
+    description: 'Convert PDF files to Markdown text, or render Markdown source to a styled HTML preview and download as PDF',
+    shortDescription: 'PDF ↔ Markdown converter',
+  },
+  {
+    id: 'docx-to-markdown',
+    name: 'DOCX to Markdown',
+    category: TOOLS_CATEGORIES.CONVERTER,
+    description: 'Convert Microsoft Word (.docx) documents to Markdown format',
+    shortDescription: 'DOCX to Markdown',
+    comingSoon: true,
+  },
+  {
+    id: 'html-to-markdown',
+    name: 'HTML to Markdown',
+    category: TOOLS_CATEGORIES.CONVERTER,
+    description: 'Convert HTML pages or snippets to clean Markdown text',
+    shortDescription: 'HTML to Markdown',
+    comingSoon: true,
+  },
+  {
+    id: 'epub-to-markdown',
+    name: 'EPUB to Markdown',
+    category: TOOLS_CATEGORIES.CONVERTER,
+    description: 'Extract and convert EPUB e-book content to Markdown',
+    shortDescription: 'EPUB to Markdown',
+    comingSoon: true,
+  },
+
   // AI Tools
   {
     id: 'chatbot-builder',

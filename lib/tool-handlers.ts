@@ -1387,6 +1387,57 @@ export const toolHandlers: Record<string, ToolHandler> = {
     },
   },
 
+  'pdf-to-markdown': {
+    description: 'Convert a PDF (supplied as base64) to Markdown text',
+    schema: {
+      type: 'object',
+      properties: {
+        pdfBase64: { type: 'string', description: 'Base64-encoded PDF file content' },
+      },
+      required: ['pdfBase64'],
+    },
+    handler: async (input) => {
+      const { pdfBase64 } = input
+      const { pdfToText } = await import('./pdf-server')
+      const data = await pdfToText(pdfBase64)
+
+      const rawText: string = data.text
+      const lines = rawText.split('\n')
+      const mdLines: string[] = []
+
+      for (let i = 0; i < lines.length; i++) {
+        const line = lines[i]!.trimEnd()
+        const trimmed = line.trimStart()
+        if (!trimmed) {
+          if (mdLines.length > 0 && mdLines[mdLines.length - 1] !== '') {
+            mdLines.push('')
+          }
+          continue
+        }
+        // Heuristic: short all-caps lines likely to be section headers
+        if (trimmed.length < 80 && trimmed === trimmed.toUpperCase() && /[A-Z]/.test(trimmed)) {
+          mdLines.push(`## ${trimmed}`)
+        } else {
+          mdLines.push(trimmed)
+        }
+      }
+
+      // Collapse multiple blank lines into one
+      const markdown = mdLines
+        .join('\n')
+        .replace(/\n{3,}/g, '\n\n')
+        .trim()
+
+      const pageCount: number = data.numpages ?? (data as any).total ?? 0
+
+      return {
+        markdown,
+        pageCount,
+        wordCount: markdown.split(/\s+/).filter(Boolean).length,
+      }
+    },
+  },
+
   'favicon-generator': {
     description: 'Generate favicon sizes from an uploaded image',
     schema: {

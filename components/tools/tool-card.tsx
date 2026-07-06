@@ -12,6 +12,7 @@ interface ToolCardProps {
   isPinned?: boolean
   onTogglePin?: (e: React.MouseEvent, id: string) => void
   comingSoon?: boolean
+  mcpEnabled?: boolean
 }
 
 const categoryGradients: Record<string, string> = {
@@ -21,7 +22,7 @@ const categoryGradients: Record<string, string> = {
   converter: 'from-orange-500 to-orange-600',
 }
 
-export function ToolCard({ id, name, description, icon: Icon, category = 'developer', isPinned, onTogglePin, comingSoon = false }: ToolCardProps) {
+export function ToolCard({ id, name, description, icon: Icon, category = 'developer', isPinned, onTogglePin, comingSoon = false, mcpEnabled = false }: ToolCardProps) {
   const gradient = categoryGradients[category] || 'from-blue-500 to-blue-600'
   const categoryInfo = CATEGORY_INFO[category as keyof typeof CATEGORY_INFO]
 
@@ -60,6 +61,16 @@ export function ToolCard({ id, name, description, icon: Icon, category = 'develo
                 <span className="text-xs font-semibold bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300 px-2 py-1 rounded whitespace-nowrap mt-0.5">
                   Coming Soon
                 </span>
+              )}
+              {!comingSoon && mcpEnabled && (
+                <Link
+                  href={`/mcp#${id}`}
+                  onClick={(e) => e.stopPropagation()}
+                  className="text-xs font-semibold bg-violet-100 dark:bg-violet-900/40 text-violet-700 dark:text-violet-300 px-2 py-1 rounded whitespace-nowrap mt-0.5 hover:bg-violet-200 dark:hover:bg-violet-800/60 transition-colors"
+                  title="Available via MCP"
+                >
+                  MCP
+                </Link>
               )}
             </div>
           </div>

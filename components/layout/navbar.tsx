@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { Code2, Menu, X, Sun, Moon } from 'lucide-react'
+import { Code2, Menu, X, Sun, Moon, Terminal } from 'lucide-react'
 import { useState, useEffect } from 'react'
 
 export function Navbar() {
@@ -44,6 +44,13 @@ export function Navbar() {
 
         {/* Right Section */}
         <div className="hidden md:flex items-center gap-4">
+          <Link
+            href="/mcp"
+            className="flex items-center gap-1.5 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+          >
+            <Terminal size={15} />
+            MCP Docs
+          </Link>
           {/* Theme Toggle */}
           {mounted && (
             <button
@@ -69,6 +76,14 @@ export function Navbar() {
       {isOpen && (
         <div className="md:hidden border-t border-border bg-card animate-in fade-in slide-in-from-top duration-200">
           <div className="container-main py-4 flex flex-col gap-4">
+            <Link
+              href="/mcp"
+              onClick={() => setIsOpen(false)}
+              className="flex items-center gap-2 text-foreground hover:text-primary transition-colors py-2"
+            >
+              <Terminal size={18} />
+              MCP Docs
+            </Link>
             {/* Mobile Theme Toggle */}
             {mounted && (
               <button

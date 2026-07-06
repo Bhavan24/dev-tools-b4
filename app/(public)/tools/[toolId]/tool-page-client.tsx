@@ -17,6 +17,7 @@ import { ConverterTools } from '@/components/tools/converter-tools'
 import { ApiTesterTool } from '@/components/tools/api-tester-tool'
 import { NotesTool } from '@/components/tools/notes-tool'
 import { ImageTools } from '@/components/tools/image-tools'
+import { PdfMarkdownTool } from '@/components/tools/pdf-markdown-tool'
 
 interface ToolPageClientProps {
   toolId: string
@@ -58,6 +59,7 @@ const CUSTOM_TOOL_REGISTRY: Record<string, (id: string) => React.ReactElement> =
   'notes': (id) => <NotesTool toolId={id} />,
   'qr-code-generator': (id) => <ImageTools toolId={id} />,
   'favicon-generator': (id) => <ImageTools toolId={id} />,
+  'pdf-to-markdown': (id) => <PdfMarkdownTool toolId={id} />,
 }
 
 const SINGLE_LINE_TOOLS = new Set(['timestamp-converter', 'url-splitter', 'mime-type-checker'])
