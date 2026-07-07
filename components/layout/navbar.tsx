@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { Code2, Menu, X, Sun, Moon, Terminal } from 'lucide-react'
+import { Code2, Menu, X, Sun, Moon, Terminal, GitPullRequest } from 'lucide-react'
 import { useState, useEffect } from 'react'
 
 export function Navbar() {
@@ -51,6 +51,14 @@ export function Navbar() {
             <Terminal size={15} />
             MCP Docs
           </Link>
+          <Link
+            href="https://github.com/Bhavan24/dev-tools-b4"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-1.5 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+          >
+            <GitPullRequest size={15} />
+          </Link>
           {/* Theme Toggle */}
           {mounted && (
             <button
@@ -83,6 +91,15 @@ export function Navbar() {
             >
               <Terminal size={18} />
               MCP Docs
+            </Link>
+            <Link
+              href="https://github.com/Bhavan24/dev-tools-b4"
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => setIsOpen(false)}
+              className="flex items-center gap-2 text-foreground hover:text-primary transition-colors py-2"
+            >
+              <GitPullRequest size={18} />
             </Link>
             {/* Mobile Theme Toggle */}
             {mounted && (
