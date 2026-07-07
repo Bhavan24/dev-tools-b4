@@ -46,7 +46,7 @@ curl -X POST https://ai-developer-tools.vercel.app/api/mcp \
 - **57 MCP-Enabled Tools** callable by Claude AI via `/api/mcp`
 - **Pinnable Tools** - Pin your frequently used tools for quick access
 - **Search & Filter** - Find tools by name, description, or category
-- **AI Tools** - Coming soon (8 AI-powered utilities in development)
+- **AI Tools** - Coming soon (15 AI-powered utilities in development)
 - **Dark Mode** - Full light/dark theme support
 - **No Signup Required** - Works instantly in your browser
 - **Fully Responsive** - Works perfectly on mobile, tablet, and desktop
@@ -57,7 +57,7 @@ curl -X POST https://ai-developer-tools.vercel.app/api/mcp \
 
 > **MCP column key:** `✅` = callable via `/api/mcp` · `—` = browser-only or coming soon
 
-### Developer Tools (33 tools)
+### Developer Tools (31 tools)
 
 | Tool | Status | MCP | Description |
 |------|--------|-----|-------------|
@@ -91,9 +91,7 @@ curl -X POST https://ai-developer-tools.vercel.app/api/mcp \
 | **REST API Tester** | ✅ Built | ✅ | Test REST APIs with custom headers, authentication, and request body |
 | **Notes** | ✅ Built | — | Simple text notes with local storage persistence (browser-only) |
 | **Favicon Generator** | ✅ Built | — | Upload an image and generate favicons in all standard sizes + .ico + ZIP (browser-only) |
-| **SVG Viewer** | 🏗️ Coming Soon | — | View and edit SVG code with live preview |
-| **HAR Viewer** | 🏗️ Coming Soon | — | View and analyze HTTP Archive (HAR) files |
-| **HAR Sanitizer** | 🏗️ Coming Soon | — | Remove sensitive data from HAR files |
+| **SVG Viewer** | ✅ Built | — | Paste or upload SVG code and see a live rendered preview with source editing |
 
 ### Validation Tools (9 tools)
 
@@ -104,10 +102,10 @@ curl -X POST https://ai-developer-tools.vercel.app/api/mcp \
 | **JavaScript Validator** | ✅ Built | ✅ | Validate JavaScript syntax |
 | **HTML Validator** | ✅ Built | ✅ | Validate HTML5 markup and detect syntax errors |
 | **Redirection Checker** | ✅ Built | ✅ | Follow HTTP redirects and check final URL |
-| **JSON Path Evaluator** | 🏗️ Coming Soon | — | Test JSONPath queries |
-| **XPath Evaluator** | 🏗️ Coming Soon | — | Test and debug XPath expressions |
-| **Link Checker** | 🏗️ Coming Soon | — | Validate links in documents |
-| **JSONPath Finder** | 🏗️ Coming Soon | — | Find and extract JSONPath values |
+| **JSONPath Evaluator** | ✅ Built | ✅ | Query JSON data using JSONPath expressions |
+| **XPath Evaluator** | ✅ Built | ✅ | Query XML documents using XPath expressions |
+| **Link Checker** | ✅ Built | ✅ | Check if URLs are reachable, see HTTP status and response time |
+| **JSONPath Finder** | ✅ Built | ✅ | Find all matches and paths in JSON using JSONPath expressions |
 
 ### Formatter Tools (5 tools)
 
@@ -119,7 +117,7 @@ curl -X POST https://ai-developer-tools.vercel.app/api/mcp \
 | **HTML Formatter** | ✅ Built | ✅ | Format and beautify HTML markup |
 | **HTML Beautifier** | ✅ Built | ✅ | Alias to HTML Formatter with preset options |
 
-### Converter Tools (33 tools)
+### Converter Tools (28 tools)
 
 | Tool | Status | MCP | Description |
 |------|--------|-----|-------------|
@@ -143,17 +141,16 @@ curl -X POST https://ai-developer-tools.vercel.app/api/mcp \
 | **IDN Converter** | ✅ Built | ✅ | Convert between Unicode and Punycode domains |
 | **Unit Converter** | ✅ Built | ✅ | Convert between different units (length, weight, temperature) |
 | **Currency Converter** | ✅ Built | ✅ | Convert between different currencies with real-time exchange rates |
-| **JSON to Protobuf** | 🏗️ Coming Soon | — | Convert JSON schema to Protocol Buffers |
-| **XML to XSD** | 🏗️ Coming Soon | — | Generate XSD schema from XML |
-| **SQL to MongoDB** | 🏗️ Coming Soon | — | Convert SQL queries to MongoDB aggregation |
-| **Image to Data URI** | 🏗️ Coming Soon | — | Convert image files to Data URI format |
-| **Data URI to Image** | 🏗️ Coming Soon | — | Convert Data URI back to downloadable image |
+| **Image / Data URI Converter** | ✅ Built | — | Convert images to Base64 Data URI strings, or decode a Data URI back to an image |
+| **SQL to MongoDB** | ✅ Built | ✅ | Convert SQL SELECT/INSERT/UPDATE/DELETE to MongoDB operations |
 | **PDF / Markdown Converter** | ✅ Built | ✅ | Convert PDF files to Markdown, or Markdown source to a styled PDF |
-| **DOCX to Markdown** | 🏗️ Coming Soon | — | Convert Microsoft Word (.docx) documents to Markdown |
-| **HTML to Markdown** | 🏗️ Coming Soon | — | Convert HTML pages or snippets to clean Markdown |
-| **EPUB to Markdown** | 🏗️ Coming Soon | — | Extract and convert EPUB e-book content to Markdown |
+| **DOCX / Markdown Converter** | ✅ Built | ✅ | Convert DOCX files to Markdown, or Markdown source to a downloadable DOCX |
+| **HTML / Markdown Converter** | ✅ Built | ✅ | Convert HTML to clean Markdown, or render Markdown to styled HTML |
+| **Excel to JSON** | 🏗️ Coming Soon | — | Convert Excel (.xlsx, .xls) spreadsheet data to structured JSON format |
+| **Excel to Markdown** | 🏗️ Coming Soon | — | Convert Excel (.xlsx, .xls) spreadsheet data to Markdown tables |
+| **CSV to Markdown** | 🏗️ Coming Soon | — | Convert CSV data to a formatted Markdown table |
 
-### AI Tools (8 tools - Coming Soon)
+### AI Tools (15 tools - Coming Soon)
 
 | Tool | Status | MCP | Description |
 |------|--------|-----|-------------|
@@ -165,15 +162,22 @@ curl -X POST https://ai-developer-tools.vercel.app/api/mcp \
 | **Sentiment Analyzer** | 🏗️ Coming Soon | — | Analyze sentiment and emotion from text data with AI |
 | **Image Analyzer** | 🏗️ Coming Soon | — | Extract insights and descriptions from images using AI vision |
 | **Data Insights** | 🏗️ Coming Soon | — | Gain AI-powered insights from datasets with automated analysis |
+| **AI Code Reviewer** | 🏗️ Coming Soon | — | Automated code review with AI-powered suggestions for improvements, bug detection, and security issues |
+| **AI Documentation Generator** | 🏗️ Coming Soon | — | Generate comprehensive API docs, README files, and inline comments from source code with AI |
+| **AI Test Generator** | 🏗️ Coming Soon | — | Automatically generate unit tests and test suites from your code using AI |
+| **AI Regex Generator** | 🏗️ Coming Soon | — | Describe what you want to match in plain English and get a working regular expression with AI |
+| **AI SQL Query Builder** | 🏗️ Coming Soon | — | Build complex SQL queries from natural language descriptions using AI |
+| **AI Commit Message Generator** | 🏗️ Coming Soon | — | Paste your git diff and get meaningful, conventional commit messages generated by AI |
+| **AI Schema Generator** | 🏗️ Coming Soon | — | Generate JSON Schema, database schemas, or OpenAPI specs from sample data or descriptions with AI |
 
 ---
 
 ## 📊 Stats
 
 - **Total Tools**: 88
-- **Built & Ready**: 60 ✅
-- **Coming Soon**: 28 🏗️
-- **MCP Enabled**: 58 ✅ (callable via `/api/mcp`)
+- **Built & Ready**: 70 ✅
+- **Coming Soon**: 18 🏗️
+- **MCP Enabled**: 66 ✅ (callable via `/api/mcp`)
 - **Categories**: 5 (Developer, Validation, Formatter, Converter, AI Tools)
 
 ---

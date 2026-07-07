@@ -68,7 +68,15 @@ export const MCP_TOOL_IDS: readonly string[] = [
   'favicon-generator',
   'currency-converter',
   'rest-api-tester',
+  'link-checker',
+  'jsonpath-finder',
+  'sql-to-mongodb',
+  'json-path-evaluator',
+  'xpath-evaluator',
   'pdf-to-markdown',
+  'docx-to-markdown',
+  'html-to-markdown',
+  'markdown-to-html',
 ] as const
 
 export const MCP_TOOL_ID_SET: ReadonlySet<string> = new Set(MCP_TOOL_IDS)

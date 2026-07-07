@@ -1438,6 +1438,230 @@ export const toolHandlers: Record<string, ToolHandler> = {
     },
   },
 
+  'link-checker': {
+    description: 'Check if a list of URLs are reachable and return their HTTP status',
+    schema: {
+      type: 'object',
+      properties: {
+        urls: { type: 'array', items: { type: 'string' }, description: 'Array of URLs to check' },
+      },
+      required: ['urls'],
+    },
+    handler: async (input) => {
+      const { urls } = input as { urls: string[] }
+      if (!Array.isArray(urls) || urls.length === 0) throw new Error('urls must be a non-empty array')
+      if (urls.length > 20) throw new Error('Maximum 20 URLs per request')
+
+      const results = await Promise.all(
+        urls.map(async (url) => {
+          const start = Date.now()
+          try {
+            const res = await fetch(url, {
+              method: 'HEAD',
+              redirect: 'follow',
+              signal: AbortSignal.timeout(10000),
+              headers: { 'User-Agent': 'Mozilla/5.0' },
+            })
+            return {
+              url,
+              status: res.status,
+              statusText: res.statusText,
+              ok: res.ok,
+              latencyMs: Date.now() - start,
+            }
+          } catch (e: any) {
+            return {
+              url,
+              status: null,
+              statusText: '',
+              ok: false,
+              latencyMs: Date.now() - start,
+              error: e.message || 'Request failed',
+            }
+          }
+        }),
+      )
+      const reachable = results.filter((r) => r.ok).length
+      return { results, reachable, failed: results.length - reachable, total: results.length }
+    },
+  },
+
+  'jsonpath-finder': {
+    description: 'Find all matches for a JSONPath expression in a JSON document, returning results and matched paths',
+    schema: {
+      type: 'object',
+      properties: {
+        json: { type: 'string', description: 'JSON document to search (as a string)' },
+        path: { type: 'string', description: 'JSONPath expression (e.g. $.users[?(@.active==true)].name)' },
+      },
+      required: ['json', 'path'],
+    },
+    handler: async (input) => {
+      const { json, path } = input
+      let parsed: any
+      try {
+        parsed = JSON.parse(json)
+      } catch {
+        throw new Error('Invalid JSON: could not parse input')
+      }
+      const { JSONPath } = await import('jsonpath-plus')
+      const results = JSONPath({ path, json: parsed, wrap: true })
+      const paths = JSONPath({ path, json: parsed, resultType: 'path', wrap: true }) as string[]
+      return { results, paths, count: results.length }
+    },
+  },
+
+  'sql-to-mongodb': {
+    description: 'Convert a SQL SELECT/INSERT/UPDATE/DELETE query to the equivalent MongoDB operation',
+    schema: {
+      type: 'object',
+      properties: {
+        sql: { type: 'string', description: 'SQL query to convert (SELECT, INSERT, UPDATE, or DELETE)' },
+      },
+      required: ['sql'],
+    },
+    handler: async (input) => {
+      const { sql } = input
+      return convertSqlToMongodb(sql.trim())
+    },
+  },
+
+  'json-path-evaluator': {
+    description: 'Evaluate a JSONPath expression against a JSON document',
+    schema: {
+      type: 'object',
+      properties: {
+        json: { type: 'string', description: 'JSON document to query (as a string)' },
+        path: { type: 'string', description: 'JSONPath expression (e.g. $.store.books[*].title)' },
+      },
+      required: ['json', 'path'],
+    },
+    handler: async (input) => {
+      const { json, path } = input
+      let parsed: any
+      try {
+        parsed = JSON.parse(json)
+      } catch {
+        throw new Error('Invalid JSON: could not parse input')
+      }
+      const { JSONPath } = await import('jsonpath-plus')
+      const results = JSONPath({ path, json: parsed, wrap: true })
+      return { results, count: results.length }
+    },
+  },
+
+  'xpath-evaluator': {
+    description: 'Evaluate an XPath expression against an XML document',
+    schema: {
+      type: 'object',
+      properties: {
+        xml: { type: 'string', description: 'XML document to query' },
+        xpath: { type: 'string', description: 'XPath expression (e.g. //book/title/text())' },
+      },
+      required: ['xml', 'xpath'],
+    },
+    handler: async (input) => {
+      const { xml, xpath } = input
+      const xpathLib = await import('xpath-ts2')
+      const { DOMParser } = await import('@xmldom/xmldom')
+
+      let doc: any
+      try {
+        const parser = new DOMParser()
+        doc = parser.parseFromString(xml, 'text/xml')
+        const parseError = doc.getElementsByTagName('parsererror')
+        if (parseError.length > 0) {
+          throw new Error('XML parse error: ' + (parseError[0]?.textContent ?? 'invalid XML'))
+        }
+      } catch (e: any) {
+        throw new Error(e.message || 'Invalid XML')
+      }
+
+      let nodes: any[]
+      try {
+        nodes = xpathLib.select(xpath, doc) as any[]
+      } catch (e: any) {
+        throw new Error('Invalid XPath expression: ' + (e.message || String(e)))
+      }
+
+      const results = nodes.map((node: any) => {
+        if (typeof node === 'string' || typeof node === 'number' || typeof node === 'boolean') {
+          return node
+        }
+        if (node.nodeType === 3 || node.nodeType === 4) return node.nodeValue
+        if (node.toString) return node.toString()
+        return String(node)
+      })
+
+      return { results, count: results.length }
+    },
+  },
+
+  'docx-to-markdown': {
+    description: 'Convert a DOCX file (supplied as base64) to Markdown text',
+    schema: {
+      type: 'object',
+      properties: {
+        docxBase64: { type: 'string', description: 'Base64-encoded DOCX file content' },
+      },
+      required: ['docxBase64'],
+    },
+    handler: async (input) => {
+      const { docxBase64 } = input
+      const { docxToHtml } = await import('./docx-server')
+      const TurndownService = (await import('turndown')).default
+      const { gfm } = await import('turndown-plugin-gfm')
+      const { html } = await docxToHtml(docxBase64)
+      const turndown = new TurndownService({ headingStyle: 'atx', codeBlockStyle: 'fenced' })
+      turndown.use(gfm)
+      const markdown = turndown.turndown(html)
+      return {
+        markdown,
+        wordCount: markdown.split(/\s+/).filter(Boolean).length,
+      }
+    },
+  },
+
+  'html-to-markdown': {
+    description: 'Convert HTML to Markdown text',
+    schema: {
+      type: 'object',
+      properties: {
+        html: { type: 'string', description: 'HTML content to convert to Markdown' },
+      },
+      required: ['html'],
+    },
+    handler: async (input) => {
+      const { html } = input
+      const TurndownService = (await import('turndown')).default
+      const { gfm } = await import('turndown-plugin-gfm')
+      const turndown = new TurndownService({ headingStyle: 'atx', codeBlockStyle: 'fenced' })
+      turndown.use(gfm)
+      const markdown = turndown.turndown(html)
+      return {
+        markdown,
+        wordCount: markdown.split(/\s+/).filter(Boolean).length,
+      }
+    },
+  },
+
+  'markdown-to-html': {
+    description: 'Convert Markdown to HTML',
+    schema: {
+      type: 'object',
+      properties: {
+        markdown: { type: 'string', description: 'Markdown content to convert to HTML' },
+      },
+      required: ['markdown'],
+    },
+    handler: async (input) => {
+      const { markdown } = input
+      const { marked } = await import('marked')
+      const html = await marked.parse(markdown)
+      return { html }
+    },
+  },
+
   'favicon-generator': {
     description: 'Generate favicon sizes from an uploaded image',
     schema: {
@@ -1963,5 +2187,155 @@ async function testRestApi(url: string, method: string, headersStr: string, body
     }
   } catch (error: any) {
     throw new Error(`API request failed: ${error.message}`)
+  }
+}
+
+// ─── SQL to MongoDB converter ─────────────────────────────────────────────────
+
+function convertSqlToMongodb(sql: string): { operation: string; collection: string; query: string; explanation: string } {
+  const upper = sql.toUpperCase().trimStart()
+
+  if (upper.startsWith('SELECT')) return convertSelect(sql)
+  if (upper.startsWith('INSERT')) return convertInsert(sql)
+  if (upper.startsWith('UPDATE')) return convertUpdate(sql)
+  if (upper.startsWith('DELETE')) return convertDelete(sql)
+
+  throw new Error('Unsupported SQL statement. Only SELECT, INSERT, UPDATE, and DELETE are supported.')
+}
+
+function sqlWhereToMongo(where: string): Record<string, any> {
+  const filter: Record<string, any> = {}
+  if (!where.trim()) return filter
+
+  const conditions = where.split(/\bAND\b/i).map((c) => c.trim())
+  for (const cond of conditions) {
+    const m = cond.match(/^([`'"]?\w+[`'"]?)\s*(=|!=|<>|>=|<=|>|<|LIKE|IS NULL|IS NOT NULL)\s*(.*)$/i)
+    if (!m) continue
+    const [, rawField, op, rawVal] = m
+    const field = rawField!.replace(/[`'"]/g, '')
+    const val = rawVal ? rawVal.trim().replace(/^['"]|['"]$/g, '') : ''
+    const upperOp = op!.toUpperCase()
+
+    if (upperOp === '=' || upperOp === 'IS NOT NULL') {
+      if (upperOp === 'IS NOT NULL') { filter[field!] = { $exists: true, $ne: null }; continue }
+      const coerced = val === 'true' ? true : val === 'false' ? false : isNaN(Number(val)) ? val : Number(val)
+      filter[field!] = coerced
+    } else if (upperOp === '!=' || upperOp === '<>') {
+      filter[field!] = { $ne: isNaN(Number(val)) ? val : Number(val) }
+    } else if (upperOp === '>') {
+      filter[field!] = { $gt: isNaN(Number(val)) ? val : Number(val) }
+    } else if (upperOp === '>=') {
+      filter[field!] = { $gte: isNaN(Number(val)) ? val : Number(val) }
+    } else if (upperOp === '<') {
+      filter[field!] = { $lt: isNaN(Number(val)) ? val : Number(val) }
+    } else if (upperOp === '<=') {
+      filter[field!] = { $lte: isNaN(Number(val)) ? val : Number(val) }
+    } else if (upperOp === 'IS NULL') {
+      filter[field!] = null
+    } else if (upperOp === 'LIKE') {
+      const pattern = val.replace(/%/g, '.*').replace(/_/g, '.')
+      filter[field!] = { $regex: pattern, $options: 'i' }
+    }
+  }
+  return filter
+}
+
+function convertSelect(sql: string): ReturnType<typeof convertSqlToMongodb> {
+  const m = sql.match(/SELECT\s+([\s\S]*?)\s+FROM\s+(\w+)(?:\s+WHERE\s+([\s\S]*?))?(?:\s+ORDER\s+BY\s+([\s\S]*?))?(?:\s+LIMIT\s+(\d+))?(?:\s+OFFSET\s+(\d+))?$/i)
+  if (!m) throw new Error('Could not parse SELECT statement')
+  const [, cols, table, where, orderBy, limit, offset] = m
+  const collection = table!
+  const filter = sqlWhereToMongo(where || '')
+
+  const parts: string[] = [`db.${collection}.find(`]
+  parts.push(`  ${JSON.stringify(filter, null, 2).replace(/\n/g, '\n  ')}`)
+
+  const colList = cols!.trim()
+  if (colList !== '*') {
+    const proj: Record<string, number> = {}
+    colList.split(',').forEach((c) => { proj[c.trim().replace(/[`'"]/g, '')] = 1 })
+    parts.push(`,\n  ${JSON.stringify(proj)}`)
+  }
+  parts.push(')')
+
+  if (orderBy) {
+    const sort: Record<string, number> = {}
+    orderBy.split(',').forEach((s) => {
+      const [col, dir] = s.trim().split(/\s+/)
+      sort[col!.replace(/[`'"]/g, '')] = (dir?.toUpperCase() === 'DESC') ? -1 : 1
+    })
+    parts.push(`\n  .sort(${JSON.stringify(sort)})`)
+  }
+  if (limit) parts.push(`\n  .limit(${limit})`)
+  if (offset) parts.push(`\n  .skip(${offset})`)
+
+  const filterKeys = Object.keys(filter)
+  return {
+    operation: 'find',
+    collection,
+    query: parts.join(''),
+    explanation: `Queries the "${collection}" collection${filterKeys.length ? ` filtering on ${filterKeys.join(', ')}` : ''}${colList !== '*' ? ` and projecting ${colList}` : ''}${limit ? `, limited to ${limit} results` : ''}.`,
+  }
+}
+
+function convertInsert(sql: string): ReturnType<typeof convertSqlToMongodb> {
+  const m = sql.match(/INSERT\s+INTO\s+(\w+)\s*\(([^)]+)\)\s*VALUES\s*\(([^)]+)\)/i)
+  if (!m) throw new Error('Could not parse INSERT statement')
+  const [, table, cols, vals] = m
+  const collection = table!
+  const keys = cols!.split(',').map((c) => c.trim().replace(/[`'"]/g, ''))
+  const values = vals!.split(',').map((v) => {
+    const t = v.trim().replace(/^['"]|['"]$/g, '')
+    return t === 'true' ? true : t === 'false' ? false : isNaN(Number(t)) ? t : Number(t)
+  })
+  const doc: Record<string, any> = {}
+  keys.forEach((k, i) => { doc[k] = values[i] })
+
+  return {
+    operation: 'insertOne',
+    collection,
+    query: `db.${collection}.insertOne(\n  ${JSON.stringify(doc, null, 2).replace(/\n/g, '\n  ')}\n)`,
+    explanation: `Inserts one document into the "${collection}" collection with ${keys.length} field${keys.length !== 1 ? 's' : ''}.`,
+  }
+}
+
+function convertUpdate(sql: string): ReturnType<typeof convertSqlToMongodb> {
+  const m = sql.match(/UPDATE\s+(\w+)\s+SET\s+([\s\S]*?)\s+WHERE\s+([\s\S]*)/i)
+  if (!m) throw new Error('Could not parse UPDATE statement. A WHERE clause is required.')
+  const [, table, setClause, where] = m
+  const collection = table!
+
+  const update: Record<string, any> = {}
+  setClause!.split(',').forEach((pair) => {
+    const [col, val] = pair.split('=').map((s) => s.trim())
+    const clean = col!.replace(/[`'"]/g, '')
+    const v = val!.replace(/^['"]|['"]$/g, '')
+    update[clean] = v === 'true' ? true : v === 'false' ? false : isNaN(Number(v)) ? v : Number(v)
+  })
+
+  const filter = sqlWhereToMongo(where || '')
+  return {
+    operation: 'updateMany',
+    collection,
+    query: `db.${collection}.updateMany(\n  ${JSON.stringify(filter, null, 2).replace(/\n/g, '\n  ')},\n  { $set: ${JSON.stringify(update, null, 2).replace(/\n/g, '\n  ')} }\n)`,
+    explanation: `Updates documents in "${collection}" that match the filter, setting ${Object.keys(update).join(', ')}.`,
+  }
+}
+
+function convertDelete(sql: string): ReturnType<typeof convertSqlToMongodb> {
+  const m = sql.match(/DELETE\s+FROM\s+(\w+)(?:\s+WHERE\s+([\s\S]*))?$/i)
+  if (!m) throw new Error('Could not parse DELETE statement')
+  const [, table, where] = m
+  const collection = table!
+  const filter = sqlWhereToMongo(where || '')
+  const hasFilter = Object.keys(filter).length > 0
+
+  return {
+    operation: hasFilter ? 'deleteMany' : 'deleteMany (ALL documents)',
+    collection,
+    query: `db.${collection}.deleteMany(\n  ${JSON.stringify(filter, null, 2).replace(/\n/g, '\n  ')}\n)`,
+    explanation: hasFilter
+      ? `Deletes all documents in "${collection}" matching the filter.`
+      : `WARNING: No WHERE clause - this will delete ALL documents in "${collection}".`,
   }
 }
