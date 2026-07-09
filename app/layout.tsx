@@ -2,6 +2,7 @@ import { Analytics } from '@vercel/analytics/next'
 import type { Metadata, Viewport } from 'next'
 import { Geist, Geist_Mono } from 'next/font/google'
 import './globals.css'
+import ServiceWorkerRegistrar from '@/components/shared/service-worker-registrar'
 
 const geistSans = Geist({ variable: '--font-geist-sans', subsets: ['latin'] })
 const geistMono = Geist_Mono({
@@ -15,6 +16,12 @@ export const metadata: Metadata = {
     'Free, powerful AI developer tools for every developer. Use instantly, no signup required.',
   keywords:
     'AI developer tools, JSON formatter, timestamp converter, text utilities, free tools, web tools',
+  manifest: '/manifest.json',
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'default',
+    title: 'AI Developer Tools',
+  },
   icons: {
     icon: [
       {
@@ -22,6 +29,7 @@ export const metadata: Metadata = {
         type: 'image/x-icon',
       },
     ],
+    apple: '/icons/icon-192.png',
   },
 }
 
@@ -45,6 +53,7 @@ export default function RootLayout({
     <html lang="en" className={`${geistSans.variable} ${geistMono.variable}`}>
       <body className="font-sans antialiased">
         {children}
+        <ServiceWorkerRegistrar />
         {process.env.NODE_ENV === 'production' && <Analytics />}
       </body>
     </html>
