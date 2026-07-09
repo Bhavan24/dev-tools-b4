@@ -28,6 +28,7 @@ import { JsonpathFinderTool } from '@/components/tools/jsonpath-finder-tool'
 import { SqlToMongodbTool } from '@/components/tools/sql-to-mongodb-tool'
 import { PdfEditorTool } from '@/components/tools/pdf-editor-tool'
 import { PdfConverterTool } from '@/components/tools/pdf-converter-tool'
+import { ExcelConverterTool } from '@/components/tools/excel-converter-tool'
 
 interface ToolPageClientProps {
   toolId: string
@@ -83,6 +84,8 @@ const CUSTOM_TOOL_REGISTRY: Record<string, (id: string) => React.ReactElement> =
   'image-to-pdf': (id) => <PdfConverterTool toolId={id} />,
   'pdf-to-images': (id) => <PdfConverterTool toolId={id} />,
   'docx-to-pdf': (id) => <PdfConverterTool toolId={id} />,
+  'excel-to-json': (_id) => <ExcelConverterTool toolId="excel-to-json" />,
+  'excel-to-markdown': (_id) => <ExcelConverterTool toolId="excel-to-markdown" />,
 }
 
 const SINGLE_LINE_TOOLS = new Set(['timestamp-converter', 'url-splitter', 'mime-type-checker'])

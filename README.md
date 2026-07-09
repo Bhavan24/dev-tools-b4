@@ -146,9 +146,8 @@ curl -X POST https://ai-developer-tools.vercel.app/api/mcp \
 | **PDF / Markdown Converter** | ✅ Built | ✅ | Convert PDF files to Markdown, or Markdown source to a styled PDF |
 | **DOCX / Markdown Converter** | ✅ Built | ✅ | Convert DOCX files to Markdown, or Markdown source to a downloadable DOCX |
 | **HTML / Markdown Converter** | ✅ Built | ✅ | Convert HTML to clean Markdown, or render Markdown to styled HTML |
-| **Excel to JSON** | 🏗️ Coming Soon | — | Convert Excel (.xlsx, .xls) spreadsheet data to structured JSON format |
-| **Excel to Markdown** | 🏗️ Coming Soon | — | Convert Excel (.xlsx, .xls) spreadsheet data to Markdown tables |
-| **CSV to Markdown** | 🏗️ Coming Soon | — | Convert CSV data to a formatted Markdown table |
+| **Excel / CSV to JSON** | ✅ Built | ✅ | Convert Excel (.xlsx, .xls) or CSV files to JSON; multi-sheet with per-sheet header row config |
+| **Excel / CSV to Markdown** | ✅ Built | ✅ | Convert Excel (.xlsx, .xls) or CSV files to Markdown tables; multi-sheet with per-sheet header row config |
 
 ### AI Tools (15 tools - Coming Soon)
 
@@ -174,10 +173,10 @@ curl -X POST https://ai-developer-tools.vercel.app/api/mcp \
 
 ## 📊 Stats
 
-- **Total Tools**: 88
-- **Built & Ready**: 70 ✅
-- **Coming Soon**: 18 🏗️
-- **MCP Enabled**: 66 ✅ (callable via `/api/mcp`)
+- **Total Tools**: 87
+- **Built & Ready**: 72 ✅
+- **Coming Soon**: 15 🏗️
+- **MCP Enabled**: 68 ✅ (callable via `/api/mcp`)
 - **Categories**: 5 (Developer, Validation, Formatter, Converter, AI Tools)
 
 ---

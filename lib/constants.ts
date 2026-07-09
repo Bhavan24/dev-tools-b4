@@ -622,30 +622,22 @@ export const TOOLS = [
     comingSoon: true,
   },
 
-  // Future Converter Tools
+  // Spreadsheet Converter Tools
   {
     id: 'excel-to-json',
-    name: 'Excel to JSON',
+    name: 'Excel / CSV to JSON',
     category: TOOLS_CATEGORIES.CONVERTER,
-    description: 'Convert Excel (.xlsx, .xls) spreadsheet data to structured JSON format',
-    shortDescription: 'Excel to JSON',
-    comingSoon: true,
+    description:
+      'Convert Excel (.xlsx, .xls) or CSV files to structured JSON. Supports multi-sheet workbooks with configurable header row counts per sheet.',
+    shortDescription: 'Excel/CSV to JSON',
   },
   {
     id: 'excel-to-markdown',
-    name: 'Excel to Markdown',
+    name: 'Excel / CSV to Markdown',
     category: TOOLS_CATEGORIES.CONVERTER,
-    description: 'Convert Excel (.xlsx, .xls) spreadsheet data to Markdown tables',
-    shortDescription: 'Excel to Markdown table',
-    comingSoon: true,
-  },
-  {
-    id: 'csv-to-markdown',
-    name: 'CSV to Markdown',
-    category: TOOLS_CATEGORIES.CONVERTER,
-    description: 'Convert CSV data to a formatted Markdown table',
-    shortDescription: 'CSV to Markdown table',
-    comingSoon: true,
+    description:
+      'Convert Excel (.xlsx, .xls) or CSV files to Markdown tables. Supports multi-sheet workbooks with configurable header row counts per sheet.',
+    shortDescription: 'Excel/CSV to Markdown tables',
   },
 
   // Additional Developer Tools

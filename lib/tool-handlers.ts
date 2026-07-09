@@ -1800,6 +1800,77 @@ export const toolHandlers: Record<string, ToolHandler> = {
       }
     },
   },
+
+  'excel-to-json': {
+    description: 'Convert CSV text to JSON array (use the browser UI for Excel/CSV file uploads)',
+    schema: {
+      type: 'object',
+      properties: {
+        csv: {
+          type: 'string',
+          description: 'CSV text to convert to JSON',
+        },
+        headerRows: {
+          type: 'number',
+          description: 'Number of header rows (default: 1)',
+          default: 1,
+        },
+      },
+      required: ['csv'],
+    },
+    handler: async (input) => {
+      const { csv, headerRows = 1 } = input
+      const rows = parseCsvText(csv)
+      if (rows.length === 0) throw new Error('No data found in CSV')
+      const headers = mergeHeaderRows(rows.slice(0, headerRows))
+      const dataRows = rows.slice(headerRows)
+      const records = dataRows.map((row) => {
+        const obj: Record<string, any> = {}
+        headers.forEach((h, i) => {
+          const key = h || `col${i + 1}`
+          const val = row[i] ?? ''
+          obj[key] = val === '' ? null : isNaN(Number(val)) || val.trim() === '' ? val : Number(val)
+        })
+        return obj
+      })
+      return { records, rowCount: records.length, columnCount: headers.length }
+    },
+  },
+
+  'excel-to-markdown': {
+    description: 'Convert CSV text to a Markdown table (use the browser UI for Excel/CSV file uploads)',
+    schema: {
+      type: 'object',
+      properties: {
+        csv: {
+          type: 'string',
+          description: 'CSV text to convert to a Markdown table',
+        },
+        headerRows: {
+          type: 'number',
+          description: 'Number of header rows (default: 1)',
+          default: 1,
+        },
+      },
+      required: ['csv'],
+    },
+    handler: async (input) => {
+      const { csv, headerRows = 1 } = input
+      const rows = parseCsvText(csv)
+      if (rows.length === 0) throw new Error('No data found in CSV')
+      const headers = mergeHeaderRows(rows.slice(0, headerRows))
+      const dataRows = rows.slice(headerRows)
+      const colCount = Math.max(headers.length, ...dataRows.map((r) => r.length))
+      const pad = (s: string) => ` ${s.replace(/\|/g, '\\|')} `
+      const headerLine = '|' + headers.map((h) => pad(h || '')).join('|') + '|'
+      const sepLine = '|' + Array(colCount).fill(' --- ').join('|') + '|'
+      const dataLines = dataRows.map(
+        (row) => '|' + Array.from({ length: colCount }, (_, i) => pad(row[i] ?? '')).join('|') + '|'
+      )
+      const markdown = [headerLine, sepLine, ...dataLines].join('\n')
+      return { markdown, rowCount: dataRows.length, columnCount: colCount }
+    },
+  },
 }
 
 // Helper functions
@@ -2521,4 +2592,46 @@ function convertDelete(sql: string): ReturnType<typeof convertSqlToMongodb> {
       ? `Deletes all documents in "${collection}" matching the filter.`
       : `WARNING: No WHERE clause - this will delete ALL documents in "${collection}".`,
   }
+}
+
+function parseCsvText(csv: string): string[][] {
+  const rows: string[][] = []
+  const lines = csv.split(/\r?\n/)
+  for (const line of lines) {
+    if (line.trim() === '') continue
+    const cells: string[] = []
+    let cur = ''
+    let inQuote = false
+    for (let i = 0; i < line.length; i++) {
+      const ch = line[i]
+      if (ch === '"') {
+        if (inQuote && line[i + 1] === '"') {
+          cur += '"'
+          i++
+        } else {
+          inQuote = !inQuote
+        }
+      } else if (ch === ',' && !inQuote) {
+        cells.push(cur)
+        cur = ''
+      } else {
+        cur += ch
+      }
+    }
+    cells.push(cur)
+    rows.push(cells)
+  }
+  return rows
+}
+
+function mergeHeaderRows(headerRows: string[][]): string[] {
+  if (headerRows.length === 0) return []
+  if (headerRows.length === 1) return headerRows[0]!
+  const colCount = Math.max(...headerRows.map((r) => r.length))
+  return Array.from({ length: colCount }, (_, i) => {
+    const parts = headerRows
+      .map((r) => (r[i] ?? '').trim())
+      .filter(Boolean)
+    return parts.join(' - ')
+  })
 }
