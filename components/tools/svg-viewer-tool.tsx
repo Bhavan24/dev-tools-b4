@@ -1,7 +1,18 @@
 'use client'
 
 import { useState, useRef } from 'react'
-import { AlertCircle, Upload, Download, Copy, Check, Code, Eye, ZoomIn, ZoomOut, RotateCcw } from 'lucide-react'
+import {
+  AlertCircle,
+  Upload,
+  Download,
+  Copy,
+  Check,
+  Code,
+  Eye,
+  ZoomIn,
+  ZoomOut,
+  RotateCcw,
+} from 'lucide-react'
 import DOMPurify from 'dompurify'
 
 const SAMPLE_SVG = `<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200">
@@ -24,7 +35,10 @@ export function SvgViewerTool({ toolId }: SvgViewerToolProps) {
 
   const validateAndSet = (value: string) => {
     setSource(value)
-    if (!value.trim()) { setError(''); return }
+    if (!value.trim()) {
+      setError('')
+      return
+    }
     if (!value.trim().toLowerCase().includes('<svg')) {
       setError('Input does not appear to be valid SVG.')
     } else {
@@ -72,27 +86,83 @@ export function SvgViewerTool({ toolId }: SvgViewerToolProps) {
               onClick={() => setViewMode(m)}
               className={`px-4 py-1.5 rounded-lg text-sm font-medium capitalize transition-all ${viewMode === m ? 'bg-background shadow text-foreground' : 'text-muted-foreground hover:text-foreground'}`}
             >
-              {m === 'split' ? 'Split' : m === 'preview' ? <span className="flex items-center gap-1"><Eye size={13} />Preview</span> : <span className="flex items-center gap-1"><Code size={13} />Source</span>}
+              {m === 'split' ? (
+                'Split'
+              ) : m === 'preview' ? (
+                <span className="flex items-center gap-1">
+                  <Eye size={13} />
+                  Preview
+                </span>
+              ) : (
+                <span className="flex items-center gap-1">
+                  <Code size={13} />
+                  Source
+                </span>
+              )}
             </button>
           ))}
         </div>
 
         <div className="flex items-center gap-1 ml-auto">
-          <button onClick={() => setZoom(z => Math.max(0.25, z - 0.25))} className="btn-secondary p-2" title="Zoom out"><ZoomOut size={15} /></button>
-          <span className="text-sm text-muted-foreground w-12 text-center">{Math.round(zoom * 100)}%</span>
-          <button onClick={() => setZoom(z => Math.min(4, z + 0.25))} className="btn-secondary p-2" title="Zoom in"><ZoomIn size={15} /></button>
-          <button onClick={() => setZoom(1)} className="btn-secondary p-2" title="Reset zoom"><RotateCcw size={15} /></button>
+          <button
+            onClick={() => setZoom((z) => Math.max(0.25, z - 0.25))}
+            className="btn-secondary p-2"
+            title="Zoom out"
+          >
+            <ZoomOut size={15} />
+          </button>
+          <span className="text-sm text-muted-foreground w-12 text-center">
+            {Math.round(zoom * 100)}%
+          </span>
+          <button
+            onClick={() => setZoom((z) => Math.min(4, z + 0.25))}
+            className="btn-secondary p-2"
+            title="Zoom in"
+          >
+            <ZoomIn size={15} />
+          </button>
+          <button onClick={() => setZoom(1)} className="btn-secondary p-2" title="Reset zoom">
+            <RotateCcw size={15} />
+          </button>
         </div>
 
-        <input ref={inputRef} type="file" accept=".svg,image/svg+xml" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (f) handleFileUpload(f) }} />
-        <button onClick={() => inputRef.current?.click()} className="btn-secondary flex items-center gap-2 text-sm">
-          <Upload size={15} />Upload SVG
+        <input
+          ref={inputRef}
+          type="file"
+          accept=".svg,image/svg+xml"
+          className="hidden"
+          onChange={(e) => {
+            const f = e.target.files?.[0]
+            if (f) handleFileUpload(f)
+          }}
+        />
+        <button
+          onClick={() => inputRef.current?.click()}
+          className="btn-secondary flex items-center gap-2 text-sm"
+        >
+          <Upload size={15} />
+          Upload SVG
         </button>
         <button onClick={copySvg} className="btn-secondary flex items-center gap-2 text-sm">
-          {copied ? <><Check size={15} className="text-green-500" />Copied</> : <><Copy size={15} />Copy</>}
+          {copied ? (
+            <>
+              <Check size={15} className="text-green-500" />
+              Copied
+            </>
+          ) : (
+            <>
+              <Copy size={15} />
+              Copy
+            </>
+          )}
         </button>
-        <button onClick={downloadSvg} disabled={!source.trim() || !!error} className="btn-primary flex items-center gap-2 text-sm">
-          <Download size={15} />Download
+        <button
+          onClick={downloadSvg}
+          disabled={!source.trim() || !!error}
+          className="btn-primary flex items-center gap-2 text-sm"
+        >
+          <Download size={15} />
+          Download
         </button>
       </div>
 
@@ -103,7 +173,9 @@ export function SvgViewerTool({ toolId }: SvgViewerToolProps) {
         </div>
       )}
 
-      <div className={`grid gap-6 ${viewMode === 'split' ? 'grid-cols-1 lg:grid-cols-2' : 'grid-cols-1'}`}>
+      <div
+        className={`grid gap-6 ${viewMode === 'split' ? 'grid-cols-1 lg:grid-cols-2' : 'grid-cols-1'}`}
+      >
         {(viewMode === 'split' || viewMode === 'source') && (
           <div className="space-y-2">
             <label className="block text-sm font-medium text-foreground">SVG source</label>
@@ -120,10 +192,17 @@ export function SvgViewerTool({ toolId }: SvgViewerToolProps) {
         {(viewMode === 'split' || viewMode === 'preview') && (
           <div className="space-y-2">
             <label className="block text-sm font-medium text-foreground">Preview</label>
-            <div className="bg-secondary border border-border rounded-xl overflow-auto flex items-center justify-center" style={{ height: '420px' }}>
+            <div
+              className="bg-secondary border border-border rounded-xl overflow-auto flex items-center justify-center"
+              style={{ height: '420px' }}
+            >
               {sanitizedSvg && !error ? (
                 <div
-                  style={{ transform: `scale(${zoom})`, transformOrigin: 'center', transition: 'transform 0.15s' }}
+                  style={{
+                    transform: `scale(${zoom})`,
+                    transformOrigin: 'center',
+                    transition: 'transform 0.15s',
+                  }}
                   dangerouslySetInnerHTML={{ __html: sanitizedSvg }}
                 />
               ) : (

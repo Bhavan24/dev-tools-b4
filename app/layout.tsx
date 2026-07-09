@@ -11,14 +11,16 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: 'AI Developer Tools',
-  description: 'Free, powerful AI developer tools for every developer. Use instantly, no signup required.',
-  keywords: 'AI developer tools, JSON formatter, timestamp converter, text utilities, free tools, web tools',
+  description:
+    'Free, powerful AI developer tools for every developer. Use instantly, no signup required.',
+  keywords:
+    'AI developer tools, JSON formatter, timestamp converter, text utilities, free tools, web tools',
   icons: {
     icon: [
       {
         url: '/favicon.ico',
         type: 'image/x-icon',
-      }
+      },
     ],
   },
 }

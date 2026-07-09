@@ -14,7 +14,7 @@ const EXAMPLES = [
   },
   {
     label: 'SELECT cols',
-    sql: 'SELECT name, email FROM users WHERE role = \'admin\'',
+    sql: "SELECT name, email FROM users WHERE role = 'admin'",
   },
   {
     label: 'ORDER BY',
@@ -36,13 +36,21 @@ const EXAMPLES = [
 
 export function SqlToMongodbTool({ toolId }: SqlToMongodbToolProps) {
   const [sql, setSql] = useState(EXAMPLES[0]!.sql)
-  const [result, setResult] = useState<{ operation: string; collection: string; query: string; explanation: string } | null>(null)
+  const [result, setResult] = useState<{
+    operation: string
+    collection: string
+    query: string
+    explanation: string
+  } | null>(null)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const [copied, setCopied] = useState(false)
 
   const convert = async () => {
-    if (!sql.trim()) { setError('Enter a SQL query to convert.'); return }
+    if (!sql.trim()) {
+      setError('Enter a SQL query to convert.')
+      return
+    }
     setError('')
     setLoading(true)
     try {
@@ -80,7 +88,10 @@ export function SqlToMongodbTool({ toolId }: SqlToMongodbToolProps) {
             <label className="block text-sm font-medium text-foreground mb-2">SQL query</label>
             <textarea
               value={sql}
-              onChange={(e) => { setSql(e.target.value); setError('') }}
+              onChange={(e) => {
+                setSql(e.target.value)
+                setError('')
+              }}
               className="input-base font-mono text-sm resize-none"
               style={{ height: '240px' }}
               placeholder="SELECT * FROM users WHERE age > 21"
@@ -88,12 +99,18 @@ export function SqlToMongodbTool({ toolId }: SqlToMongodbToolProps) {
           </div>
 
           <div>
-            <p className="text-xs text-muted-foreground mb-2 flex items-center gap-1"><Info size={12} />Examples:</p>
+            <p className="text-xs text-muted-foreground mb-2 flex items-center gap-1">
+              <Info size={12} />
+              Examples:
+            </p>
             <div className="flex flex-wrap gap-1.5">
               {EXAMPLES.map((ex) => (
                 <button
                   key={ex.label}
-                  onClick={() => { setSql(ex.sql); setError('') }}
+                  onClick={() => {
+                    setSql(ex.sql)
+                    setError('')
+                  }}
                   className="px-2.5 py-1 text-xs rounded-lg bg-secondary hover:bg-secondary/70 text-foreground border border-border transition-colors"
                 >
                   {ex.label}
@@ -114,7 +131,14 @@ export function SqlToMongodbTool({ toolId }: SqlToMongodbToolProps) {
             disabled={!sql.trim() || loading}
             className="btn-primary w-full flex items-center justify-center gap-2"
           >
-            {loading ? <><Loader2 size={16} className="animate-spin" />Converting…</> : 'Convert to MongoDB'}
+            {loading ? (
+              <>
+                <Loader2 size={16} className="animate-spin" />
+                Converting…
+              </>
+            ) : (
+              'Convert to MongoDB'
+            )}
           </button>
         </div>
 
@@ -130,13 +154,26 @@ export function SqlToMongodbTool({ toolId }: SqlToMongodbToolProps) {
                   </p>
                 </div>
                 <button onClick={copy} className="btn-secondary flex items-center gap-2 text-sm">
-                  {copied ? <><Check size={14} className="text-green-500" />Copied</> : <><Copy size={14} />Copy</>}
+                  {copied ? (
+                    <>
+                      <Check size={14} className="text-green-500" />
+                      Copied
+                    </>
+                  ) : (
+                    <>
+                      <Copy size={14} />
+                      Copy
+                    </>
+                  )}
                 </button>
               </div>
 
               <div>
                 <label className="block text-xs text-muted-foreground mb-1.5">MongoDB query</label>
-                <div className="bg-secondary rounded-xl p-4 font-mono text-sm overflow-auto" style={{ minHeight: '200px' }}>
+                <div
+                  className="bg-secondary rounded-xl p-4 font-mono text-sm overflow-auto"
+                  style={{ minHeight: '200px' }}
+                >
                   <pre className="whitespace-pre-wrap break-words">{result.query}</pre>
                 </div>
               </div>
@@ -149,7 +186,10 @@ export function SqlToMongodbTool({ toolId }: SqlToMongodbToolProps) {
               )}
             </>
           ) : (
-            <div className="bg-secondary rounded-xl flex items-center justify-center text-muted-foreground text-sm" style={{ height: '360px' }}>
+            <div
+              className="bg-secondary rounded-xl flex items-center justify-center text-muted-foreground text-sm"
+              style={{ height: '360px' }}
+            >
               MongoDB query will appear here
             </div>
           )}

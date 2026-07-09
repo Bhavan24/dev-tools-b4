@@ -60,11 +60,17 @@ function renderSpans(doc: PDFKit.PDFDocument, spans: Span[], baseSize: number) {
     doc.font(font).fontSize(size)
 
     if (span.link) {
-      doc.fillColor('#0066cc').text(span.text, { continued: true, link: span.link, width: maxWidth, lineBreak: false })
+      doc
+        .fillColor('#0066cc')
+        .text(span.text, { continued: true, link: span.link, width: maxWidth, lineBreak: false })
     } else if (span.code) {
-      doc.fillColor('#c0392b').text(span.text, { continued: true, width: maxWidth, lineBreak: false })
+      doc
+        .fillColor('#c0392b')
+        .text(span.text, { continued: true, width: maxWidth, lineBreak: false })
     } else {
-      doc.fillColor('#222222').text(span.text, { continued: true, width: maxWidth, lineBreak: false })
+      doc
+        .fillColor('#222222')
+        .text(span.text, { continued: true, width: maxWidth, lineBreak: false })
     }
   }
   // end the line
@@ -86,7 +92,9 @@ export function markdownToPdfBuffer(markdown: string): Promise<Buffer> {
     const tokens = marked.lexer(markdown)
     let firstBlock = true
 
-    const gap = (px: number) => { doc.moveDown(px / 12) }
+    const gap = (px: number) => {
+      doc.moveDown(px / 12)
+    }
 
     for (const token of tokens) {
       if (!firstBlock) gap(6)
@@ -102,7 +110,12 @@ export function markdownToPdfBuffer(markdown: string): Promise<Buffer> {
           // underline rule for h1/h2
           if (t.depth <= 2) {
             const y = doc.y
-            doc.moveTo(MARGIN, y).lineTo(PAGE_WIDTH - MARGIN, y).strokeColor('#cccccc').lineWidth(0.5).stroke()
+            doc
+              .moveTo(MARGIN, y)
+              .lineTo(PAGE_WIDTH - MARGIN, y)
+              .strokeColor('#cccccc')
+              .lineWidth(0.5)
+              .stroke()
             gap(4)
           }
           doc.font('Helvetica').fillColor('#222222').fontSize(11)
@@ -162,7 +175,12 @@ export function markdownToPdfBuffer(markdown: string): Promise<Buffer> {
 
         case 'hr': {
           gap(4)
-          doc.moveTo(MARGIN, doc.y).lineTo(PAGE_WIDTH - MARGIN, doc.y).strokeColor('#cccccc').lineWidth(0.5).stroke()
+          doc
+            .moveTo(MARGIN, doc.y)
+            .lineTo(PAGE_WIDTH - MARGIN, doc.y)
+            .strokeColor('#cccccc')
+            .lineWidth(0.5)
+            .stroke()
           gap(4)
           break
         }
@@ -219,7 +237,10 @@ function renderTable(doc: PDFKit.PDFDocument, table: Tokens.Table) {
   // header
   let y = doc.y
   table.header.forEach((cell, ci) => {
-    doc.rect(x0 + ci * colWidth, y, colWidth, rowHeight).fill('#f0f0f0').stroke('#cccccc')
+    doc
+      .rect(x0 + ci * colWidth, y, colWidth, rowHeight)
+      .fill('#f0f0f0')
+      .stroke('#cccccc')
     doc.font('Helvetica-Bold').fontSize(9).fillColor('#111111')
     doc.text(cell.text, x0 + ci * colWidth + 4, y + 5, { width: colWidth - 8, lineBreak: false })
   })
@@ -229,7 +250,10 @@ function renderTable(doc: PDFKit.PDFDocument, table: Tokens.Table) {
   table.rows.forEach((row, ri) => {
     const bg = ri % 2 === 0 ? '#ffffff' : '#fafafa'
     row.forEach((cell, ci) => {
-      doc.rect(x0 + ci * colWidth, y, colWidth, rowHeight).fill(bg).stroke('#cccccc')
+      doc
+        .rect(x0 + ci * colWidth, y, colWidth, rowHeight)
+        .fill(bg)
+        .stroke('#cccccc')
       doc.font('Helvetica').fontSize(9).fillColor('#222222')
       doc.text(cell.text, x0 + ci * colWidth + 4, y + 5, { width: colWidth - 8, lineBreak: false })
     })

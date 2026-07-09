@@ -46,7 +46,16 @@ function ImageToUriPanel() {
   const [dragging, setDragging] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
 
-  const ACCEPTED = ['image/png', 'image/jpeg', 'image/gif', 'image/webp', 'image/svg+xml', 'image/bmp', 'image/ico', 'image/x-icon']
+  const ACCEPTED = [
+    'image/png',
+    'image/jpeg',
+    'image/gif',
+    'image/webp',
+    'image/svg+xml',
+    'image/bmp',
+    'image/ico',
+    'image/x-icon',
+  ]
 
   const processFile = (file: File) => {
     if (!ACCEPTED.includes(file.type) && !file.name.match(/\.(png|jpe?g|gif|webp|svg|bmp|ico)$/i)) {
@@ -69,7 +78,11 @@ function ImageToUriPanel() {
   }
 
   const formatSize = (bytes: number) =>
-    bytes < 1024 ? `${bytes} B` : bytes < 1048576 ? `${(bytes / 1024).toFixed(1)} KB` : `${(bytes / 1048576).toFixed(2)} MB`
+    bytes < 1024
+      ? `${bytes} B`
+      : bytes < 1048576
+        ? `${(bytes / 1024).toFixed(1)} KB`
+        : `${(bytes / 1048576).toFixed(2)} MB`
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -79,14 +92,25 @@ function ImageToUriPanel() {
           type="file"
           accept="image/*"
           className="hidden"
-          onChange={(e) => { const f = e.target.files?.[0]; if (f) processFile(f) }}
+          onChange={(e) => {
+            const f = e.target.files?.[0]
+            if (f) processFile(f)
+          }}
         />
         <div
           className={`border-2 border-dashed rounded-xl p-10 text-center cursor-pointer transition-colors ${dragging ? 'border-primary bg-primary/5' : 'border-border hover:border-primary/50 hover:bg-secondary/50'}`}
           onClick={() => inputRef.current?.click()}
-          onDragOver={(e) => { e.preventDefault(); setDragging(true) }}
+          onDragOver={(e) => {
+            e.preventDefault()
+            setDragging(true)
+          }}
           onDragLeave={() => setDragging(false)}
-          onDrop={(e) => { e.preventDefault(); setDragging(false); const f = e.dataTransfer.files?.[0]; if (f) processFile(f) }}
+          onDrop={(e) => {
+            e.preventDefault()
+            setDragging(false)
+            const f = e.dataTransfer.files?.[0]
+            if (f) processFile(f)
+          }}
         >
           <ImageIcon size={36} className="mx-auto mb-3 text-muted-foreground" />
           <p className="font-medium text-foreground mb-1">Drop an image here or click to upload</p>
@@ -102,17 +126,28 @@ function ImageToUriPanel() {
         )}
 
         {error && <ErrorBanner message={error} />}
-        <button onClick={() => inputRef.current?.click()} className="btn-primary w-full flex items-center justify-center gap-2">
-          <Upload size={16} />Select Image
+        <button
+          onClick={() => inputRef.current?.click()}
+          className="btn-primary w-full flex items-center justify-center gap-2"
+        >
+          <Upload size={16} />
+          Select Image
         </button>
       </div>
 
       <div className="space-y-4">
         {dataUri ? (
           <>
-            <div className="bg-secondary rounded-xl p-3 flex items-center justify-center" style={{ height: '180px' }}>
+            <div
+              className="bg-secondary rounded-xl p-3 flex items-center justify-center"
+              style={{ height: '180px' }}
+            >
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={dataUri} alt="Preview" className="max-h-full max-w-full object-contain rounded" />
+              <img
+                src={dataUri}
+                alt="Preview"
+                className="max-h-full max-w-full object-contain rounded"
+              />
             </div>
             <div className="flex items-center justify-between text-sm text-muted-foreground">
               <span>{mimeType}</span>
@@ -121,12 +156,28 @@ function ImageToUriPanel() {
             <div className="bg-secondary rounded-xl p-3 font-mono text-xs max-h-40 overflow-auto break-all">
               {dataUri}
             </div>
-            <button onClick={copy} className="btn-primary w-full flex items-center justify-center gap-2">
-              {copied ? <><Check size={16} className="text-green-500" />Copied!</> : <><Copy size={16} />Copy Data URI</>}
+            <button
+              onClick={copy}
+              className="btn-primary w-full flex items-center justify-center gap-2"
+            >
+              {copied ? (
+                <>
+                  <Check size={16} className="text-green-500" />
+                  Copied!
+                </>
+              ) : (
+                <>
+                  <Copy size={16} />
+                  Copy Data URI
+                </>
+              )}
             </button>
           </>
         ) : (
-          <div className="bg-secondary rounded-xl flex flex-col items-center justify-center gap-3 text-muted-foreground" style={{ height: '300px' }}>
+          <div
+            className="bg-secondary rounded-xl flex flex-col items-center justify-center gap-3 text-muted-foreground"
+            style={{ height: '300px' }}
+          >
             <Code size={40} className="opacity-30" />
             <p className="text-sm">Data URI will appear here</p>
           </div>
@@ -184,19 +235,30 @@ function UriToImagePanel() {
           disabled={!previewSrc}
           className="btn-primary w-full flex items-center justify-center gap-2"
         >
-          <Download size={16} />Download Image
+          <Download size={16} />
+          Download Image
         </button>
       </div>
 
       <div className="space-y-3">
         <label className="block text-sm font-medium text-foreground">Preview</label>
         {previewSrc ? (
-          <div className="bg-secondary border border-border rounded-xl p-4 flex items-center justify-center" style={{ height: '360px' }}>
+          <div
+            className="bg-secondary border border-border rounded-xl p-4 flex items-center justify-center"
+            style={{ height: '360px' }}
+          >
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={previewSrc} alt="Decoded preview" className="max-h-full max-w-full object-contain rounded" />
+            <img
+              src={previewSrc}
+              alt="Decoded preview"
+              className="max-h-full max-w-full object-contain rounded"
+            />
           </div>
         ) : (
-          <div className="bg-secondary rounded-xl flex flex-col items-center justify-center gap-3 text-muted-foreground" style={{ height: '360px' }}>
+          <div
+            className="bg-secondary rounded-xl flex flex-col items-center justify-center gap-3 text-muted-foreground"
+            style={{ height: '360px' }}
+          >
             <ImageIcon size={40} className="opacity-30" />
             <p className="text-sm">Image preview will appear here</p>
           </div>

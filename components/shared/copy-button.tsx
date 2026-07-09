@@ -26,11 +26,7 @@ export function CopyButton({ text, className = '' }: CopyButtonProps) {
       className={`p-2 rounded-lg hover:bg-secondary transition-colors text-muted-foreground hover:text-foreground ${className}`}
       title="Copy to clipboard"
     >
-      {copied ? (
-        <Check size={18} className="text-green-500" />
-      ) : (
-        <Copy size={18} />
-      )}
+      {copied ? <Check size={18} className="text-green-500" /> : <Copy size={18} />}
     </button>
   )
 }

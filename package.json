@@ -6,7 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "format": "prettier --write \"**/*.{ts,tsx,js,mjs,json}\"",
+    "format:check": "prettier --check \"**/*.{ts,tsx,js,mjs,json}\""
   },
   "dependencies": {
     "@base-ui/react": "^1.6.0",
@@ -53,6 +55,7 @@
     "@types/react": "19.2.14",
     "@types/react-dom": "19.2.3",
     "postcss": "^8.5.15",
+    "prettier": "3.9.4",
     "tailwindcss": "^4.3.1",
     "typescript": "5.7.3"
   },

@@ -63,7 +63,10 @@ export function NotesTool({ toolId }: NotesToolProps) {
   }
 
   const handleClearAll = () => {
-    if (notes.length && window.confirm('Are you sure you want to delete all notes? This cannot be undone.')) {
+    if (
+      notes.length &&
+      window.confirm('Are you sure you want to delete all notes? This cannot be undone.')
+    ) {
       setNotes([])
       localStorage.removeItem(STORAGE_KEY)
     }
@@ -88,7 +91,10 @@ export function NotesTool({ toolId }: NotesToolProps) {
           placeholder="Add a new note... (Ctrl+Enter to add)"
           className="input-base w-full resize-none h-24"
         />
-        <button onClick={handleAddNote} className="btn-primary w-full flex items-center justify-center gap-2 py-2">
+        <button
+          onClick={handleAddNote}
+          className="btn-primary w-full flex items-center justify-center gap-2 py-2"
+        >
           <Plus size={18} />
           <span>Add Note</span>
         </button>
@@ -106,11 +112,15 @@ export function NotesTool({ toolId }: NotesToolProps) {
       {notes.length > 0 ? (
         <div className="space-y-2">
           {notes.map((note) => (
-            <div key={note.id} className="card-base p-4 flex items-start gap-3 hover:bg-muted/50 transition-colors">
+            <div
+              key={note.id}
+              className="card-base p-4 flex items-start gap-3 hover:bg-muted/50 transition-colors"
+            >
               <div className="flex-1 min-w-0">
                 <p className="text-foreground wrap-break-word whitespace-pre-wrap">{note.text}</p>
                 <p className="text-xs text-muted-foreground mt-1">
-                  {new Date(note.createdAt).toLocaleDateString()} {new Date(note.createdAt).toLocaleTimeString()}
+                  {new Date(note.createdAt).toLocaleDateString()}{' '}
+                  {new Date(note.createdAt).toLocaleTimeString()}
                 </p>
               </div>
 

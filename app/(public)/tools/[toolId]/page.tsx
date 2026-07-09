@@ -3,11 +3,7 @@ import Link from 'next/link'
 import { ArrowLeft } from 'lucide-react'
 import { ToolPageClient } from './tool-page-client'
 
-export default async function ToolPage({ 
-  params 
-}: { 
-  params: Promise<{ toolId: string }> 
-}) {
+export default async function ToolPage({ params }: { params: Promise<{ toolId: string }> }) {
   const { toolId } = await params
   const tool = TOOLS.find((t) => t.id === toolId)
 

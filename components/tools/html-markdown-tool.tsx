@@ -46,7 +46,10 @@ function HtmlToMarkdownPanel() {
   const [copied, setCopied] = useState(false)
 
   const convert = async () => {
-    if (!html.trim()) { setError('Please enter some HTML first.'); return }
+    if (!html.trim()) {
+      setError('Please enter some HTML first.')
+      return
+    }
     setError('')
     setLoading(true)
     try {
@@ -93,8 +96,14 @@ function HtmlToMarkdownPanel() {
           <label className="block font-medium text-foreground mb-2">HTML input</label>
           <textarea
             value={html}
-            onChange={(e) => { setHtml(e.target.value); setError(''); setResult(null) }}
-            placeholder={'<h1>Hello World</h1>\n<p>This is a <strong>sample</strong> paragraph.</p>\n<ul>\n  <li>Item one</li>\n  <li>Item two</li>\n</ul>'}
+            onChange={(e) => {
+              setHtml(e.target.value)
+              setError('')
+              setResult(null)
+            }}
+            placeholder={
+              '<h1>Hello World</h1>\n<p>This is a <strong>sample</strong> paragraph.</p>\n<ul>\n  <li>Item one</li>\n  <li>Item two</li>\n</ul>'
+            }
             className="input-base h-80 font-mono text-sm resize-none"
           />
         </div>
@@ -105,9 +114,15 @@ function HtmlToMarkdownPanel() {
           className="btn-primary w-full flex items-center justify-center gap-2"
         >
           {loading ? (
-            <><Loader2 size={16} className="animate-spin" />Converting…</>
+            <>
+              <Loader2 size={16} className="animate-spin" />
+              Converting…
+            </>
           ) : (
-            <><Code size={16} />Convert to Markdown</>
+            <>
+              <Code size={16} />
+              Convert to Markdown
+            </>
           )}
         </button>
       </div>
@@ -122,11 +137,28 @@ function HtmlToMarkdownPanel() {
               <pre className="whitespace-pre-wrap break-words">{result.markdown}</pre>
             </div>
             <div className="flex gap-2">
-              <button onClick={copyMarkdown} className="btn-secondary flex-1 flex items-center justify-center gap-2">
-                {copied ? <><Check size={16} className="text-green-500" />Copied</> : <><Copy size={16} />Copy</>}
+              <button
+                onClick={copyMarkdown}
+                className="btn-secondary flex-1 flex items-center justify-center gap-2"
+              >
+                {copied ? (
+                  <>
+                    <Check size={16} className="text-green-500" />
+                    Copied
+                  </>
+                ) : (
+                  <>
+                    <Copy size={16} />
+                    Copy
+                  </>
+                )}
               </button>
-              <button onClick={downloadMarkdown} className="btn-primary flex-1 flex items-center justify-center gap-2">
-                <Download size={16} />Download .md
+              <button
+                onClick={downloadMarkdown}
+                className="btn-primary flex-1 flex items-center justify-center gap-2"
+              >
+                <Download size={16} />
+                Download .md
               </button>
             </div>
           </>
@@ -161,7 +193,10 @@ function MarkdownToHtmlPanel() {
   }
 
   const convert = async () => {
-    if (!markdown.trim()) { setError('Please enter some Markdown first.'); return }
+    if (!markdown.trim()) {
+      setError('Please enter some Markdown first.')
+      return
+    }
     setError('')
     setLoading(true)
     try {
@@ -209,8 +244,14 @@ function MarkdownToHtmlPanel() {
             <label className="block font-medium text-foreground mb-2">Markdown source</label>
             <textarea
               value={markdown}
-              onChange={(e) => { setMarkdown(e.target.value); setError(''); setResult(null) }}
-              placeholder={'# Hello World\n\nThis is a **sample** paragraph.\n\n- Item one\n- Item two'}
+              onChange={(e) => {
+                setMarkdown(e.target.value)
+                setError('')
+                setResult(null)
+              }}
+              placeholder={
+                '# Hello World\n\nThis is a **sample** paragraph.\n\n- Item one\n- Item two'
+              }
               className="input-base h-80 font-mono text-sm resize-none"
             />
           </div>
@@ -221,9 +262,15 @@ function MarkdownToHtmlPanel() {
             className="btn-primary w-full flex items-center justify-center gap-2"
           >
             {loading ? (
-              <><Loader2 size={16} className="animate-spin" />Converting…</>
+              <>
+                <Loader2 size={16} className="animate-spin" />
+                Converting…
+              </>
             ) : (
-              <><Code size={16} />Convert to HTML</>
+              <>
+                <Code size={16} />
+                Convert to HTML
+              </>
             )}
           </button>
         </div>
@@ -263,10 +310,24 @@ function MarkdownToHtmlPanel() {
             </div>
             <div className="flex gap-2">
               <button onClick={copyHtml} className="btn-secondary flex items-center gap-2 text-sm">
-                {copied ? <><Check size={14} className="text-green-500" />Copied</> : <><Copy size={14} />Copy HTML</>}
+                {copied ? (
+                  <>
+                    <Check size={14} className="text-green-500" />
+                    Copied
+                  </>
+                ) : (
+                  <>
+                    <Copy size={14} />
+                    Copy HTML
+                  </>
+                )}
               </button>
-              <button onClick={downloadHtml} className="btn-primary flex items-center gap-2 text-sm">
-                <Download size={14} />Download .html
+              <button
+                onClick={downloadHtml}
+                className="btn-primary flex items-center gap-2 text-sm"
+              >
+                <Download size={14} />
+                Download .html
               </button>
             </div>
           </div>

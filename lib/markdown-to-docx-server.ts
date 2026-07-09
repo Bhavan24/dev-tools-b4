@@ -55,7 +55,7 @@ function spansToRuns(spans: Span[]): TextRun[] {
         bold: s.bold,
         italics: s.italic,
         font: s.code ? 'Courier New' : undefined,
-      }),
+      })
   )
 }
 
@@ -80,7 +80,7 @@ function tokensToParagraphs(tokens: Token[]): (Paragraph | Table)[] {
           new Paragraph({
             heading: HEADING_LEVEL_MAP[t.depth] ?? HeadingLevel.HEADING_6,
             children: spansToRuns(spans),
-          }),
+          })
         )
         break
       }
@@ -99,7 +99,7 @@ function tokensToParagraphs(tokens: Token[]): (Paragraph | Table)[] {
             new Paragraph({
               children: [new TextRun({ text: line, font: 'Courier New' })],
               shading: { type: ShadingType.SOLID, color: 'F4F4F4', fill: 'F4F4F4' },
-            }),
+            })
           )
         }
         break
@@ -112,7 +112,7 @@ function tokensToParagraphs(tokens: Token[]): (Paragraph | Table)[] {
           new Paragraph({
             children: [new TextRun({ text: inner, italics: true, color: '555555' })],
             indent: { left: 720 },
-          }),
+          })
         )
         break
       }
@@ -120,13 +120,17 @@ function tokensToParagraphs(tokens: Token[]): (Paragraph | Table)[] {
       case 'list': {
         const t = token as Tokens.List
         t.items.forEach((item, i) => {
-          const spans = parseInline(item.tokens.filter((tok) => tok.type !== 'list').flatMap((tok) => (tok.type === 'text' ? [tok] : (tok as any).tokens ?? [tok])))
+          const spans = parseInline(
+            item.tokens
+              .filter((tok) => tok.type !== 'list')
+              .flatMap((tok) => (tok.type === 'text' ? [tok] : ((tok as any).tokens ?? [tok])))
+          )
           elements.push(
             new Paragraph({
               children: spansToRuns(spans.length ? spans : [{ text: item.text }]),
               bullet: t.ordered ? undefined : { level: 0 },
               numbering: t.ordered ? { reference: 'default-numbering', level: 0 } : undefined,
-            }),
+            })
           )
         })
         break
@@ -137,7 +141,7 @@ function tokensToParagraphs(tokens: Token[]): (Paragraph | Table)[] {
           new Paragraph({
             children: [],
             border: { bottom: { style: BorderStyle.SINGLE, size: 6, color: 'CCCCCC', space: 1 } },
-          }),
+          })
         )
         break
       }
@@ -152,13 +156,15 @@ function tokensToParagraphs(tokens: Token[]): (Paragraph | Table)[] {
             children: t.header.map(
               (cell) =>
                 new TableCell({
-                  children: [new Paragraph({ children: [new TextRun({ text: cell.text, bold: true })] })],
+                  children: [
+                    new Paragraph({ children: [new TextRun({ text: cell.text, bold: true })] }),
+                  ],
                   shading: { type: ShadingType.SOLID, color: 'F0F0F0', fill: 'F0F0F0' },
                   width: { size: Math.floor(9000 / t.header.length), type: WidthType.DXA },
-                }),
+                })
             ),
             tableHeader: true,
-          }),
+          })
         )
 
         // Data rows
@@ -170,9 +176,9 @@ function tokensToParagraphs(tokens: Token[]): (Paragraph | Table)[] {
                   new TableCell({
                     children: [new Paragraph({ children: [new TextRun({ text: cell.text })] })],
                     width: { size: Math.floor(9000 / t.header.length), type: WidthType.DXA },
-                  }),
+                  })
               ),
-            }),
+            })
           )
         }
 

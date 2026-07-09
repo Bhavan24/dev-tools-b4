@@ -7,12 +7,33 @@ interface EncodeDecodeToolProps {
   toolId: string
 }
 
-const CONFIG: Record<string, { label1: string; label2: string; action1: string; action2: string }> = {
-  'url-encoder-decoder': { label1: 'Encode', label2: 'Decode', action1: 'encode', action2: 'decode' },
-  'html-encoder-decoder': { label1: 'Encode', label2: 'Decode', action1: 'encode', action2: 'decode' },
-  'xml-string-escaper': { label1: 'Escape', label2: 'Unescape', action1: 'escape', action2: 'unescape' },
-  'idn-converter': { label1: 'To ASCII', label2: 'To Unicode', action1: 'toAscii', action2: 'toUnicode' },
-}
+const CONFIG: Record<string, { label1: string; label2: string; action1: string; action2: string }> =
+  {
+    'url-encoder-decoder': {
+      label1: 'Encode',
+      label2: 'Decode',
+      action1: 'encode',
+      action2: 'decode',
+    },
+    'html-encoder-decoder': {
+      label1: 'Encode',
+      label2: 'Decode',
+      action1: 'encode',
+      action2: 'decode',
+    },
+    'xml-string-escaper': {
+      label1: 'Escape',
+      label2: 'Unescape',
+      action1: 'escape',
+      action2: 'unescape',
+    },
+    'idn-converter': {
+      label1: 'To ASCII',
+      label2: 'To Unicode',
+      action1: 'toAscii',
+      action2: 'toUnicode',
+    },
+  }
 
 export function EncodeDecodeTool({ toolId }: EncodeDecodeToolProps) {
   const config = CONFIG[toolId]
@@ -108,7 +129,10 @@ export function EncodeDecodeTool({ toolId }: EncodeDecodeToolProps) {
         )}
 
         {result && (
-          <button onClick={copyToClipboard} className="btn-secondary w-full flex items-center justify-center gap-2">
+          <button
+            onClick={copyToClipboard}
+            className="btn-secondary w-full flex items-center justify-center gap-2"
+          >
             {copied ? (
               <>
                 <Check size={18} className="text-green-500" />

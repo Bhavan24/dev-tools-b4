@@ -7,8 +7,16 @@ interface CsvOptionsConverterToolProps {
   toolId: string
 }
 
-const CONFIG: Record<string, { type: 'checkbox' | 'text'; key: string; label: string; default: string | boolean }> = {
-  'csv-to-json': { type: 'checkbox', key: 'hasHeader', label: 'First row is header', default: true },
+const CONFIG: Record<
+  string,
+  { type: 'checkbox' | 'text'; key: string; label: string; default: string | boolean }
+> = {
+  'csv-to-json': {
+    type: 'checkbox',
+    key: 'hasHeader',
+    label: 'First row is header',
+    default: true,
+  },
   'csv-to-sql': { type: 'text', key: 'tableName', label: 'Table Name', default: 'table1' },
 }
 
@@ -93,7 +101,11 @@ export function CsvOptionsConverterTool({ toolId }: CsvOptionsConverterToolProps
           </div>
         )}
 
-        <button onClick={handleExecute} disabled={loading} className="btn-primary w-full flex items-center justify-center gap-2">
+        <button
+          onClick={handleExecute}
+          disabled={loading}
+          className="btn-primary w-full flex items-center justify-center gap-2"
+        >
           {loading ? (
             <>
               <Loader2 size={18} className="animate-spin" />
@@ -128,7 +140,10 @@ export function CsvOptionsConverterTool({ toolId }: CsvOptionsConverterToolProps
         )}
 
         {result && (
-          <button onClick={copyToClipboard} className="btn-secondary w-full flex items-center justify-center gap-2">
+          <button
+            onClick={copyToClipboard}
+            className="btn-secondary w-full flex items-center justify-center gap-2"
+          >
             {copied ? (
               <>
                 <Check size={18} className="text-green-500" />

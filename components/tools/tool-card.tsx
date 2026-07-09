@@ -22,7 +22,17 @@ const categoryGradients: Record<string, string> = {
   converter: 'from-orange-500 to-orange-600',
 }
 
-export function ToolCard({ id, name, description, icon: Icon, category = 'developer', isPinned, onTogglePin, comingSoon = false, mcpEnabled = false }: ToolCardProps) {
+export function ToolCard({
+  id,
+  name,
+  description,
+  icon: Icon,
+  category = 'developer',
+  isPinned,
+  onTogglePin,
+  comingSoon = false,
+  mcpEnabled = false,
+}: ToolCardProps) {
   const gradient = categoryGradients[category] || 'from-blue-500 to-blue-600'
   const categoryInfo = CATEGORY_INFO[category as keyof typeof CATEGORY_INFO]
 
@@ -58,7 +68,9 @@ export function ToolCard({ id, name, description, icon: Icon, category = 'develo
       <Link href={`/tools/${id}`} className="h-full block">
         <div className="bg-white/70 dark:bg-slate-800/70 backdrop-blur border border-white/30 dark:border-white/10 rounded-xl p-5 shadow-md hover:shadow-lg transition-all duration-300 hover:border-primary/50 cursor-pointer h-full flex flex-col">
           {/* Icon */}
-          <div className={`p-2.5 rounded-lg bg-linear-to-br ${gradient} w-fit mb-3 group-hover:scale-110 transition-transform ${!comingSoon && mcpEnabled ? 'mt-6' : ''}`}>
+          <div
+            className={`p-2.5 rounded-lg bg-linear-to-br ${gradient} w-fit mb-3 group-hover:scale-110 transition-transform ${!comingSoon && mcpEnabled ? 'mt-6' : ''}`}
+          >
             <Icon size={24} className="text-white" />
           </div>
 
@@ -77,16 +89,19 @@ export function ToolCard({ id, name, description, icon: Icon, category = 'develo
           </div>
 
           {/* Description */}
-          <p className="text-sm text-muted-foreground line-clamp-2 mb-3 flex-1">
-            {description}
-          </p>
+          <p className="text-sm text-muted-foreground line-clamp-2 mb-3 flex-1">{description}</p>
 
           {/* Footer */}
           <div className="flex items-center justify-between">
-            <span className={`text-xs font-semibold bg-linear-to-r ${gradient} text-white px-2 py-1 rounded`}>
+            <span
+              className={`text-xs font-semibold bg-linear-to-r ${gradient} text-white px-2 py-1 rounded`}
+            >
               {categoryInfo?.name || category}
             </span>
-            <ArrowRight size={16} className="text-primary group-hover:translate-x-1 transition-transform" />
+            <ArrowRight
+              size={16}
+              className="text-primary group-hover:translate-x-1 transition-transform"
+            />
           </div>
         </div>
       </Link>

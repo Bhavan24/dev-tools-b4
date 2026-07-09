@@ -9,7 +9,9 @@ export async function POST(request: NextRequest) {
     }
 
     const pdfBuffer = await markdownToPdfBuffer(markdown)
-    const safeName = (filename || 'document').replace(/[^a-zA-Z0-9_\-. ]/g, '_').replace(/\.pdf$/i, '')
+    const safeName = (filename || 'document')
+      .replace(/[^a-zA-Z0-9_\-. ]/g, '_')
+      .replace(/\.pdf$/i, '')
 
     return new NextResponse(pdfBuffer, {
       status: 200,

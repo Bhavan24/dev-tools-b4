@@ -9,7 +9,9 @@ export async function POST(request: NextRequest) {
     }
 
     const docxBuffer = await markdownToDocxBuffer(markdown)
-    const safeName = (filename || 'document').replace(/[^a-zA-Z0-9_\-. ]/g, '_').replace(/\.docx$/i, '')
+    const safeName = (filename || 'document')
+      .replace(/[^a-zA-Z0-9_\-. ]/g, '_')
+      .replace(/\.docx$/i, '')
 
     return new NextResponse(docxBuffer, {
       status: 200,

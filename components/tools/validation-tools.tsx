@@ -141,7 +141,9 @@ export function ValidationTools({ toolId }: ValidationToolsProps) {
                   }`}
                 >
                   <div>
-                    <p className={`font-semibold ${result.isValid ? 'text-green-700 dark:text-green-400' : 'text-red-700 dark:text-red-400'}`}>
+                    <p
+                      className={`font-semibold ${result.isValid ? 'text-green-700 dark:text-green-400' : 'text-red-700 dark:text-red-400'}`}
+                    >
                       {result.isValid ? 'Valid HTML' : 'Invalid HTML'}
                     </p>
                     <p className="text-sm text-muted-foreground">
@@ -175,7 +177,9 @@ export function ValidationTools({ toolId }: ValidationToolsProps) {
                   </div>
                   <div className="bg-secondary rounded-lg p-3">
                     <p className="text-xs text-muted-foreground">Status</p>
-                    <p className={`text-lg font-bold ${result.isRedirected ? 'text-orange-600' : 'text-green-600'}`}>
+                    <p
+                      className={`text-lg font-bold ${result.isRedirected ? 'text-orange-600' : 'text-green-600'}`}
+                    >
                       {result.isRedirected ? 'Redirected' : 'Direct'}
                     </p>
                   </div>
@@ -186,7 +190,9 @@ export function ValidationTools({ toolId }: ValidationToolsProps) {
                     <p className="text-xs font-medium text-muted-foreground mb-2">Redirect Chain</p>
                     {result.chain.map((link: any, idx: number) => (
                       <div key={idx} className="text-xs font-mono p-2 bg-primary/5 rounded">
-                        <p className="text-muted-foreground">{idx + 1}. {link.status}</p>
+                        <p className="text-muted-foreground">
+                          {idx + 1}. {link.status}
+                        </p>
                         <p className="text-foreground break-all truncate">{link.url}</p>
                       </div>
                     ))}

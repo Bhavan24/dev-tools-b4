@@ -9,7 +9,7 @@ export const TOOLS_CATEGORIES = {
 export interface Tool {
   id: string
   name: string
-  category: typeof TOOLS_CATEGORIES[keyof typeof TOOLS_CATEGORIES]
+  category: (typeof TOOLS_CATEGORIES)[keyof typeof TOOLS_CATEGORIES]
   description: string
   shortDescription: string
   comingSoon?: boolean
@@ -240,14 +240,16 @@ export const TOOLS = [
     id: 'link-checker',
     name: 'Link Checker',
     category: TOOLS_CATEGORIES.VALIDATION,
-    description: 'Check if a list of URLs are reachable and see their HTTP status codes and response times',
+    description:
+      'Check if a list of URLs are reachable and see their HTTP status codes and response times',
     shortDescription: 'Check links',
   },
   {
     id: 'jsonpath-finder',
     name: 'JSONPath Finder',
     category: TOOLS_CATEGORIES.VALIDATION,
-    description: 'Find and extract all matching values and their paths from a JSON document using JSONPath expressions',
+    description:
+      'Find and extract all matching values and their paths from a JSON document using JSONPath expressions',
     shortDescription: 'Find JSONPath matches',
   },
   {
@@ -349,7 +351,8 @@ export const TOOLS = [
     id: 'sql-to-mongodb',
     name: 'SQL to MongoDB',
     category: TOOLS_CATEGORIES.CONVERTER,
-    description: 'Convert SQL SELECT, INSERT, UPDATE, and DELETE queries to equivalent MongoDB operations',
+    description:
+      'Convert SQL SELECT, INSERT, UPDATE, and DELETE queries to equivalent MongoDB operations',
     shortDescription: 'SQL to MongoDB query',
   },
   {
@@ -405,7 +408,8 @@ export const TOOLS = [
     id: 'image-to-data-uri',
     name: 'Image / Data URI Converter',
     category: TOOLS_CATEGORIES.CONVERTER,
-    description: 'Convert image files to Base64 Data URI strings, or decode a Data URI back to a downloadable image',
+    description:
+      'Convert image files to Base64 Data URI strings, or decode a Data URI back to a downloadable image',
     shortDescription: 'Image <-> Data URI',
   },
   {
@@ -449,21 +453,24 @@ export const TOOLS = [
     id: 'pdf-to-markdown',
     name: 'PDF / Markdown Converter',
     category: TOOLS_CATEGORIES.CONVERTER,
-    description: 'Convert PDF files to Markdown text, or render Markdown source to a styled HTML preview and download as PDF',
+    description:
+      'Convert PDF files to Markdown text, or render Markdown source to a styled HTML preview and download as PDF',
     shortDescription: 'PDF ↔ Markdown converter',
   },
   {
     id: 'docx-to-markdown',
     name: 'DOCX / Markdown Converter',
     category: TOOLS_CATEGORIES.CONVERTER,
-    description: 'Convert Microsoft Word (.docx) documents to Markdown format, or render Markdown source to a downloadable DOCX file',
+    description:
+      'Convert Microsoft Word (.docx) documents to Markdown format, or render Markdown source to a downloadable DOCX file',
     shortDescription: 'DOCX <-> Markdown converter',
   },
   {
     id: 'html-to-markdown',
     name: 'HTML / Markdown Converter',
     category: TOOLS_CATEGORIES.CONVERTER,
-    description: 'Convert HTML pages or snippets to clean Markdown text, or render Markdown to styled HTML',
+    description:
+      'Convert HTML pages or snippets to clean Markdown text, or render Markdown to styled HTML',
     shortDescription: 'HTML <-> Markdown converter',
   },
 
@@ -536,7 +543,8 @@ export const TOOLS = [
     id: 'ai-code-reviewer',
     name: 'AI Code Reviewer',
     category: TOOLS_CATEGORIES.AI_TOOLS,
-    description: 'Automated code review with AI-powered suggestions for improvements, bug detection, and security issues',
+    description:
+      'Automated code review with AI-powered suggestions for improvements, bug detection, and security issues',
     shortDescription: 'AI code review',
     comingSoon: true,
   },
@@ -544,7 +552,8 @@ export const TOOLS = [
     id: 'ai-doc-generator',
     name: 'AI Documentation Generator',
     category: TOOLS_CATEGORIES.AI_TOOLS,
-    description: 'Generate comprehensive API docs, README files, and inline comments from source code with AI',
+    description:
+      'Generate comprehensive API docs, README files, and inline comments from source code with AI',
     shortDescription: 'Generate docs with AI',
     comingSoon: true,
   },
@@ -560,7 +569,8 @@ export const TOOLS = [
     id: 'ai-regex-generator',
     name: 'AI Regex Generator',
     category: TOOLS_CATEGORIES.AI_TOOLS,
-    description: 'Describe what you want to match in plain English and get a working regular expression with AI',
+    description:
+      'Describe what you want to match in plain English and get a working regular expression with AI',
     shortDescription: 'Generate regex with AI',
     comingSoon: true,
   },
@@ -576,7 +586,8 @@ export const TOOLS = [
     id: 'ai-commit-message',
     name: 'AI Commit Message Generator',
     category: TOOLS_CATEGORIES.AI_TOOLS,
-    description: 'Paste your git diff and get meaningful, conventional commit messages generated by AI',
+    description:
+      'Paste your git diff and get meaningful, conventional commit messages generated by AI',
     shortDescription: 'Generate commit messages',
     comingSoon: true,
   },
@@ -584,7 +595,8 @@ export const TOOLS = [
     id: 'ai-schema-generator',
     name: 'AI Schema Generator',
     category: TOOLS_CATEGORIES.AI_TOOLS,
-    description: 'Generate JSON Schema, database schemas, or OpenAPI specs from sample data or natural language descriptions with AI',
+    description:
+      'Generate JSON Schema, database schemas, or OpenAPI specs from sample data or natural language descriptions with AI',
     shortDescription: 'Generate schemas with AI',
     comingSoon: true,
   },
@@ -627,14 +639,16 @@ export const TOOLS = [
     id: 'text-case-converter',
     name: 'Text Case Converter',
     category: TOOLS_CATEGORIES.DEVELOPER,
-    description: 'Convert text between different cases (uppercase, lowercase, camelCase, snake_case, etc.)',
+    description:
+      'Convert text between different cases (uppercase, lowercase, camelCase, snake_case, etc.)',
     shortDescription: 'Convert text case',
   },
   {
     id: 'unit-converter',
     name: 'Unit Converter',
     category: TOOLS_CATEGORIES.CONVERTER,
-    description: 'Convert between different units of measurement (length, weight, temperature, etc.)',
+    description:
+      'Convert between different units of measurement (length, weight, temperature, etc.)',
     shortDescription: 'Convert units',
   },
   {
@@ -669,7 +683,8 @@ export const TOOLS = [
     id: 'mock-data-generator',
     name: 'Mock Data Generator',
     category: TOOLS_CATEGORIES.DEVELOPER,
-    description: 'Generate realistic mock data for testing across multiple categories (Person, Text, Web, Location, Time, Finance, Miscellaneous)',
+    description:
+      'Generate realistic mock data for testing across multiple categories (Person, Text, Web, Location, Time, Finance, Miscellaneous)',
     shortDescription: 'Generate mock test data',
   },
   {
@@ -690,7 +705,8 @@ export const TOOLS = [
     id: 'favicon-generator',
     name: 'Favicon Generator',
     category: TOOLS_CATEGORIES.DEVELOPER,
-    description: 'Upload a PNG, JPEG, JPG, or WebP image and generate favicons in all standard sizes',
+    description:
+      'Upload a PNG, JPEG, JPG, or WebP image and generate favicons in all standard sizes',
     shortDescription: 'Generate favicons from image',
   },
 ] as const satisfies Tool[]

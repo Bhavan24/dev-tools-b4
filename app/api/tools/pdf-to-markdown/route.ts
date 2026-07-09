@@ -45,7 +45,10 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    const markdown = mdLines.join('\n').replace(/\n{3,}/g, '\n\n').trim()
+    const markdown = mdLines
+      .join('\n')
+      .replace(/\n{3,}/g, '\n\n')
+      .trim()
 
     return NextResponse.json({
       result: {

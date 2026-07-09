@@ -64,7 +64,7 @@ const CUSTOM_TOOL_REGISTRY: Record<string, (id: string) => React.ReactElement> =
   'redirection-checker': (id) => <ValidationTools toolId={id} />,
   'currency-converter': (id) => <ConverterTools toolId={id} />,
   'rest-api-tester': (id) => <ApiTesterTool toolId={id} />,
-  'notes': (id) => <NotesTool toolId={id} />,
+  notes: (id) => <NotesTool toolId={id} />,
   'qr-code-generator': (id) => <ImageTools toolId={id} />,
   'favicon-generator': (id) => <ImageTools toolId={id} />,
   'pdf-to-markdown': (id) => <PdfMarkdownTool toolId={id} />,
@@ -295,9 +295,14 @@ export function ToolPageClient({ toolId }: ToolPageClientProps) {
           {result && typeof result === 'object' && !Array.isArray(result) && (
             <div className="mb-4 space-y-2 max-h-64 overflow-auto">
               {Object.entries(result).map(([key, val]) => (
-                <div key={key} className="bg-secondary rounded-lg p-3 flex justify-between items-center text-sm">
+                <div
+                  key={key}
+                  className="bg-secondary rounded-lg p-3 flex justify-between items-center text-sm"
+                >
                   <div>
-                    <p className="text-xs text-muted-foreground capitalize font-medium">{key.replace(/([A-Z])/g, ' $1').trim()}</p>
+                    <p className="text-xs text-muted-foreground capitalize font-medium">
+                      {key.replace(/([A-Z])/g, ' $1').trim()}
+                    </p>
                     <p className="font-mono text-sm mt-1 break-all">{String(val)}</p>
                   </div>
                   <button

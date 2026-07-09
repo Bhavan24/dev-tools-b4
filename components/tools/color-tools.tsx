@@ -65,26 +65,72 @@ function RgbToHexTool({ onCopy, copied }: { onCopy: (text: string) => void; copi
         <div>
           <label className="block font-medium text-foreground mb-2">Red (0-255)</label>
           <div className="flex gap-3 items-center">
-            <input type="range" min={0} max={255} value={r} onChange={(e) => setR(parseInt(e.target.value))} className="flex-1" />
-            <input type="number" min={0} max={255} value={r} onChange={(e) => setR(Math.max(0, Math.min(255, parseInt(e.target.value) || 0)))} className="input-base w-20" />
+            <input
+              type="range"
+              min={0}
+              max={255}
+              value={r}
+              onChange={(e) => setR(parseInt(e.target.value))}
+              className="flex-1"
+            />
+            <input
+              type="number"
+              min={0}
+              max={255}
+              value={r}
+              onChange={(e) => setR(Math.max(0, Math.min(255, parseInt(e.target.value) || 0)))}
+              className="input-base w-20"
+            />
           </div>
         </div>
         <div>
           <label className="block font-medium text-foreground mb-2">Green (0-255)</label>
           <div className="flex gap-3 items-center">
-            <input type="range" min={0} max={255} value={g} onChange={(e) => setG(parseInt(e.target.value))} className="flex-1" />
-            <input type="number" min={0} max={255} value={g} onChange={(e) => setG(Math.max(0, Math.min(255, parseInt(e.target.value) || 0)))} className="input-base w-20" />
+            <input
+              type="range"
+              min={0}
+              max={255}
+              value={g}
+              onChange={(e) => setG(parseInt(e.target.value))}
+              className="flex-1"
+            />
+            <input
+              type="number"
+              min={0}
+              max={255}
+              value={g}
+              onChange={(e) => setG(Math.max(0, Math.min(255, parseInt(e.target.value) || 0)))}
+              className="input-base w-20"
+            />
           </div>
         </div>
         <div>
           <label className="block font-medium text-foreground mb-2">Blue (0-255)</label>
           <div className="flex gap-3 items-center">
-            <input type="range" min={0} max={255} value={b} onChange={(e) => setB(parseInt(e.target.value))} className="flex-1" />
-            <input type="number" min={0} max={255} value={b} onChange={(e) => setB(Math.max(0, Math.min(255, parseInt(e.target.value) || 0)))} className="input-base w-20" />
+            <input
+              type="range"
+              min={0}
+              max={255}
+              value={b}
+              onChange={(e) => setB(parseInt(e.target.value))}
+              className="flex-1"
+            />
+            <input
+              type="number"
+              min={0}
+              max={255}
+              value={b}
+              onChange={(e) => setB(Math.max(0, Math.min(255, parseInt(e.target.value) || 0)))}
+              className="input-base w-20"
+            />
           </div>
         </div>
 
-        <button onClick={handleConvert} disabled={loading} className="btn-primary w-full flex items-center justify-center gap-2">
+        <button
+          onClick={handleConvert}
+          disabled={loading}
+          className="btn-primary w-full flex items-center justify-center gap-2"
+        >
           {loading ? <Loader2 size={18} className="animate-spin" /> : 'Convert to HEX'}
         </button>
       </div>
@@ -121,7 +167,9 @@ function RgbToHexTool({ onCopy, copied }: { onCopy: (text: string) => void; copi
             </div>
             <div className="bg-secondary rounded-lg p-4">
               <p className="text-sm text-muted-foreground mb-1">RGB</p>
-              <p className="font-mono">rgb({r}, {g}, {b})</p>
+              <p className="font-mono">
+                rgb({r}, {g}, {b})
+              </p>
             </div>
           </div>
         )}
@@ -167,11 +215,21 @@ function HexToRgbTool({ onCopy, copied }: { onCopy: (text: string) => void; copi
               onChange={(e) => setHex(e.target.value)}
               className="w-16 h-10 rounded-lg border border-border cursor-pointer"
             />
-            <input type="text" value={hex} onChange={(e) => setHex(e.target.value)} className="input-base flex-1 font-mono" placeholder="#000000" />
+            <input
+              type="text"
+              value={hex}
+              onChange={(e) => setHex(e.target.value)}
+              className="input-base flex-1 font-mono"
+              placeholder="#000000"
+            />
           </div>
         </div>
 
-        <button onClick={handleConvert} disabled={loading} className="btn-primary w-full flex items-center justify-center gap-2">
+        <button
+          onClick={handleConvert}
+          disabled={loading}
+          className="btn-primary w-full flex items-center justify-center gap-2"
+        >
           {loading ? <Loader2 size={18} className="animate-spin" /> : 'Convert to RGB'}
         </button>
       </div>
@@ -188,25 +246,37 @@ function HexToRgbTool({ onCopy, copied }: { onCopy: (text: string) => void; copi
               <div className="space-y-2 font-mono text-sm">
                 <div className="flex justify-between items-center">
                   <span>Red: {result.r}</span>
-                  <button onClick={() => onCopy(String(result.r))} className="p-1 hover:bg-primary/10 rounded">
+                  <button
+                    onClick={() => onCopy(String(result.r))}
+                    className="p-1 hover:bg-primary/10 rounded"
+                  >
                     {copied ? <Check size={16} className="text-green-500" /> : <Copy size={16} />}
                   </button>
                 </div>
                 <div className="flex justify-between items-center">
                   <span>Green: {result.g}</span>
-                  <button onClick={() => onCopy(String(result.g))} className="p-1 hover:bg-primary/10 rounded">
+                  <button
+                    onClick={() => onCopy(String(result.g))}
+                    className="p-1 hover:bg-primary/10 rounded"
+                  >
                     {copied ? <Check size={16} className="text-green-500" /> : <Copy size={16} />}
                   </button>
                 </div>
                 <div className="flex justify-between items-center">
                   <span>Blue: {result.b}</span>
-                  <button onClick={() => onCopy(String(result.b))} className="p-1 hover:bg-primary/10 rounded">
+                  <button
+                    onClick={() => onCopy(String(result.b))}
+                    className="p-1 hover:bg-primary/10 rounded"
+                  >
                     {copied ? <Check size={16} className="text-green-500" /> : <Copy size={16} />}
                   </button>
                 </div>
                 <div className="border-t border-border pt-2 flex justify-between items-center">
                   <span>{result.rgb}</span>
-                  <button onClick={() => onCopy(result.rgb)} className="p-1 hover:bg-primary/10 rounded">
+                  <button
+                    onClick={() => onCopy(result.rgb)}
+                    className="p-1 hover:bg-primary/10 rounded"
+                  >
                     {copied ? <Check size={16} className="text-green-500" /> : <Copy size={16} />}
                   </button>
                 </div>
@@ -232,7 +302,13 @@ function HexToRgbTool({ onCopy, copied }: { onCopy: (text: string) => void; copi
   )
 }
 
-function ColorCodePickerTool({ onCopy, copied }: { onCopy: (text: string) => void; copied: boolean }) {
+function ColorCodePickerTool({
+  onCopy,
+  copied,
+}: {
+  onCopy: (text: string) => void
+  copied: boolean
+}) {
   const [color, setColor] = useState('#FF5733')
   const [format, setFormat] = useState<'hex' | 'rgb' | 'hsl'>('hex')
   const [result, setResult] = useState<any>(null)
@@ -270,20 +346,34 @@ function ColorCodePickerTool({ onCopy, copied }: { onCopy: (text: string) => voi
               onChange={(e) => setColor(e.target.value)}
               className="w-16 h-10 rounded-lg border border-border cursor-pointer"
             />
-            <input type="text" value={color} onChange={(e) => setColor(e.target.value)} className="input-base flex-1 font-mono" placeholder="#000000" />
+            <input
+              type="text"
+              value={color}
+              onChange={(e) => setColor(e.target.value)}
+              className="input-base flex-1 font-mono"
+              placeholder="#000000"
+            />
           </div>
         </div>
 
         <div>
           <label className="block font-medium text-foreground mb-3">Target Format</label>
-          <select value={format} onChange={(e) => setFormat(e.target.value as 'hex' | 'rgb' | 'hsl')} className="input-base w-full">
+          <select
+            value={format}
+            onChange={(e) => setFormat(e.target.value as 'hex' | 'rgb' | 'hsl')}
+            className="input-base w-full"
+          >
             <option value="hex">HEX</option>
             <option value="rgb">RGB</option>
             <option value="hsl">HSL</option>
           </select>
         </div>
 
-        <button onClick={handleConvert} disabled={loading} className="btn-primary w-full flex items-center justify-center gap-2">
+        <button
+          onClick={handleConvert}
+          disabled={loading}
+          className="btn-primary w-full flex items-center justify-center gap-2"
+        >
           {loading ? <Loader2 size={18} className="animate-spin" /> : 'Convert'}
         </button>
       </div>
@@ -299,7 +389,10 @@ function ColorCodePickerTool({ onCopy, copied }: { onCopy: (text: string) => voi
               {result.hex && (
                 <div className="flex justify-between items-center font-mono text-sm">
                   <span>HEX: {result.hex}</span>
-                  <button onClick={() => onCopy(result.hex)} className="p-1 hover:bg-primary/10 rounded">
+                  <button
+                    onClick={() => onCopy(result.hex)}
+                    className="p-1 hover:bg-primary/10 rounded"
+                  >
                     {copied ? <Check size={16} className="text-green-500" /> : <Copy size={16} />}
                   </button>
                 </div>
@@ -307,7 +400,10 @@ function ColorCodePickerTool({ onCopy, copied }: { onCopy: (text: string) => voi
               {result.rgb && (
                 <div className="flex justify-between items-center font-mono text-sm">
                   <span>RGB: {result.rgb}</span>
-                  <button onClick={() => onCopy(result.rgb)} className="p-1 hover:bg-primary/10 rounded">
+                  <button
+                    onClick={() => onCopy(result.rgb)}
+                    className="p-1 hover:bg-primary/10 rounded"
+                  >
                     {copied ? <Check size={16} className="text-green-500" /> : <Copy size={16} />}
                   </button>
                 </div>
@@ -315,7 +411,10 @@ function ColorCodePickerTool({ onCopy, copied }: { onCopy: (text: string) => voi
               {result.hsl && (
                 <div className="flex justify-between items-center font-mono text-sm">
                   <span>HSL: {result.hsl}</span>
-                  <button onClick={() => onCopy(result.hsl)} className="p-1 hover:bg-primary/10 rounded">
+                  <button
+                    onClick={() => onCopy(result.hsl)}
+                    className="p-1 hover:bg-primary/10 rounded"
+                  >
                     {copied ? <Check size={16} className="text-green-500" /> : <Copy size={16} />}
                   </button>
                 </div>

@@ -2,7 +2,10 @@ export function copyToClipboard(text: string): Promise<boolean> {
   if (!navigator?.clipboard) {
     return Promise.resolve(false)
   }
-  return navigator.clipboard.writeText(text).then(() => true).catch(() => false)
+  return navigator.clipboard
+    .writeText(text)
+    .then(() => true)
+    .catch(() => false)
 }
 
 export function formatJSON(json: string, beautify: boolean = true): string {
@@ -31,10 +34,7 @@ export function parseJSON(json: string): Record<string, unknown> | null {
   }
 }
 
-export function convertTimestamp(
-  input: string,
-  toTimestamp: boolean
-): string {
+export function convertTimestamp(input: string, toTimestamp: boolean): string {
   try {
     if (toTimestamp) {
       const date = new Date(input)
@@ -58,11 +58,17 @@ export function convertCase(text: string, targetCase: string): string {
     case 'capitalize':
       return text.charAt(0).toUpperCase() + text.slice(1)
     case 'titlecase':
-      return text.split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')
+      return text
+        .split(' ')
+        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(' ')
     case 'camelcase':
-      return text.split(' ').map((word, i) => 
-        i === 0 ? word.toLowerCase() : word.charAt(0).toUpperCase() + word.slice(1)
-      ).join('')
+      return text
+        .split(' ')
+        .map((word, i) =>
+          i === 0 ? word.toLowerCase() : word.charAt(0).toUpperCase() + word.slice(1)
+        )
+        .join('')
     case 'snakecase':
       return text.toLowerCase().replace(/\s+/g, '_')
     case 'kebabcase':
@@ -133,7 +139,8 @@ export function rgbToHsl(r: number, g: number, b: number): { h: number; s: numbe
   b /= 255
   const max = Math.max(r, g, b)
   const min = Math.min(r, g, b)
-  let h = 0, s = 0
+  let h = 0,
+    s = 0
   const l = (max + min) / 2
 
   if (max !== min) {
@@ -235,8 +242,8 @@ export function convertUnits(
       'kg-to-t': 0.001,
     },
     temperature: {
-      'c-to-f': (c: number) => (c * 9/5) + 32,
-      'f-to-c': (f: number) => (f - 32) * 5/9,
+      'c-to-f': (c: number) => (c * 9) / 5 + 32,
+      'f-to-c': (f: number) => ((f - 32) * 5) / 9,
       'c-to-k': (c: number) => c + 273.15,
       'k-to-c': (k: number) => k - 273.15,
     },
@@ -281,36 +288,116 @@ export function convertUnits(
 }
 
 const firstNames = [
-  'James', 'Mary', 'Robert', 'Patricia', 'Michael', 'Jennifer', 'William', 'Linda',
-  'David', 'Barbara', 'Richard', 'Elizabeth', 'Joseph', 'Susan', 'Thomas', 'Jessica',
-  'Charles', 'Sarah', 'Christopher', 'Karen', 'Daniel', 'Nancy', 'Matthew', 'Lisa'
+  'James',
+  'Mary',
+  'Robert',
+  'Patricia',
+  'Michael',
+  'Jennifer',
+  'William',
+  'Linda',
+  'David',
+  'Barbara',
+  'Richard',
+  'Elizabeth',
+  'Joseph',
+  'Susan',
+  'Thomas',
+  'Jessica',
+  'Charles',
+  'Sarah',
+  'Christopher',
+  'Karen',
+  'Daniel',
+  'Nancy',
+  'Matthew',
+  'Lisa',
 ]
 
 const lastNames = [
-  'Smith', 'Johnson', 'Williams', 'Brown', 'Jones', 'Garcia', 'Miller', 'Davis',
-  'Rodriguez', 'Martinez', 'Hernandez', 'Lopez', 'Gonzalez', 'Wilson', 'Anderson',
-  'Thomas', 'Taylor', 'Moore', 'Jackson', 'Martin', 'Lee', 'Perez', 'Thompson'
+  'Smith',
+  'Johnson',
+  'Williams',
+  'Brown',
+  'Jones',
+  'Garcia',
+  'Miller',
+  'Davis',
+  'Rodriguez',
+  'Martinez',
+  'Hernandez',
+  'Lopez',
+  'Gonzalez',
+  'Wilson',
+  'Anderson',
+  'Thomas',
+  'Taylor',
+  'Moore',
+  'Jackson',
+  'Martin',
+  'Lee',
+  'Perez',
+  'Thompson',
 ]
 
 const companies = [
-  'Google', 'Microsoft', 'Apple', 'Amazon', 'Facebook', 'Netflix', 'Tesla',
-  'Adobe', 'Salesforce', 'IBM', 'Oracle', 'Intel', 'Cisco', 'Nvidia'
+  'Google',
+  'Microsoft',
+  'Apple',
+  'Amazon',
+  'Facebook',
+  'Netflix',
+  'Tesla',
+  'Adobe',
+  'Salesforce',
+  'IBM',
+  'Oracle',
+  'Intel',
+  'Cisco',
+  'Nvidia',
 ]
 
 const jobTitles = [
-  'Software Engineer', 'Product Manager', 'Data Scientist', 'UX Designer',
-  'DevOps Engineer', 'QA Engineer', 'Frontend Developer', 'Backend Developer',
-  'Full Stack Developer', 'Manager', 'Director', 'Analyst'
+  'Software Engineer',
+  'Product Manager',
+  'Data Scientist',
+  'UX Designer',
+  'DevOps Engineer',
+  'QA Engineer',
+  'Frontend Developer',
+  'Backend Developer',
+  'Full Stack Developer',
+  'Manager',
+  'Director',
+  'Analyst',
 ]
 
 const productCategories = [
-  'Electronics', 'Clothing', 'Books', 'Home & Garden', 'Sports', 'Toys',
-  'Food & Beverage', 'Health & Beauty', 'Automotive', 'Office Supplies'
+  'Electronics',
+  'Clothing',
+  'Books',
+  'Home & Garden',
+  'Sports',
+  'Toys',
+  'Food & Beverage',
+  'Health & Beauty',
+  'Automotive',
+  'Office Supplies',
 ]
 
 const cities = [
-  'New York', 'Los Angeles', 'Chicago', 'Houston', 'Phoenix', 'Philadelphia',
-  'San Antonio', 'San Diego', 'Dallas', 'San Jose', 'Austin', 'Seattle'
+  'New York',
+  'Los Angeles',
+  'Chicago',
+  'Houston',
+  'Phoenix',
+  'Philadelphia',
+  'San Antonio',
+  'San Diego',
+  'Dallas',
+  'San Jose',
+  'Austin',
+  'Seattle',
 ]
 
 const states = ['CA', 'TX', 'FL', 'NY', 'PA', 'IL', 'OH', 'GA', 'NC', 'MI']
@@ -436,7 +523,9 @@ export function generatePassword(options: PasswordGeneratorOptions): string {
   return password
 }
 
-export function calculatePasswordStrength(password: string): 'weak' | 'medium' | 'strong' | 'very strong' {
+export function calculatePasswordStrength(
+  password: string
+): 'weak' | 'medium' | 'strong' | 'very strong' {
   let strength = 0
   if (password.length >= 8) strength++
   if (password.length >= 12) strength++
@@ -451,7 +540,10 @@ export function calculatePasswordStrength(password: string): 'weak' | 'medium' |
   return 'very strong'
 }
 
-export function generateBulkMockData(categories: string[], count: number): Record<string, unknown>[] {
+export function generateBulkMockData(
+  categories: string[],
+  count: number
+): Record<string, unknown>[] {
   // Dynamic import Chance in browser
   if (typeof window === 'undefined') {
     return []
@@ -466,7 +558,7 @@ export function generateBulkMockData(categories: string[], count: number): Recor
       const chance = new Chance()
       const record: Record<string, unknown> = {}
 
-      categories.forEach(category => {
+      categories.forEach((category) => {
         switch (category) {
           case 'person':
             record.name = chance.name()

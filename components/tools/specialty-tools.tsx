@@ -20,7 +20,9 @@ export function SpecialtyTools({ toolId }: SpecialtyToolsProps) {
 
 function JwtDecoderTool() {
   const [token, setToken] = useState('')
-  const [result, setResult] = useState<{ header: any; payload: any; signature: string } | null>(null)
+  const [result, setResult] = useState<{ header: any; payload: any; signature: string } | null>(
+    null
+  )
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [copied, setCopied] = useState<string | null>(null)
@@ -64,7 +66,11 @@ function JwtDecoderTool() {
           placeholder="Paste your JWT token here..."
           className="input-base h-24 font-mono text-xs resize-none"
         />
-        <button onClick={handleDecode} disabled={loading} className="btn-primary w-full flex items-center justify-center gap-2">
+        <button
+          onClick={handleDecode}
+          disabled={loading}
+          className="btn-primary w-full flex items-center justify-center gap-2"
+        >
           {loading ? <Loader2 size={18} className="animate-spin" /> : 'Decode'}
         </button>
       </div>
@@ -86,11 +92,17 @@ function JwtDecoderTool() {
                 onClick={() => copyToClipboard(JSON.stringify(result.header, null, 2), 'header')}
                 className="p-2 hover:bg-primary/10 rounded transition-colors"
               >
-                {copied === 'header' ? <Check size={16} className="text-green-500" /> : <Copy size={16} />}
+                {copied === 'header' ? (
+                  <Check size={16} className="text-green-500" />
+                ) : (
+                  <Copy size={16} />
+                )}
               </button>
             </div>
             <div className="bg-background rounded p-3 font-mono text-xs overflow-auto max-h-32">
-              <pre className="whitespace-pre-wrap break-words">{JSON.stringify(result.header, null, 2)}</pre>
+              <pre className="whitespace-pre-wrap break-words">
+                {JSON.stringify(result.header, null, 2)}
+              </pre>
             </div>
           </div>
 
@@ -102,11 +114,17 @@ function JwtDecoderTool() {
                 onClick={() => copyToClipboard(JSON.stringify(result.payload, null, 2), 'payload')}
                 className="p-2 hover:bg-primary/10 rounded transition-colors"
               >
-                {copied === 'payload' ? <Check size={16} className="text-green-500" /> : <Copy size={16} />}
+                {copied === 'payload' ? (
+                  <Check size={16} className="text-green-500" />
+                ) : (
+                  <Copy size={16} />
+                )}
               </button>
             </div>
             <div className="bg-background rounded p-3 font-mono text-xs overflow-auto max-h-32">
-              <pre className="whitespace-pre-wrap break-words">{JSON.stringify(result.payload, null, 2)}</pre>
+              <pre className="whitespace-pre-wrap break-words">
+                {JSON.stringify(result.payload, null, 2)}
+              </pre>
             </div>
           </div>
 
@@ -118,10 +136,16 @@ function JwtDecoderTool() {
                 onClick={() => copyToClipboard(result.signature, 'signature')}
                 className="p-2 hover:bg-primary/10 rounded transition-colors"
               >
-                {copied === 'signature' ? <Check size={16} className="text-green-500" /> : <Copy size={16} />}
+                {copied === 'signature' ? (
+                  <Check size={16} className="text-green-500" />
+                ) : (
+                  <Copy size={16} />
+                )}
               </button>
             </div>
-            <div className="bg-background rounded p-3 font-mono text-xs overflow-auto max-h-32 break-all">{result.signature}</div>
+            <div className="bg-background rounded p-3 font-mono text-xs overflow-auto max-h-32 break-all">
+              {result.signature}
+            </div>
           </div>
         </div>
       )}
@@ -189,7 +213,11 @@ function TextCaseConverterTool() {
 
         <div>
           <label className="block font-medium text-foreground mb-3">Target Case</label>
-          <select value={targetCase} onChange={(e) => setTargetCase(e.target.value)} className="input-base w-full">
+          <select
+            value={targetCase}
+            onChange={(e) => setTargetCase(e.target.value)}
+            className="input-base w-full"
+          >
             {caseOptions.map((opt) => (
               <option key={opt.value} value={opt.value}>
                 {opt.label}
@@ -198,7 +226,11 @@ function TextCaseConverterTool() {
           </select>
         </div>
 
-        <button onClick={handleConvert} disabled={loading} className="btn-primary w-full flex items-center justify-center gap-2">
+        <button
+          onClick={handleConvert}
+          disabled={loading}
+          className="btn-primary w-full flex items-center justify-center gap-2"
+        >
           {loading ? <Loader2 size={18} className="animate-spin" /> : 'Convert'}
         </button>
       </div>
@@ -215,9 +247,14 @@ function TextCaseConverterTool() {
           <div className="bg-secondary rounded-lg p-4 space-y-4">
             <div>
               <p className="text-sm text-muted-foreground mb-2">Converted Text</p>
-              <div className="bg-background rounded p-4 font-mono text-sm break-words max-h-32 overflow-auto">{result.converted}</div>
+              <div className="bg-background rounded p-4 font-mono text-sm break-words max-h-32 overflow-auto">
+                {result.converted}
+              </div>
             </div>
-            <button onClick={copyToClipboard} className="btn-secondary w-full flex items-center justify-center gap-2">
+            <button
+              onClick={copyToClipboard}
+              className="btn-secondary w-full flex items-center justify-center gap-2"
+            >
               {copied ? (
                 <>
                   <Check size={18} className="text-green-500" />
@@ -247,7 +284,11 @@ function RegexParserTool() {
   const [pattern, setPattern] = useState('^[a-z]+@[a-z]+\\.[a-z]{2,}$')
   const [flags, setFlags] = useState('i')
   const [testString, setTestString] = useState('test@example.com')
-  const [result, setResult] = useState<{ matches: string[]; hasMatch: boolean; isValid: boolean } | null>(null)
+  const [result, setResult] = useState<{
+    matches: string[]
+    hasMatch: boolean
+    isValid: boolean
+  } | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
 
@@ -308,7 +349,11 @@ function RegexParserTool() {
           />
         </div>
 
-        <button onClick={handleTest} disabled={loading} className="btn-primary w-full flex items-center justify-center gap-2">
+        <button
+          onClick={handleTest}
+          disabled={loading}
+          className="btn-primary w-full flex items-center justify-center gap-2"
+        >
           {loading ? <Loader2 size={18} className="animate-spin" /> : 'Test Pattern'}
         </button>
       </div>
@@ -324,17 +369,24 @@ function RegexParserTool() {
         {result && (
           <div className="card-base space-y-4">
             <div>
-              <p className={`text-sm font-medium ${result.hasMatch ? 'text-green-600' : 'text-red-600'}`}>
+              <p
+                className={`text-sm font-medium ${result.hasMatch ? 'text-green-600' : 'text-red-600'}`}
+              >
                 {result.hasMatch ? '✓ Matches Found' : '✗ No Matches'}
               </p>
             </div>
 
             {result.matches.length > 0 && (
               <div>
-                <p className="text-sm text-muted-foreground mb-2">Matches ({result.matches.length})</p>
+                <p className="text-sm text-muted-foreground mb-2">
+                  Matches ({result.matches.length})
+                </p>
                 <div className="space-y-1 max-h-32 overflow-auto">
                   {result.matches.map((match, idx) => (
-                    <div key={idx} className="bg-secondary rounded px-3 py-1 font-mono text-xs break-words">
+                    <div
+                      key={idx}
+                      className="bg-secondary rounded px-3 py-1 font-mono text-xs break-words"
+                    >
                       {match}
                     </div>
                   ))}
@@ -344,7 +396,9 @@ function RegexParserTool() {
 
             <div>
               <p className="text-sm text-muted-foreground mb-2">Test String</p>
-              <div className="bg-secondary rounded p-3 font-mono text-xs max-h-20 overflow-auto break-words">{testString}</div>
+              <div className="bg-secondary rounded p-3 font-mono text-xs max-h-20 overflow-auto break-words">
+                {testString}
+              </div>
             </div>
           </div>
         )}

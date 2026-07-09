@@ -1,7 +1,20 @@
 'use client'
 
 import { useState, useRef, useCallback, useEffect } from 'react'
-import { Loader2, AlertCircle, Download, Upload, QrCode, Image as ImageIcon, Camera, Monitor, ScanLine, Copy, Check, Archive } from 'lucide-react'
+import {
+  Loader2,
+  AlertCircle,
+  Download,
+  Upload,
+  QrCode,
+  Image as ImageIcon,
+  Camera,
+  Monitor,
+  ScanLine,
+  Copy,
+  Check,
+  Archive,
+} from 'lucide-react'
 import jsQR from 'jsqr'
 import JSZip from 'jszip'
 
@@ -56,7 +69,10 @@ function QrCodeGeneratorPanel() {
   const [error, setError] = useState('')
 
   const handleGenerate = async () => {
-    if (!text.trim()) { setError('Please enter text or a URL'); return }
+    if (!text.trim()) {
+      setError('Please enter text or a URL')
+      return
+    }
     setLoading(true)
     setError('')
     try {
@@ -110,13 +126,27 @@ function QrCodeGeneratorPanel() {
         <div className="grid grid-cols-2 gap-4">
           <div>
             <label className="block font-medium text-foreground mb-2">Size: {size}px</label>
-            <input type="range" min={128} max={512} step={32} value={size} onChange={(e) => setSize(parseInt(e.target.value))} className="w-full" />
+            <input
+              type="range"
+              min={128}
+              max={512}
+              step={32}
+              value={size}
+              onChange={(e) => setSize(parseInt(e.target.value))}
+              className="w-full"
+            />
           </div>
           <div>
             <label className="block font-medium text-foreground mb-2">Error Correction</label>
-            <select value={ecLevel} onChange={(e) => setEcLevel(e.target.value as 'L' | 'M' | 'Q' | 'H')} className="input-base w-full">
+            <select
+              value={ecLevel}
+              onChange={(e) => setEcLevel(e.target.value as 'L' | 'M' | 'Q' | 'H')}
+              className="input-base w-full"
+            >
               {Object.entries(EC_LABELS).map(([val, label]) => (
-                <option key={val} value={val}>{label}</option>
+                <option key={val} value={val}>
+                  {label}
+                </option>
               ))}
             </select>
           </div>
@@ -124,8 +154,22 @@ function QrCodeGeneratorPanel() {
 
         {error && <ErrorBanner message={error} />}
 
-        <button onClick={handleGenerate} disabled={loading} className="btn-primary w-full flex items-center justify-center gap-2">
-          {loading ? <><Loader2 size={18} className="animate-spin" />Generating...</> : <><QrCode size={18} />Generate QR Code</>}
+        <button
+          onClick={handleGenerate}
+          disabled={loading}
+          className="btn-primary w-full flex items-center justify-center gap-2"
+        >
+          {loading ? (
+            <>
+              <Loader2 size={18} className="animate-spin" />
+              Generating...
+            </>
+          ) : (
+            <>
+              <QrCode size={18} />
+              Generate QR Code
+            </>
+          )}
         </button>
       </div>
 
@@ -134,10 +178,19 @@ function QrCodeGeneratorPanel() {
           <div className="space-y-4">
             <div className="bg-secondary rounded-xl p-6 flex items-center justify-center">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={result.dataUrl} alt="Generated QR Code" className="rounded-lg shadow" style={{ width: size, height: size, maxWidth: '100%' }} />
+              <img
+                src={result.dataUrl}
+                alt="Generated QR Code"
+                className="rounded-lg shadow"
+                style={{ width: size, height: size, maxWidth: '100%' }}
+              />
             </div>
-            <button onClick={handleDownload} className="btn-secondary w-full flex items-center justify-center gap-2">
-              <Download size={18} />Download PNG
+            <button
+              onClick={handleDownload}
+              className="btn-secondary w-full flex items-center justify-center gap-2"
+            >
+              <Download size={18} />
+              Download PNG
             </button>
           </div>
         ) : (
@@ -183,7 +236,9 @@ function QrCodeScannerPanel() {
   useEffect(() => () => stopCamera(), [stopCamera])
 
   const decodeFromImageData = (imageData: ImageData): string | null => {
-    const code = jsQR(imageData.data, imageData.width, imageData.height, { inversionAttempts: 'dontInvert' })
+    const code = jsQR(imageData.data, imageData.width, imageData.height, {
+      inversionAttempts: 'dontInvert',
+    })
     return code ? code.data : null
   }
 
@@ -220,7 +275,10 @@ function QrCodeScannerPanel() {
     setScannedResult(null)
     setScanning(true)
     try {
-      const stream = await (navigator.mediaDevices as any).getDisplayMedia({ video: true, audio: false })
+      const stream = await (navigator.mediaDevices as any).getDisplayMedia({
+        video: true,
+        audio: false,
+      })
       const video = document.createElement('video')
       video.srcObject = stream
       await video.play()
@@ -249,7 +307,9 @@ function QrCodeScannerPanel() {
     setError('')
     setScannedResult(null)
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: 'environment' },
+      })
       streamRef.current = stream
       if (videoRef.current) {
         videoRef.current.srcObject = stream
@@ -303,7 +363,12 @@ function QrCodeScannerPanel() {
   }
 
   const isUrl = (s: string) => {
-    try { new URL(s); return true } catch { return false }
+    try {
+      new URL(s)
+      return true
+    } catch {
+      return false
+    }
   }
 
   const MODES: { id: ScanMode; label: string; icon: React.ReactNode }[] = [
@@ -344,13 +409,20 @@ function QrCodeScannerPanel() {
               type="file"
               accept="image/*"
               className="hidden"
-              onChange={(e) => { const f = e.target.files?.[0]; if (f) handleFileUpload(f) }}
+              onChange={(e) => {
+                const f = e.target.files?.[0]
+                if (f) handleFileUpload(f)
+              }}
             />
             <div
               className="border-2 border-dashed border-border hover:border-primary/50 rounded-xl p-8 text-center cursor-pointer transition-colors hover:bg-secondary/50"
               onClick={() => fileInputRef.current?.click()}
               onDragOver={(e) => e.preventDefault()}
-              onDrop={(e) => { e.preventDefault(); const f = e.dataTransfer.files?.[0]; if (f) handleFileUpload(f) }}
+              onDrop={(e) => {
+                e.preventDefault()
+                const f = e.dataTransfer.files?.[0]
+                if (f) handleFileUpload(f)
+              }}
             >
               <ScanLine size={32} className="mx-auto mb-3 text-muted-foreground" />
               <p className="font-medium text-foreground mb-1">Drop image with QR code</p>
@@ -363,11 +435,18 @@ function QrCodeScannerPanel() {
         {mode === 'camera' && (
           <div className="space-y-3">
             {!cameraActive ? (
-              <button onClick={startCamera} className="btn-primary w-full flex items-center justify-center gap-2">
-                <Camera size={18} />Start Camera
+              <button
+                onClick={startCamera}
+                className="btn-primary w-full flex items-center justify-center gap-2"
+              >
+                <Camera size={18} />
+                Start Camera
               </button>
             ) : (
-              <button onClick={stopCamera} className="btn-secondary w-full flex items-center justify-center gap-2">
+              <button
+                onClick={stopCamera}
+                className="btn-secondary w-full flex items-center justify-center gap-2"
+              >
                 Stop Camera
               </button>
             )}
@@ -387,7 +466,17 @@ function QrCodeScannerPanel() {
             disabled={scanning}
             className="btn-primary w-full flex items-center justify-center gap-2"
           >
-            {scanning ? <><Loader2 size={18} className="animate-spin" />Capturing…</> : <><Monitor size={18} />Capture Screen</>}
+            {scanning ? (
+              <>
+                <Loader2 size={18} className="animate-spin" />
+                Capturing…
+              </>
+            ) : (
+              <>
+                <Monitor size={18} />
+                Capture Screen
+              </>
+            )}
           </button>
         )}
 
@@ -412,7 +501,9 @@ function QrCodeScannerPanel() {
         {scannedResult ? (
           <div className="space-y-3">
             <div className="bg-secondary rounded-xl p-4 space-y-3">
-              <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Decoded content</p>
+              <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                Decoded content
+              </p>
               <p className="font-mono text-sm break-all">{scannedResult}</p>
               {isUrl(scannedResult) && (
                 <a
@@ -425,21 +516,39 @@ function QrCodeScannerPanel() {
                 </a>
               )}
             </div>
-            <button onClick={copyResult} className="btn-secondary w-full flex items-center justify-center gap-2">
-              {copied ? <><Check size={18} className="text-green-500" />Copied</> : <><Copy size={18} />Copy Result</>}
+            <button
+              onClick={copyResult}
+              className="btn-secondary w-full flex items-center justify-center gap-2"
+            >
+              {copied ? (
+                <>
+                  <Check size={18} className="text-green-500" />
+                  Copied
+                </>
+              ) : (
+                <>
+                  <Copy size={18} />
+                  Copy Result
+                </>
+              )}
             </button>
             <button
-              onClick={() => { setScannedResult(null); setError('') }}
+              onClick={() => {
+                setScannedResult(null)
+                setError('')
+              }}
               className="w-full text-sm text-muted-foreground hover:text-foreground transition-colors"
             >
               Scan another
             </button>
           </div>
-        ) : !cameraActive && (
-          <div className="bg-secondary rounded-xl h-64 flex flex-col items-center justify-center gap-3 text-muted-foreground">
-            <ScanLine size={40} className="opacity-30" />
-            <p className="text-sm">Decoded content will appear here</p>
-          </div>
+        ) : (
+          !cameraActive && (
+            <div className="bg-secondary rounded-xl h-64 flex flex-col items-center justify-center gap-3 text-muted-foreground">
+              <ScanLine size={40} className="opacity-30" />
+              <p className="text-sm">Decoded content will appear here</p>
+            </div>
+          )
         )}
       </div>
     </div>
@@ -492,7 +601,10 @@ function FaviconGeneratorTool() {
   }
 
   const handleGenerate = () => {
-    if (!preview) { setError('Please upload an image first'); return }
+    if (!preview) {
+      setError('Please upload an image first')
+      return
+    }
     setGenerating(true)
     setError('')
     const img = new window.Image()
@@ -510,7 +622,10 @@ function FaviconGeneratorTool() {
       setFavicons(results)
       setGenerating(false)
     }
-    img.onerror = () => { setError('Failed to process image'); setGenerating(false) }
+    img.onerror = () => {
+      setError('Failed to process image')
+      setGenerating(false)
+    }
     img.src = preview
   }
 
@@ -564,14 +679,25 @@ function FaviconGeneratorTool() {
         <div className="space-y-4">
           <div
             className={`border-2 border-dashed rounded-xl p-8 text-center cursor-pointer transition-colors ${
-              dragging ? 'border-primary bg-primary/5' : 'border-border hover:border-primary/50 hover:bg-secondary/50'
+              dragging
+                ? 'border-primary bg-primary/5'
+                : 'border-border hover:border-primary/50 hover:bg-secondary/50'
             }`}
             onClick={() => inputRef.current?.click()}
-            onDragOver={(e) => { e.preventDefault(); setDragging(true) }}
+            onDragOver={(e) => {
+              e.preventDefault()
+              setDragging(true)
+            }}
             onDragLeave={() => setDragging(false)}
             onDrop={handleDrop}
           >
-            <input ref={inputRef} type="file" accept="image/png,image/jpeg,image/jpg,image/webp" onChange={handleFileChange} className="hidden" />
+            <input
+              ref={inputRef}
+              type="file"
+              accept="image/png,image/jpeg,image/jpg,image/webp"
+              onChange={handleFileChange}
+              className="hidden"
+            />
             <Upload size={32} className="mx-auto mb-3 text-muted-foreground" />
             <p className="font-medium text-foreground mb-1">Drop image here or click to upload</p>
             <p className="text-sm text-muted-foreground">PNG, JPEG, JPG, WebP supported</p>
@@ -590,8 +716,22 @@ function FaviconGeneratorTool() {
 
           {error && <ErrorBanner message={error} />}
 
-          <button onClick={handleGenerate} disabled={!preview || generating} className="btn-primary w-full flex items-center justify-center gap-2">
-            {generating ? <><Loader2 size={18} className="animate-spin" />Generating…</> : <><ImageIcon size={18} />Generate Favicons</>}
+          <button
+            onClick={handleGenerate}
+            disabled={!preview || generating}
+            className="btn-primary w-full flex items-center justify-center gap-2"
+          >
+            {generating ? (
+              <>
+                <Loader2 size={18} className="animate-spin" />
+                Generating…
+              </>
+            ) : (
+              <>
+                <ImageIcon size={18} />
+                Generate Favicons
+              </>
+            )}
           </button>
         </div>
 
@@ -599,11 +739,21 @@ function FaviconGeneratorTool() {
           {favicons.length > 0 ? (
             <>
               <div className="flex flex-wrap items-center gap-2">
-                <span className="font-medium text-foreground text-sm flex-1">{favicons.length} sizes ready</span>
-                <button onClick={downloadIco} className="btn-secondary text-xs flex items-center gap-1 px-3 py-1.5">
-                  <Download size={13} />favicon.ico
+                <span className="font-medium text-foreground text-sm flex-1">
+                  {favicons.length} sizes ready
+                </span>
+                <button
+                  onClick={downloadIco}
+                  className="btn-secondary text-xs flex items-center gap-1 px-3 py-1.5"
+                >
+                  <Download size={13} />
+                  favicon.ico
                 </button>
-                <button onClick={downloadZip} disabled={zipping} className="btn-primary text-xs flex items-center gap-1 px-3 py-1.5">
+                <button
+                  onClick={downloadZip}
+                  disabled={zipping}
+                  className="btn-primary text-xs flex items-center gap-1 px-3 py-1.5"
+                >
                   {zipping ? <Loader2 size={13} className="animate-spin" /> : <Archive size={13} />}
                   Download All (.zip)
                 </button>
@@ -617,8 +767,14 @@ function FaviconGeneratorTool() {
                     className="bg-secondary hover:bg-secondary/80 rounded-xl p-3 flex flex-col items-center gap-2 transition-colors group"
                   >
                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={favicon.dataUrl} alt={`${favicon.size}x${favicon.size}`} className="w-10 h-10 object-contain rounded" />
-                    <span className="text-xs text-muted-foreground font-mono">{favicon.size}×{favicon.size}</span>
+                    <img
+                      src={favicon.dataUrl}
+                      alt={`${favicon.size}x${favicon.size}`}
+                      className="w-10 h-10 object-contain rounded"
+                    />
+                    <span className="text-xs text-muted-foreground font-mono">
+                      {favicon.size}×{favicon.size}
+                    </span>
                     <span className="text-xs text-primary opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1">
                       <Download size={10} /> PNG
                     </span>
@@ -627,7 +783,8 @@ function FaviconGeneratorTool() {
               </div>
 
               <p className="text-xs text-muted-foreground">
-                ZIP includes all PNGs, a multi-size <code className="font-mono">favicon.ico</code> (16/32/48px), and an HTML snippet.
+                ZIP includes all PNGs, a multi-size <code className="font-mono">favicon.ico</code>{' '}
+                (16/32/48px), and an HTML snippet.
               </p>
             </>
           ) : (
@@ -667,21 +824,21 @@ function buildIco(favicons: FaviconResult[]): Uint8Array {
   const buf = new ArrayBuffer(headerSize + dataSize)
   const view = new DataView(buf)
 
-  view.setUint16(0, 0, true)     // reserved
-  view.setUint16(2, 1, true)     // type = 1 (icon)
+  view.setUint16(0, 0, true) // reserved
+  view.setUint16(2, 1, true) // type = 1 (icon)
   view.setUint16(4, count, true) // image count
 
   let offset = headerSize
   favicons.forEach((f, i) => {
     const icoSize = f.size >= 256 ? 0 : f.size // 256 encoded as 0 per spec
-    view.setUint8(6 + i * 16, icoSize)          // width
-    view.setUint8(7 + i * 16, icoSize)          // height
-    view.setUint8(8 + i * 16, 0)                // color count
-    view.setUint8(9 + i * 16, 0)                // reserved
-    view.setUint16(10 + i * 16, 1, true)         // planes
-    view.setUint16(12 + i * 16, 32, true)        // bit depth
+    view.setUint8(6 + i * 16, icoSize) // width
+    view.setUint8(7 + i * 16, icoSize) // height
+    view.setUint8(8 + i * 16, 0) // color count
+    view.setUint8(9 + i * 16, 0) // reserved
+    view.setUint16(10 + i * 16, 1, true) // planes
+    view.setUint16(12 + i * 16, 32, true) // bit depth
     view.setUint32(14 + i * 16, f.pngBytes.length, true) // byte size
-    view.setUint32(18 + i * 16, offset, true)    // offset
+    view.setUint32(18 + i * 16, offset, true) // offset
     new Uint8Array(buf, offset, f.pngBytes.length).set(f.pngBytes)
     offset += f.pngBytes.length
   })

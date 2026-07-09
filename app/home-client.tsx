@@ -59,7 +59,10 @@ function HomePageContent({ mcpToolIds }: HomeClientProps) {
         <div className="mb-12 space-y-6">
           {/* Search Bar */}
           <div className="relative">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground" size={20} />
+            <Search
+              className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground"
+              size={20}
+            />
             <input
               type="text"
               placeholder="Search tools by name or function..."
@@ -103,7 +106,9 @@ function HomePageContent({ mcpToolIds }: HomeClientProps) {
         {/* Pinned Tools Section */}
         {isHydrated && pinnedTools.length > 0 && (
           <div className="mb-12">
-            <h2 className="text-lg font-semibold text-foreground mb-4">📌 Pinned Tools ({pinnedTools.length})</h2>
+            <h2 className="text-lg font-semibold text-foreground mb-4">
+              📌 Pinned Tools ({pinnedTools.length})
+            </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mb-8 pb-8 border-b border-border">
               {pinnedTools.map((tool) => {
                 const iconName = CATEGORY_INFO[tool.category].icon as keyof typeof LucideIcons
@@ -151,7 +156,9 @@ function HomePageContent({ mcpToolIds }: HomeClientProps) {
           </div>
         ) : (
           <div className="text-center py-16">
-            <p className="text-lg text-muted-foreground mb-4">No tools found matching your search.</p>
+            <p className="text-lg text-muted-foreground mb-4">
+              No tools found matching your search.
+            </p>
             <button
               onClick={() => {
                 setSearchQuery('')

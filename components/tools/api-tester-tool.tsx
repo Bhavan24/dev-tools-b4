@@ -219,12 +219,17 @@ export function ApiTesterTool({ toolId }: ApiTesterToolProps) {
             <div className="grid grid-cols-2 gap-2">
               <div className="bg-secondary rounded-lg p-3">
                 <p className="text-xs text-muted-foreground">Status</p>
-                <p className={`text-2xl font-bold ${
-                  result.status >= 200 && result.status < 300 ? 'text-green-600' :
-                  result.status >= 300 && result.status < 400 ? 'text-blue-600' :
-                  result.status >= 400 && result.status < 500 ? 'text-orange-600' :
-                  'text-red-600'
-                }`}>
+                <p
+                  className={`text-2xl font-bold ${
+                    result.status >= 200 && result.status < 300
+                      ? 'text-green-600'
+                      : result.status >= 300 && result.status < 400
+                        ? 'text-blue-600'
+                        : result.status >= 400 && result.status < 500
+                          ? 'text-orange-600'
+                          : 'text-red-600'
+                  }`}
+                >
                   {result.status}
                 </p>
               </div>

@@ -79,7 +79,11 @@ function UuidGeneratorTool() {
           </div>
         </div>
 
-        <button onClick={handleGenerate} disabled={loading} className="btn-primary w-full flex items-center justify-center gap-2">
+        <button
+          onClick={handleGenerate}
+          disabled={loading}
+          className="btn-primary w-full flex items-center justify-center gap-2"
+        >
           {loading ? <Loader2 size={18} className="animate-spin" /> : 'Generate UUIDs'}
         </button>
       </div>
@@ -95,13 +99,20 @@ function UuidGeneratorTool() {
           </div>
           <div className="space-y-2 max-h-96 overflow-y-auto">
             {result.uuids.map((uuid, idx) => (
-              <div key={idx} className="bg-secondary rounded-lg p-3 flex justify-between items-center font-mono text-sm">
+              <div
+                key={idx}
+                className="bg-secondary rounded-lg p-3 flex justify-between items-center font-mono text-sm"
+              >
                 <span>{uuid}</span>
                 <button
                   onClick={() => copyToClipboard(uuid, idx)}
                   className="p-1 hover:bg-primary/10 rounded transition-colors"
                 >
-                  {copiedIndex === idx ? <Check size={16} className="text-green-500" /> : <Copy size={16} />}
+                  {copiedIndex === idx ? (
+                    <Check size={16} className="text-green-500" />
+                  ) : (
+                    <Copy size={16} />
+                  )}
                 </button>
               </div>
             ))}
@@ -171,7 +182,14 @@ function PasswordGeneratorTool() {
       <div className="space-y-4">
         <div>
           <label className="block font-medium text-foreground mb-3">Length: {length}</label>
-          <input type="range" min={8} max={128} value={length} onChange={(e) => setLength(parseInt(e.target.value))} className="w-full" />
+          <input
+            type="range"
+            min={8}
+            max={128}
+            value={length}
+            onChange={(e) => setLength(parseInt(e.target.value))}
+            className="w-full"
+          />
         </div>
 
         <div className="space-y-2">
@@ -216,7 +234,11 @@ function PasswordGeneratorTool() {
 
         {error && <p className="text-sm text-red-600">{error}</p>}
 
-        <button onClick={handleGenerate} disabled={loading} className="btn-primary w-full flex items-center justify-center gap-2">
+        <button
+          onClick={handleGenerate}
+          disabled={loading}
+          className="btn-primary w-full flex items-center justify-center gap-2"
+        >
           {loading ? <Loader2 size={18} className="animate-spin" /> : 'Generate Password'}
         </button>
       </div>
@@ -226,13 +248,20 @@ function PasswordGeneratorTool() {
           <p className="text-sm text-muted-foreground mb-2">Generated Password</p>
           <div className="bg-secondary rounded-lg p-4 mb-4 flex justify-between items-center">
             <span className="font-mono text-lg font-bold break-all">{result.password}</span>
-            <button onClick={copyToClipboard} className="p-2 hover:bg-primary/10 rounded transition-colors">
+            <button
+              onClick={copyToClipboard}
+              className="p-2 hover:bg-primary/10 rounded transition-colors"
+            >
               {copied ? <Check size={18} className="text-green-500" /> : <Copy size={18} />}
             </button>
           </div>
           <div className="flex items-center gap-2">
             <span className="text-sm text-muted-foreground">Strength:</span>
-            <div className={`${getStrength().color} text-white text-xs font-semibold px-3 py-1 rounded-full`}>{getStrength().text}</div>
+            <div
+              className={`${getStrength().color} text-white text-xs font-semibold px-3 py-1 rounded-full`}
+            >
+              {getStrength().text}
+            </div>
           </div>
         </div>
       )}
@@ -305,7 +334,11 @@ function HashGeneratorTool() {
           </div>
         </div>
 
-        <button onClick={handleHash} disabled={loading} className="btn-primary w-full flex items-center justify-center gap-2">
+        <button
+          onClick={handleHash}
+          disabled={loading}
+          className="btn-primary w-full flex items-center justify-center gap-2"
+        >
           {loading ? <Loader2 size={18} className="animate-spin" /> : 'Generate Hash'}
         </button>
       </div>
@@ -321,10 +354,19 @@ function HashGeneratorTool() {
         {result && (
           <div className="bg-secondary rounded-lg p-4 space-y-3">
             <div className="flex items-center gap-2">
-              <span className={`text-xs font-semibold px-3 py-1 rounded-full text-white bg-primary`}>{algorithm.toUpperCase()}</span>
+              <span
+                className={`text-xs font-semibold px-3 py-1 rounded-full text-white bg-primary`}
+              >
+                {algorithm.toUpperCase()}
+              </span>
             </div>
-            <div className="bg-background rounded p-3 font-mono text-xs break-all max-h-32 overflow-auto">{result.hash}</div>
-            <button onClick={copyToClipboard} className="btn-secondary w-full flex items-center justify-center gap-2">
+            <div className="bg-background rounded p-3 font-mono text-xs break-all max-h-32 overflow-auto">
+              {result.hash}
+            </div>
+            <button
+              onClick={copyToClipboard}
+              className="btn-secondary w-full flex items-center justify-center gap-2"
+            >
               {copied ? (
                 <>
                   <Check size={18} className="text-green-500" />
@@ -390,7 +432,11 @@ function JsonGeneratorTool() {
       <div className="space-y-4">
         <div>
           <label className="block font-medium text-foreground mb-3">Data Type</label>
-          <select value={type} onChange={(e) => setType(e.target.value)} className="input-base w-full">
+          <select
+            value={type}
+            onChange={(e) => setType(e.target.value)}
+            className="input-base w-full"
+          >
             <option value="person">Person</option>
             <option value="product">Product</option>
             <option value="todo">Todo</option>
@@ -410,7 +456,11 @@ function JsonGeneratorTool() {
           />
         </div>
 
-        <button onClick={handleGenerate} disabled={loading} className="btn-primary w-full flex items-center justify-center gap-2">
+        <button
+          onClick={handleGenerate}
+          disabled={loading}
+          className="btn-primary w-full flex items-center justify-center gap-2"
+        >
           {loading ? <Loader2 size={18} className="animate-spin" /> : 'Generate JSON'}
         </button>
       </div>
@@ -428,7 +478,10 @@ function JsonGeneratorTool() {
             <div className="bg-secondary rounded-lg p-4 font-mono text-xs max-h-96 overflow-auto">
               <pre className="whitespace-pre-wrap break-words">{result}</pre>
             </div>
-            <button onClick={copyToClipboard} className="btn-secondary w-full flex items-center justify-center gap-2">
+            <button
+              onClick={copyToClipboard}
+              className="btn-secondary w-full flex items-center justify-center gap-2"
+            >
               {copied ? (
                 <>
                   <Check size={18} className="text-green-500" />

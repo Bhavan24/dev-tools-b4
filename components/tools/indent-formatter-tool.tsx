@@ -87,7 +87,11 @@ export function IndentFormatterTool({ toolId }: IndentFormatterToolProps) {
           <span className="text-sm text-muted-foreground">spaces</span>
         </div>
 
-        <button onClick={handleExecute} disabled={loading} className="btn-primary w-full flex items-center justify-center gap-2">
+        <button
+          onClick={handleExecute}
+          disabled={loading}
+          className="btn-primary w-full flex items-center justify-center gap-2"
+        >
           {loading ? (
             <>
               <Loader2 size={18} className="animate-spin" />
@@ -122,7 +126,10 @@ export function IndentFormatterTool({ toolId }: IndentFormatterToolProps) {
         )}
 
         {result && (
-          <button onClick={copyToClipboard} className="btn-secondary w-full flex items-center justify-center gap-2">
+          <button
+            onClick={copyToClipboard}
+            className="btn-secondary w-full flex items-center justify-center gap-2"
+          >
             {copied ? (
               <>
                 <Check size={18} className="text-green-500" />

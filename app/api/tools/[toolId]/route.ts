@@ -11,18 +11,12 @@ export async function POST(
 
     const handler = toolHandlers[toolId]
     if (!handler) {
-      return NextResponse.json(
-        { error: 'Tool not found' },
-        { status: 404 }
-      )
+      return NextResponse.json({ error: 'Tool not found' }, { status: 404 })
     }
 
     const result = await handler.handler(body)
     return NextResponse.json({ result })
   } catch (error: any) {
-    return NextResponse.json(
-      { error: error.message || 'Failed to execute tool' },
-      { status: 400 }
-    )
+    return NextResponse.json({ error: error.message || 'Failed to execute tool' }, { status: 400 })
   }
 }

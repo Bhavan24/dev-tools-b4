@@ -39,7 +39,10 @@ export function JsonpathFinderTool({ toolId }: JsonpathFinderToolProps) {
   const [copied, setCopied] = useState(false)
 
   const evaluate = async () => {
-    if (!json.trim() || !path.trim()) { setError('Both JSON and expression are required.'); return }
+    if (!json.trim() || !path.trim()) {
+      setError('Both JSON and expression are required.')
+      return
+    }
     setError('')
     setLoading(true)
     try {
@@ -78,7 +81,10 @@ export function JsonpathFinderTool({ toolId }: JsonpathFinderToolProps) {
             <label className="block text-sm font-medium text-foreground mb-2">JSON document</label>
             <textarea
               value={json}
-              onChange={(e) => { setJson(e.target.value); setError('') }}
+              onChange={(e) => {
+                setJson(e.target.value)
+                setError('')
+              }}
               className="input-base font-mono text-sm resize-none"
               style={{ height: '300px' }}
               placeholder="Paste your JSON here..."
@@ -86,11 +92,16 @@ export function JsonpathFinderTool({ toolId }: JsonpathFinderToolProps) {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-foreground mb-2">JSONPath expression</label>
+            <label className="block text-sm font-medium text-foreground mb-2">
+              JSONPath expression
+            </label>
             <input
               type="text"
               value={path}
-              onChange={(e) => { setPath(e.target.value); setError('') }}
+              onChange={(e) => {
+                setPath(e.target.value)
+                setError('')
+              }}
               onKeyDown={(e) => e.key === 'Enter' && evaluate()}
               placeholder="$.store.books[*].title"
               className="input-base font-mono text-sm"
@@ -98,12 +109,18 @@ export function JsonpathFinderTool({ toolId }: JsonpathFinderToolProps) {
           </div>
 
           <div>
-            <p className="text-xs text-muted-foreground mb-2 flex items-center gap-1"><Info size={12} />Quick examples:</p>
+            <p className="text-xs text-muted-foreground mb-2 flex items-center gap-1">
+              <Info size={12} />
+              Quick examples:
+            </p>
             <div className="flex flex-wrap gap-1.5">
               {EXAMPLES.map((ex) => (
                 <button
                   key={ex.path}
-                  onClick={() => { setPath(ex.path); setError('') }}
+                  onClick={() => {
+                    setPath(ex.path)
+                    setError('')
+                  }}
                   className="px-2.5 py-1 text-xs rounded-lg bg-secondary hover:bg-secondary/70 text-foreground border border-border transition-colors font-mono"
                 >
                   {ex.label}
@@ -124,25 +141,53 @@ export function JsonpathFinderTool({ toolId }: JsonpathFinderToolProps) {
             disabled={!json.trim() || !path.trim() || loading}
             className="btn-primary w-full flex items-center justify-center gap-2"
           >
-            {loading ? <><Loader2 size={16} className="animate-spin" />Finding…</> : 'Find Matches'}
+            {loading ? (
+              <>
+                <Loader2 size={16} className="animate-spin" />
+                Finding…
+              </>
+            ) : (
+              'Find Matches'
+            )}
           </button>
         </div>
 
         <div className="space-y-3">
           <div className="flex items-center justify-between">
             <label className="block text-sm font-medium text-foreground">
-              Results {result != null && <span className="text-muted-foreground font-normal">({result.count} match{result.count !== 1 ? 'es' : ''})</span>}
+              Results{' '}
+              {result != null && (
+                <span className="text-muted-foreground font-normal">
+                  ({result.count} match{result.count !== 1 ? 'es' : ''})
+                </span>
+              )}
             </label>
             {result != null && (
-              <button onClick={copyResult} className="btn-secondary flex items-center gap-2 text-sm">
-                {copied ? <><Check size={14} className="text-green-500" />Copied</> : <><Copy size={14} />Copy</>}
+              <button
+                onClick={copyResult}
+                className="btn-secondary flex items-center gap-2 text-sm"
+              >
+                {copied ? (
+                  <>
+                    <Check size={14} className="text-green-500" />
+                    Copied
+                  </>
+                ) : (
+                  <>
+                    <Copy size={14} />
+                    Copy
+                  </>
+                )}
               </button>
             )}
           </div>
 
           {result != null ? (
             <div className="space-y-3">
-              <div className="bg-secondary rounded-xl p-4 font-mono text-sm overflow-auto" style={{ height: '320px' }}>
+              <div
+                className="bg-secondary rounded-xl p-4 font-mono text-sm overflow-auto"
+                style={{ height: '320px' }}
+              >
                 <pre className="whitespace-pre-wrap break-words">{resultText}</pre>
               </div>
               {result.paths.length > 0 && (
@@ -150,17 +195,27 @@ export function JsonpathFinderTool({ toolId }: JsonpathFinderToolProps) {
                   <p className="text-xs text-muted-foreground mb-1.5">Matched paths:</p>
                   <div className="space-y-1">
                     {result.paths.slice(0, 20).map((p, i) => (
-                      <code key={i} className="block text-xs text-primary bg-secondary px-2 py-1 rounded font-mono truncate">{p}</code>
+                      <code
+                        key={i}
+                        className="block text-xs text-primary bg-secondary px-2 py-1 rounded font-mono truncate"
+                      >
+                        {p}
+                      </code>
                     ))}
                     {result.paths.length > 20 && (
-                      <p className="text-xs text-muted-foreground">…and {result.paths.length - 20} more</p>
+                      <p className="text-xs text-muted-foreground">
+                        …and {result.paths.length - 20} more
+                      </p>
                     )}
                   </div>
                 </div>
               )}
             </div>
           ) : (
-            <div className="bg-secondary rounded-xl flex items-center justify-center text-muted-foreground text-sm" style={{ height: '360px' }}>
+            <div
+              className="bg-secondary rounded-xl flex items-center justify-center text-muted-foreground text-sm"
+              style={{ height: '360px' }}
+            >
               Results will appear here
             </div>
           )}

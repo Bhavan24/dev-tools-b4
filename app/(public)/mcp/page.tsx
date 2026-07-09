@@ -7,7 +7,8 @@ import { McpCopyButton } from './mcp-copy-button'
 
 export const metadata: Metadata = {
   title: 'MCP API Docs — AI Developer Tools',
-  description: 'Full reference for all MCP-enabled tools: endpoints, parameters, types, and live examples.',
+  description:
+    'Full reference for all MCP-enabled tools: endpoints, parameters, types, and live examples.',
 }
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
@@ -24,13 +25,15 @@ function typeBadge(type: string, isRequired: boolean) {
   return { color, label: type }
 }
 
-function buildExampleArgs(handler: { schema: { properties: Record<string, any>; required?: string[] } }): Record<string, any> {
+function buildExampleArgs(handler: {
+  schema: { properties: Record<string, any>; required?: string[] }
+}): Record<string, any> {
   const args: Record<string, any> = {}
   for (const [key, prop] of Object.entries(handler.schema.properties)) {
     if (prop.enum) {
       args[key] = prop.enum[0]
     } else if (prop.type === 'number') {
-      args[key] = prop.default ?? (prop.minimum ?? 1)
+      args[key] = prop.default ?? prop.minimum ?? 1
     } else if (prop.type === 'boolean') {
       args[key] = prop.default ?? true
     } else {
@@ -108,10 +111,16 @@ export default function McpDocsPage() {
         </div>
         <p className="text-muted-foreground max-w-2xl">
           Every tool below is callable via the{' '}
-          <a href="https://modelcontextprotocol.io" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
+          <a
+            href="https://modelcontextprotocol.io"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-primary hover:underline"
+          >
             Model Context Protocol
           </a>
-          . Connect Claude or any MCP-compatible client to the endpoint and all {totalTools} tools become available instantly.
+          . Connect Claude or any MCP-compatible client to the endpoint and all {totalTools} tools
+          become available instantly.
         </p>
       </div>
 
@@ -124,25 +133,33 @@ export default function McpDocsPage() {
 
         <div className="space-y-3">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">MCP Endpoint</p>
+            <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">
+              MCP Endpoint
+            </p>
             <div className="flex items-center gap-2 bg-muted rounded-lg border border-border p-3">
-              <code className="flex-1 text-sm font-mono text-foreground break-all">{mcpEndpoint}</code>
+              <code className="flex-1 text-sm font-mono text-foreground break-all">
+                {mcpEndpoint}
+              </code>
               <McpCopyButton text={mcpEndpoint} label="Copy" />
             </div>
           </div>
 
           <div>
-            <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">claude_desktop_config.json</p>
             <div className="relative bg-slate-900 rounded-lg overflow-hidden">
               <pre className="p-4 text-sm font-mono text-slate-100 overflow-x-auto">{`{
   "mcpServers": {
-    "dev-tools": {
-      "url": "${mcpEndpoint}"
+    "devtools": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "mcp-remote",
+        "${mcpEndpoint}"
+      ]
     }
   }
 }`}</pre>
               <McpCopyButton
-                text={`{\n  "mcpServers": {\n    "dev-tools": {\n      "url": "${mcpEndpoint}"\n    }\n  }\n}`}
+                text={`{\n  "mcpServers": {\n    "dev-tools": {\n      "command": "npx",\n      "args": [\n        "-y",\n        "mcp-remote",\n        "${mcpEndpoint}"\n      ]\n    }\n  }\n}`}
                 label="Copy"
                 className="absolute top-2 right-2 text-slate-100 bg-slate-700 hover:bg-slate-600"
               />
@@ -150,7 +167,9 @@ export default function McpDocsPage() {
           </div>
 
           <div>
-            <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">curl test</p>
+            <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">
+              curl test
+            </p>
             <div className="relative bg-slate-900 rounded-lg overflow-hidden">
               <pre className="p-4 text-sm font-mono text-slate-100 overflow-x-auto">{`curl -X POST ${mcpEndpoint} \\
   -H "Content-Type: application/json" \\
@@ -254,26 +273,34 @@ export default function McpDocsPage() {
                             <tbody>
                               {Object.entries(props).map(([param, prop], i) => {
                                 const isReq = required.includes(param)
-                                const typeLabel = prop.enum ? `enum` : prop.type ?? 'string'
+                                const typeLabel = prop.enum ? `enum` : (prop.type ?? 'string')
                                 const { color } = typeBadge(typeLabel, isReq)
                                 return (
                                   <tr key={param} className={i % 2 === 0 ? '' : 'bg-muted/30'}>
-                                    <td className="px-3 py-2 font-mono text-xs text-foreground align-top">{param}</td>
+                                    <td className="px-3 py-2 font-mono text-xs text-foreground align-top">
+                                      {param}
+                                    </td>
                                     <td className="px-3 py-2 align-top">
-                                      <span className={`text-xs font-semibold px-1.5 py-0.5 rounded ${color}`}>
+                                      <span
+                                        className={`text-xs font-semibold px-1.5 py-0.5 rounded ${color}`}
+                                      >
                                         {typeLabel}
                                       </span>
                                       {prop.enum && (
                                         <div className="mt-1 flex flex-wrap gap-1">
                                           {(prop.enum as string[]).map((v) => (
-                                            <code key={v} className="text-xs bg-muted px-1 rounded">{v}</code>
+                                            <code key={v} className="text-xs bg-muted px-1 rounded">
+                                              {v}
+                                            </code>
                                           ))}
                                         </div>
                                       )}
                                     </td>
                                     <td className="px-3 py-2 align-top">
                                       {isReq ? (
-                                        <span className="text-xs font-semibold text-red-500">yes</span>
+                                        <span className="text-xs font-semibold text-red-500">
+                                          yes
+                                        </span>
                                       ) : (
                                         <span className="text-xs text-muted-foreground">no</span>
                                       )}
@@ -282,7 +309,8 @@ export default function McpDocsPage() {
                                       {prop.description ?? ''}
                                       {prop.default !== undefined && (
                                         <span className="ml-1 text-muted-foreground/70">
-                                          (default: <code className="font-mono">{String(prop.default)}</code>)
+                                          (default:{' '}
+                                          <code className="font-mono">{String(prop.default)}</code>)
                                         </span>
                                       )}
                                     </td>
@@ -293,7 +321,9 @@ export default function McpDocsPage() {
                           </table>
                         </div>
                       ) : (
-                        <p className="text-sm text-muted-foreground italic">No parameters — call with an empty object.</p>
+                        <p className="text-sm text-muted-foreground italic">
+                          No parameters — call with an empty object.
+                        </p>
                       )}
                     </div>
 
@@ -319,7 +349,9 @@ export default function McpDocsPage() {
                             Arguments JSON
                           </p>
                           <div className="relative bg-slate-900 rounded-lg overflow-hidden">
-                            <pre className="p-3 text-xs font-mono text-slate-100 overflow-x-auto">{exampleJson}</pre>
+                            <pre className="p-3 text-xs font-mono text-slate-100 overflow-x-auto">
+                              {exampleJson}
+                            </pre>
                             <McpCopyButton
                               text={exampleJson}
                               label="Copy"
@@ -344,7 +376,9 @@ export default function McpDocsPage() {
           <div>
             <p className="text-sm font-semibold text-foreground mb-1">Auto-generated reference</p>
             <p className="text-sm text-muted-foreground">
-              This page is generated directly from the live handler registry. New tools appear here automatically as soon as they are implemented — no manual documentation updates needed.
+              This page is generated directly from the live handler registry. New tools appear here
+              automatically as soon as they are implemented — no manual documentation updates
+              needed.
             </p>
           </div>
         </div>

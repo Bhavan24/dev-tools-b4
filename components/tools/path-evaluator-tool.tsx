@@ -65,9 +65,7 @@ export function PathEvaluatorTool({ toolId }: PathEvaluatorToolProps) {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(
-          mode === 'jsonpath'
-            ? { json: input, path }
-            : { xml: input, xpath: path },
+          mode === 'jsonpath' ? { json: input, path } : { xml: input, xpath: path }
         ),
       })
       if (!response.ok) {
@@ -104,7 +102,10 @@ export function PathEvaluatorTool({ toolId }: PathEvaluatorToolProps) {
             <label className="block text-sm font-medium text-foreground mb-2">{label} input</label>
             <textarea
               value={input}
-              onChange={(e) => { setInput(e.target.value); setError('') }}
+              onChange={(e) => {
+                setInput(e.target.value)
+                setError('')
+              }}
               className="input-base font-mono text-sm resize-none"
               style={{ height: '320px' }}
               placeholder={`Paste your ${label} here...`}
@@ -116,7 +117,10 @@ export function PathEvaluatorTool({ toolId }: PathEvaluatorToolProps) {
             <input
               type="text"
               value={path}
-              onChange={(e) => { setPath(e.target.value); setError('') }}
+              onChange={(e) => {
+                setPath(e.target.value)
+                setError('')
+              }}
               onKeyDown={(e) => e.key === 'Enter' && evaluate()}
               placeholder={placeholder}
               className="input-base font-mono text-sm"
@@ -135,7 +139,14 @@ export function PathEvaluatorTool({ toolId }: PathEvaluatorToolProps) {
             disabled={!input.trim() || !path.trim() || loading}
             className="btn-primary w-full flex items-center justify-center gap-2"
           >
-            {loading ? <><Loader2 size={16} className="animate-spin" />Evaluating…</> : 'Evaluate'}
+            {loading ? (
+              <>
+                <Loader2 size={16} className="animate-spin" />
+                Evaluating…
+              </>
+            ) : (
+              'Evaluate'
+            )}
           </button>
         </div>
 
@@ -143,8 +154,21 @@ export function PathEvaluatorTool({ toolId }: PathEvaluatorToolProps) {
           <div className="flex items-center justify-between">
             <label className="block text-sm font-medium text-foreground">Results</label>
             {result != null && (
-              <button onClick={copyResult} className="btn-secondary flex items-center gap-2 text-sm">
-                {copied ? <><Check size={14} className="text-green-500" />Copied</> : <><Copy size={14} />Copy</>}
+              <button
+                onClick={copyResult}
+                className="btn-secondary flex items-center gap-2 text-sm"
+              >
+                {copied ? (
+                  <>
+                    <Check size={14} className="text-green-500" />
+                    Copied
+                  </>
+                ) : (
+                  <>
+                    <Copy size={14} />
+                    Copy
+                  </>
+                )}
               </button>
             )}
           </div>
@@ -152,14 +176,22 @@ export function PathEvaluatorTool({ toolId }: PathEvaluatorToolProps) {
           {result != null ? (
             <div className="space-y-2">
               <p className="text-xs text-muted-foreground">
-                {Array.isArray(result) ? `${result.length} match${result.length !== 1 ? 'es' : ''}` : '1 result'}
+                {Array.isArray(result)
+                  ? `${result.length} match${result.length !== 1 ? 'es' : ''}`
+                  : '1 result'}
               </p>
-              <div className="bg-secondary rounded-xl p-4 font-mono text-sm overflow-auto" style={{ height: '360px' }}>
+              <div
+                className="bg-secondary rounded-xl p-4 font-mono text-sm overflow-auto"
+                style={{ height: '360px' }}
+              >
                 <pre className="whitespace-pre-wrap break-words">{resultText}</pre>
               </div>
             </div>
           ) : (
-            <div className="bg-secondary rounded-xl flex items-center justify-center text-muted-foreground text-sm" style={{ height: '400px' }}>
+            <div
+              className="bg-secondary rounded-xl flex items-center justify-center text-muted-foreground text-sm"
+              style={{ height: '400px' }}
+            >
               Results will appear here
             </div>
           )}

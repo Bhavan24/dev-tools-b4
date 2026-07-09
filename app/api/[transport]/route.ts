@@ -3,10 +3,7 @@ import { z } from 'zod'
 import { toolHandlers } from '@/lib/tool-handlers'
 
 // Helper to convert JSON Schema property to Zod validator
-function jsonSchemaPropertyToZod(
-  prop: Record<string, any>,
-  isRequired: boolean
-): z.ZodTypeAny {
+function jsonSchemaPropertyToZod(prop: Record<string, any>, isRequired: boolean): z.ZodTypeAny {
   let field: z.ZodTypeAny
 
   if (prop.enum) {
@@ -84,7 +81,7 @@ const handler = createMcpHandler(
     })
   },
   {},
-  { basePath: '/api', maxDuration: 60 }
+  { basePath: '/api', maxDuration: 60, verboseLogs: true }
 )
 
 export { handler as GET, handler as POST }

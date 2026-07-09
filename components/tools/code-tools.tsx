@@ -25,7 +25,10 @@ export function CodeTools({ toolId }: CodeToolsProps) {
       const body: Record<string, any> = isCodeCleaner
         ? { code: input, language }
         : isDiffChecker
-          ? { text1: input.split('\n\n---\n\n')[0] || '', text2: input.split('\n\n---\n\n')[1] || '' }
+          ? {
+              text1: input.split('\n\n---\n\n')[0] || '',
+              text2: input.split('\n\n---\n\n')[1] || '',
+            }
           : {}
 
       const response = await fetch(`/api/tools/${toolId}`, {

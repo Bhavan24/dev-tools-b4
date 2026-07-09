@@ -29,7 +29,10 @@ export function LinkCheckerTool({ toolId }: LinkCheckerToolProps) {
 
   const check = async () => {
     const targets = urls.map((u) => u.trim()).filter(Boolean)
-    if (!targets.length) { setError('Add at least one URL to check.'); return }
+    if (!targets.length) {
+      setError('Add at least one URL to check.')
+      return
+    }
     setError('')
     setResults(null)
     setLoading(true)
@@ -68,7 +71,10 @@ export function LinkCheckerTool({ toolId }: LinkCheckerToolProps) {
               className="input-base flex-1"
             />
             {urls.length > 1 && (
-              <button onClick={() => removeRow(i)} className="btn-secondary p-2 text-muted-foreground hover:text-red-500">
+              <button
+                onClick={() => removeRow(i)}
+                className="btn-secondary p-2 text-muted-foreground hover:text-red-500"
+              >
                 <Trash2 size={16} />
               </button>
             )}
@@ -78,14 +84,22 @@ export function LinkCheckerTool({ toolId }: LinkCheckerToolProps) {
 
       <div className="flex gap-2">
         <button onClick={addRow} className="btn-secondary flex items-center gap-2 text-sm">
-          <Plus size={15} />Add URL
+          <Plus size={15} />
+          Add URL
         </button>
         <button
           onClick={check}
           disabled={!validUrls || loading}
           className="btn-primary flex items-center gap-2"
         >
-          {loading ? <><Loader2 size={16} className="animate-spin" />Checking…</> : `Check ${validUrls} URL${validUrls !== 1 ? 's' : ''}`}
+          {loading ? (
+            <>
+              <Loader2 size={16} className="animate-spin" />
+              Checking…
+            </>
+          ) : (
+            `Check ${validUrls} URL${validUrls !== 1 ? 's' : ''}`
+          )}
         </button>
       </div>
 
@@ -99,13 +113,20 @@ export function LinkCheckerTool({ toolId }: LinkCheckerToolProps) {
       {results && (
         <div className="space-y-2">
           <div className="flex items-center gap-3 text-sm text-muted-foreground">
-            <span className="text-green-600 font-medium">{results.filter((r) => r.ok).length} reachable</span>
+            <span className="text-green-600 font-medium">
+              {results.filter((r) => r.ok).length} reachable
+            </span>
             <span>·</span>
-            <span className="text-red-500 font-medium">{results.filter((r) => !r.ok).length} failed</span>
+            <span className="text-red-500 font-medium">
+              {results.filter((r) => !r.ok).length} failed
+            </span>
           </div>
           <div className="divide-y divide-border border border-border rounded-xl overflow-hidden">
             {results.map((r, i) => (
-              <div key={i} className="flex items-start gap-3 px-4 py-3 bg-background hover:bg-secondary/40 transition-colors">
+              <div
+                key={i}
+                className="flex items-start gap-3 px-4 py-3 bg-background hover:bg-secondary/40 transition-colors"
+              >
                 <div className="mt-0.5 shrink-0">
                   {r.ok ? (
                     <CheckCircle size={17} className="text-green-500" />
@@ -119,7 +140,9 @@ export function LinkCheckerTool({ toolId }: LinkCheckerToolProps) {
                 </div>
                 <div className="shrink-0 text-right space-y-0.5">
                   {r.status != null && (
-                    <span className={`text-xs font-mono font-semibold ${r.ok ? 'text-green-600' : 'text-red-500'}`}>
+                    <span
+                      className={`text-xs font-mono font-semibold ${r.ok ? 'text-green-600' : 'text-red-500'}`}
+                    >
                       {r.status} {r.statusText}
                     </span>
                   )}

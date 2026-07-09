@@ -1,7 +1,16 @@
 'use client'
 
 import { useState, useRef } from 'react'
-import { Loader2, AlertCircle, Download, Upload, Copy, Check, FileText, FileCode } from 'lucide-react'
+import {
+  Loader2,
+  AlertCircle,
+  Download,
+  Upload,
+  Copy,
+  Check,
+  FileText,
+  FileCode,
+} from 'lucide-react'
 import { marked } from 'marked'
 import DOMPurify from 'dompurify'
 
@@ -41,7 +50,11 @@ export function PdfMarkdownTool({ toolId }: PdfMarkdownToolProps) {
 function PdfToMarkdownPanel() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
-  const [result, setResult] = useState<{ markdown: string; pageCount: number; wordCount: number } | null>(null)
+  const [result, setResult] = useState<{
+    markdown: string
+    pageCount: number
+    wordCount: number
+  } | null>(null)
   const [copied, setCopied] = useState(false)
   const [dragging, setDragging] = useState(false)
   const [fileName, setFileName] = useState('')
@@ -102,16 +115,29 @@ function PdfToMarkdownPanel() {
           type="file"
           accept="application/pdf"
           className="hidden"
-          onChange={(e) => { const f = e.target.files?.[0]; if (f) processFile(f) }}
+          onChange={(e) => {
+            const f = e.target.files?.[0]
+            if (f) processFile(f)
+          }}
         />
         <div
           className={`border-2 border-dashed rounded-xl p-10 text-center cursor-pointer transition-colors ${
-            dragging ? 'border-primary bg-primary/5' : 'border-border hover:border-primary/50 hover:bg-secondary/50'
+            dragging
+              ? 'border-primary bg-primary/5'
+              : 'border-border hover:border-primary/50 hover:bg-secondary/50'
           }`}
           onClick={() => inputRef.current?.click()}
-          onDragOver={(e) => { e.preventDefault(); setDragging(true) }}
+          onDragOver={(e) => {
+            e.preventDefault()
+            setDragging(true)
+          }}
           onDragLeave={() => setDragging(false)}
-          onDrop={(e) => { e.preventDefault(); setDragging(false); const f = e.dataTransfer.files?.[0]; if (f) processFile(f) }}
+          onDrop={(e) => {
+            e.preventDefault()
+            setDragging(false)
+            const f = e.dataTransfer.files?.[0]
+            if (f) processFile(f)
+          }}
         >
           <FileText size={36} className="mx-auto mb-3 text-muted-foreground" />
           <p className="font-medium text-foreground mb-1">Drop a PDF here or click to upload</p>
@@ -133,9 +159,15 @@ function PdfToMarkdownPanel() {
           className="btn-primary w-full flex items-center justify-center gap-2"
         >
           {loading ? (
-            <><Loader2 size={18} className="animate-spin" />Converting…</>
+            <>
+              <Loader2 size={18} className="animate-spin" />
+              Converting…
+            </>
           ) : (
-            <><Upload size={18} />Select PDF</>
+            <>
+              <Upload size={18} />
+              Select PDF
+            </>
           )}
         </button>
       </div>
@@ -144,7 +176,9 @@ function PdfToMarkdownPanel() {
         {result ? (
           <>
             <div className="flex items-center gap-3 text-sm text-muted-foreground">
-              <span>{result.pageCount} page{result.pageCount !== 1 ? 's' : ''}</span>
+              <span>
+                {result.pageCount} page{result.pageCount !== 1 ? 's' : ''}
+              </span>
               <span>·</span>
               <span>{result.wordCount.toLocaleString()} words</span>
             </div>
@@ -152,11 +186,28 @@ function PdfToMarkdownPanel() {
               <pre className="whitespace-pre-wrap break-words">{result.markdown}</pre>
             </div>
             <div className="flex gap-2">
-              <button onClick={copyMarkdown} className="btn-secondary flex-1 flex items-center justify-center gap-2">
-                {copied ? <><Check size={16} className="text-green-500" />Copied</> : <><Copy size={16} />Copy</>}
+              <button
+                onClick={copyMarkdown}
+                className="btn-secondary flex-1 flex items-center justify-center gap-2"
+              >
+                {copied ? (
+                  <>
+                    <Check size={16} className="text-green-500" />
+                    Copied
+                  </>
+                ) : (
+                  <>
+                    <Copy size={16} />
+                    Copy
+                  </>
+                )}
               </button>
-              <button onClick={downloadMarkdown} className="btn-primary flex-1 flex items-center justify-center gap-2">
-                <Download size={16} />Download .md
+              <button
+                onClick={downloadMarkdown}
+                className="btn-primary flex-1 flex items-center justify-center gap-2"
+              >
+                <Download size={16} />
+                Download .md
               </button>
             </div>
           </>
@@ -189,11 +240,17 @@ function MarkdownToPdfPanel() {
   }
 
   const generatePdf = async () => {
-    if (!markdown.trim()) { setError('Please enter some Markdown first.'); return }
+    if (!markdown.trim()) {
+      setError('Please enter some Markdown first.')
+      return
+    }
     setError('')
     setLoading(true)
     // Revoke previous blob URL before generating a new one
-    if (pdfUrl) { URL.revokeObjectURL(pdfUrl); setPdfUrl(null) }
+    if (pdfUrl) {
+      URL.revokeObjectURL(pdfUrl)
+      setPdfUrl(null)
+    }
     try {
       const response = await fetch('/api/tools/markdown-to-pdf', {
         method: 'POST',
@@ -229,8 +286,14 @@ function MarkdownToPdfPanel() {
             <label className="block font-medium text-foreground mb-2">Markdown source</label>
             <textarea
               value={markdown}
-              onChange={(e) => { setMarkdown(e.target.value); setError(''); setPdfUrl(null) }}
-              placeholder={'# My Document\n\nWrite your **Markdown** here...\n\n## Section\n\nSome paragraph text.'}
+              onChange={(e) => {
+                setMarkdown(e.target.value)
+                setError('')
+                setPdfUrl(null)
+              }}
+              placeholder={
+                '# My Document\n\nWrite your **Markdown** here...\n\n## Section\n\nSome paragraph text.'
+              }
               className="input-base h-80 font-mono text-sm resize-none"
             />
           </div>
@@ -241,9 +304,15 @@ function MarkdownToPdfPanel() {
             className="btn-primary w-full flex items-center justify-center gap-2"
           >
             {loading ? (
-              <><Loader2 size={16} className="animate-spin" />Generating…</>
+              <>
+                <Loader2 size={16} className="animate-spin" />
+                Generating…
+              </>
             ) : (
-              <><FileText size={16} />Generate PDF</>
+              <>
+                <FileText size={16} />
+                Generate PDF
+              </>
             )}
           </button>
         </div>
@@ -269,7 +338,8 @@ function MarkdownToPdfPanel() {
           <div className="flex items-center justify-between">
             <label className="block font-medium text-foreground">PDF preview</label>
             <button onClick={downloadPdf} className="btn-secondary flex items-center gap-2 text-sm">
-              <Download size={15} />Download PDF
+              <Download size={15} />
+              Download PDF
             </button>
           </div>
           <iframe

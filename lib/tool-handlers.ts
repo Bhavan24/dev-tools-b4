@@ -1,5 +1,13 @@
 import { Buffer } from 'buffer'
-import { generateMockData, rgbToHex, hexToRgb, rgbToHsl, hexToHsl, hslToRgb, hslToHex } from './helpers'
+import {
+  generateMockData,
+  rgbToHex,
+  hexToRgb,
+  rgbToHsl,
+  hexToHsl,
+  hslToRgb,
+  hslToHex,
+} from './helpers'
 import QRCode from 'qrcode'
 
 interface ToolHandler {
@@ -121,8 +129,15 @@ export const toolHandlers: Record<string, ToolHandler> = {
     schema: {
       type: 'object',
       properties: {
-        type: { type: 'string', description: 'Data type: person, product, todo, note (default: person)' },
-        count: { type: 'number', description: 'Number of records to generate (default: 10)', default: 10 },
+        type: {
+          type: 'string',
+          description: 'Data type: person, product, todo, note (default: person)',
+        },
+        count: {
+          type: 'number',
+          description: 'Number of records to generate (default: 10)',
+          default: 10,
+        },
       },
       required: ['type'],
     },
@@ -361,7 +376,9 @@ export const toolHandlers: Record<string, ToolHandler> = {
             result.hex = hslToHex(h, s, l)
           }
         } else {
-          throw new Error('Invalid color format. Use HEX (#fff), RGB (255,255,255), or HSL (0,0%,100%)')
+          throw new Error(
+            'Invalid color format. Use HEX (#fff), RGB (255,255,255), or HSL (0,0%,100%)'
+          )
         }
 
         return result
@@ -383,24 +400,24 @@ export const toolHandlers: Record<string, ToolHandler> = {
     handler: async (input) => {
       const { filename } = input
       const mimeTypes: Record<string, string> = {
-        'json': 'application/json',
-        'xml': 'application/xml',
-        'html': 'text/html',
-        'css': 'text/css',
-        'js': 'application/javascript',
-        'txt': 'text/plain',
-        'pdf': 'application/pdf',
-        'png': 'image/png',
-        'jpg': 'image/jpeg',
-        'jpeg': 'image/jpeg',
-        'gif': 'image/gif',
-        'svg': 'image/svg+xml',
-        'mp4': 'video/mp4',
-        'mp3': 'audio/mpeg',
-        'zip': 'application/zip',
-        'yaml': 'application/yaml',
-        'yml': 'application/yaml',
-        'csv': 'text/csv',
+        json: 'application/json',
+        xml: 'application/xml',
+        html: 'text/html',
+        css: 'text/css',
+        js: 'application/javascript',
+        txt: 'text/plain',
+        pdf: 'application/pdf',
+        png: 'image/png',
+        jpg: 'image/jpeg',
+        jpeg: 'image/jpeg',
+        gif: 'image/gif',
+        svg: 'image/svg+xml',
+        mp4: 'video/mp4',
+        mp3: 'audio/mpeg',
+        zip: 'application/zip',
+        yaml: 'application/yaml',
+        yml: 'application/yaml',
+        csv: 'text/csv',
       }
       const ext = filename.split('.').pop()?.toLowerCase() || ''
       return mimeTypes[ext] || 'application/octet-stream'
@@ -986,7 +1003,11 @@ export const toolHandlers: Record<string, ToolHandler> = {
       type: 'object',
       properties: {
         input: { type: 'string', description: 'Domain to convert' },
-        action: { type: 'string', enum: ['toAscii', 'toUnicode'], description: 'Conversion direction' },
+        action: {
+          type: 'string',
+          enum: ['toAscii', 'toUnicode'],
+          description: 'Conversion direction',
+        },
       },
       required: ['input', 'action'],
     },
@@ -1024,7 +1045,11 @@ export const toolHandlers: Record<string, ToolHandler> = {
       type: 'object',
       properties: {
         text: { type: 'string', description: 'Text to convert' },
-        case: { type: 'string', description: 'Target case: uppercase, lowercase, capitalize, camelCase, snake_case, kebab-case, PascalCase' },
+        case: {
+          type: 'string',
+          description:
+            'Target case: uppercase, lowercase, capitalize, camelCase, snake_case, kebab-case, PascalCase',
+        },
       },
       required: ['text', 'case'],
     },
@@ -1043,16 +1068,27 @@ export const toolHandlers: Record<string, ToolHandler> = {
           result.converted = text.charAt(0).toUpperCase() + text.slice(1).toLowerCase()
           break
         case 'camelCase':
-          result.converted = text.replace(/[\s_-]+(.)/g, (_: string, char: string) => char.toUpperCase()).replace(/^(.)/, (match: string) => match.toLowerCase())
+          result.converted = text
+            .replace(/[\s_-]+(.)/g, (_: string, char: string) => char.toUpperCase())
+            .replace(/^(.)/, (match: string) => match.toLowerCase())
           break
         case 'snake_case':
-          result.converted = text.replace(/([a-z])([A-Z])/g, '$1_$2').replace(/[\s-]+/g, '_').toLowerCase()
+          result.converted = text
+            .replace(/([a-z])([A-Z])/g, '$1_$2')
+            .replace(/[\s-]+/g, '_')
+            .toLowerCase()
           break
         case 'kebab-case':
-          result.converted = text.replace(/([a-z])([A-Z])/g, '$1-$2').replace(/[\s_]+/g, '-').toLowerCase()
+          result.converted = text
+            .replace(/([a-z])([A-Z])/g, '$1-$2')
+            .replace(/[\s_]+/g, '-')
+            .toLowerCase()
           break
         case 'PascalCase':
-          result.converted = text.split(/[\s_-]+/).map((word: string) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join('')
+          result.converted = text
+            .split(/[\s_-]+/)
+            .map((word: string) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+            .join('')
           break
         default:
           throw new Error('Invalid case type')
@@ -1067,7 +1103,10 @@ export const toolHandlers: Record<string, ToolHandler> = {
       type: 'object',
       properties: {
         value: { type: 'number', description: 'Value to convert' },
-        fromUnit: { type: 'string', description: 'Source unit (m, km, ft, mi, kg, lb, g, oz, C, F)' },
+        fromUnit: {
+          type: 'string',
+          description: 'Source unit (m, km, ft, mi, kg, lb, g, oz, C, F)',
+        },
         toUnit: { type: 'string', description: 'Target unit' },
       },
       required: ['value', 'fromUnit', 'toUnit'],
@@ -1088,7 +1127,11 @@ export const toolHandlers: Record<string, ToolHandler> = {
       const conversion = conversions[fromUnit][toUnit]
       if (!conversion) throw new Error(`Cannot convert from ${fromUnit} to ${toUnit}`)
       const converted = value * conversion
-      return { original: `${value} ${fromUnit}`, converted: `${converted.toFixed(4)} ${toUnit}`, value: parseFloat(converted.toFixed(4)) }
+      return {
+        original: `${value} ${fromUnit}`,
+        converted: `${converted.toFixed(4)} ${toUnit}`,
+        value: parseFloat(converted.toFixed(4)),
+      }
     },
   },
 
@@ -1097,14 +1140,23 @@ export const toolHandlers: Record<string, ToolHandler> = {
     schema: {
       type: 'object',
       properties: {
-        count: { type: 'number', description: 'Number of UUIDs to generate (default: 1, max: 100)', default: 1 },
+        count: {
+          type: 'number',
+          description: 'Number of UUIDs to generate (default: 1, max: 100)',
+          default: 1,
+        },
       },
       required: [],
     },
     handler: async (input) => {
       const { count = 1 } = input
       const limit = Math.min(Math.max(count, 1), 100)
-      const generateUUID = () => 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c: string) => { const r = (Math.random() * 16) | 0; const v = c === 'x' ? r : (r & 0x3) | 0x8; return v.toString(16) })
+      const generateUUID = () =>
+        'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c: string) => {
+          const r = (Math.random() * 16) | 0
+          const v = c === 'x' ? r : (r & 0x3) | 0x8
+          return v.toString(16)
+        })
       const uuids = Array.from({ length: limit }, generateUUID)
       return { count: uuids.length, uuids }
     },
@@ -1124,7 +1176,8 @@ export const toolHandlers: Record<string, ToolHandler> = {
       const { text, algorithm } = input
       const crypto = require('crypto')
       const validAlgorithms = ['md5', 'sha1', 'sha256', 'sha512']
-      if (!validAlgorithms.includes(algorithm)) throw new Error(`Invalid algorithm. Use: ${validAlgorithms.join(', ')}`)
+      if (!validAlgorithms.includes(algorithm))
+        throw new Error(`Invalid algorithm. Use: ${validAlgorithms.join(', ')}`)
       const hash = crypto.createHash(algorithm).update(text).digest('hex')
       return { text, algorithm, hash }
     },
@@ -1135,7 +1188,11 @@ export const toolHandlers: Record<string, ToolHandler> = {
     schema: {
       type: 'object',
       properties: {
-        length: { type: 'number', description: 'Password length (8-128, default: 16)', default: 16 },
+        length: {
+          type: 'number',
+          description: 'Password length (8-128, default: 16)',
+          default: 16,
+        },
         uppercase: { type: 'boolean', description: 'Include uppercase letters', default: true },
         lowercase: { type: 'boolean', description: 'Include lowercase letters', default: true },
         numbers: { type: 'boolean', description: 'Include numbers', default: true },
@@ -1144,7 +1201,13 @@ export const toolHandlers: Record<string, ToolHandler> = {
       required: [],
     },
     handler: async (input) => {
-      const { length = 16, uppercase = true, lowercase = true, numbers = true, symbols = true } = input
+      const {
+        length = 16,
+        uppercase = true,
+        lowercase = true,
+        numbers = true,
+        symbols = true,
+      } = input
       if (length < 8 || length > 128) throw new Error('Password length must be between 8 and 128')
       let chars = ''
       if (uppercase) chars += 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
@@ -1153,8 +1216,16 @@ export const toolHandlers: Record<string, ToolHandler> = {
       if (symbols) chars += '!@#$%^&*()_+-=[]{}|;:,.<>?'
       if (!chars) throw new Error('At least one character type must be selected')
       let password = ''
-      for (let i = 0; i < length; i++) password += chars.charAt(Math.floor(Math.random() * chars.length))
-      return { password, length, hasUppercase: uppercase, hasLowercase: lowercase, hasNumbers: numbers, hasSymbols: symbols }
+      for (let i = 0; i < length; i++)
+        password += chars.charAt(Math.floor(Math.random() * chars.length))
+      return {
+        password,
+        length,
+        hasUppercase: uppercase,
+        hasLowercase: lowercase,
+        hasNumbers: numbers,
+        hasSymbols: symbols,
+      }
     },
   },
 
@@ -1163,7 +1234,12 @@ export const toolHandlers: Record<string, ToolHandler> = {
     schema: {
       type: 'object',
       properties: {
-        category: { type: 'string', description: 'Data category: person, text, web, location, time, finance, miscellaneous (default: person)', default: 'person' },
+        category: {
+          type: 'string',
+          description:
+            'Data category: person, text, web, location, time, finance, miscellaneous (default: person)',
+          default: 'person',
+        },
       },
       required: [],
     },
@@ -1250,7 +1326,11 @@ export const toolHandlers: Record<string, ToolHandler> = {
       type: 'object',
       properties: {
         code: { type: 'string', description: 'Code to clean' },
-        language: { type: 'string', description: 'Language: js, css, html, py, java (default: js)', default: 'js' },
+        language: {
+          type: 'string',
+          description: 'Language: js, css, html, py, java (default: js)',
+          default: 'js',
+        },
       },
       required: ['code'],
     },
@@ -1312,7 +1392,11 @@ export const toolHandlers: Record<string, ToolHandler> = {
       type: 'object',
       properties: {
         url: { type: 'string', description: 'URL to check for redirects' },
-        maxRedirects: { type: 'number', description: 'Maximum redirects to follow (default: 10)', default: 10 },
+        maxRedirects: {
+          type: 'number',
+          description: 'Maximum redirects to follow (default: 10)',
+          default: 10,
+        },
       },
       required: ['url'],
     },
@@ -1345,9 +1429,21 @@ export const toolHandlers: Record<string, ToolHandler> = {
       type: 'object',
       properties: {
         url: { type: 'string', description: 'API endpoint URL' },
-        method: { type: 'string', description: 'HTTP method (GET, POST, PUT, DELETE, PATCH)', default: 'GET' },
-        headers: { type: 'string', description: 'JSON string of headers (e.g., {"Authorization": "Bearer token"})', default: '{}' },
-        body: { type: 'string', description: 'Request body as JSON string (for POST/PUT/PATCH)', default: '' },
+        method: {
+          type: 'string',
+          description: 'HTTP method (GET, POST, PUT, DELETE, PATCH)',
+          default: 'GET',
+        },
+        headers: {
+          type: 'string',
+          description: 'JSON string of headers (e.g., {"Authorization": "Bearer token"})',
+          default: '{}',
+        },
+        body: {
+          type: 'string',
+          description: 'Request body as JSON string (for POST/PUT/PATCH)',
+          default: '',
+        },
       },
       required: ['url'],
     },
@@ -1363,7 +1459,11 @@ export const toolHandlers: Record<string, ToolHandler> = {
       type: 'object',
       properties: {
         text: { type: 'string', description: 'Text or URL to encode in the QR code' },
-        size: { type: 'number', description: 'Size of the QR code in pixels (default: 256)', default: 256 },
+        size: {
+          type: 'number',
+          description: 'Size of the QR code in pixels (default: 256)',
+          default: 256,
+        },
         errorCorrectionLevel: {
           type: 'string',
           enum: ['L', 'M', 'Q', 'H'],
@@ -1449,7 +1549,8 @@ export const toolHandlers: Record<string, ToolHandler> = {
     },
     handler: async (input) => {
       const { urls } = input as { urls: string[] }
-      if (!Array.isArray(urls) || urls.length === 0) throw new Error('urls must be a non-empty array')
+      if (!Array.isArray(urls) || urls.length === 0)
+        throw new Error('urls must be a non-empty array')
       if (urls.length > 20) throw new Error('Maximum 20 URLs per request')
 
       const results = await Promise.all(
@@ -1479,7 +1580,7 @@ export const toolHandlers: Record<string, ToolHandler> = {
               error: e.message || 'Request failed',
             }
           }
-        }),
+        })
       )
       const reachable = results.filter((r) => r.ok).length
       return { results, reachable, failed: results.length - reachable, total: results.length }
@@ -1487,12 +1588,16 @@ export const toolHandlers: Record<string, ToolHandler> = {
   },
 
   'jsonpath-finder': {
-    description: 'Find all matches for a JSONPath expression in a JSON document, returning results and matched paths',
+    description:
+      'Find all matches for a JSONPath expression in a JSON document, returning results and matched paths',
     schema: {
       type: 'object',
       properties: {
         json: { type: 'string', description: 'JSON document to search (as a string)' },
-        path: { type: 'string', description: 'JSONPath expression (e.g. $.users[?(@.active==true)].name)' },
+        path: {
+          type: 'string',
+          description: 'JSONPath expression (e.g. $.users[?(@.active==true)].name)',
+        },
       },
       required: ['json', 'path'],
     },
@@ -1512,11 +1617,15 @@ export const toolHandlers: Record<string, ToolHandler> = {
   },
 
   'sql-to-mongodb': {
-    description: 'Convert a SQL SELECT/INSERT/UPDATE/DELETE query to the equivalent MongoDB operation',
+    description:
+      'Convert a SQL SELECT/INSERT/UPDATE/DELETE query to the equivalent MongoDB operation',
     schema: {
       type: 'object',
       properties: {
-        sql: { type: 'string', description: 'SQL query to convert (SELECT, INSERT, UPDATE, or DELETE)' },
+        sql: {
+          type: 'string',
+          description: 'SQL query to convert (SELECT, INSERT, UPDATE, or DELETE)',
+        },
       },
       required: ['sql'],
     },
@@ -1667,8 +1776,14 @@ export const toolHandlers: Record<string, ToolHandler> = {
     schema: {
       type: 'object',
       properties: {
-        imageBase64: { type: 'string', description: 'Base64-encoded image (PNG, JPEG, JPG, or WebP)' },
-        mimeType: { type: 'string', description: 'MIME type of the image (image/png, image/jpeg, image/webp)' },
+        imageBase64: {
+          type: 'string',
+          description: 'Base64-encoded image (PNG, JPEG, JPG, or WebP)',
+        },
+        mimeType: {
+          type: 'string',
+          description: 'MIME type of the image (image/png, image/jpeg, image/webp)',
+        },
       },
       required: ['imageBase64', 'mimeType'],
     },
@@ -1790,7 +1905,34 @@ function formatXml(xml: string, indent: number): string {
 }
 
 function formatSql(sql: string): string {
-  const keywords = ['SELECT', 'FROM', 'WHERE', 'AND', 'OR', 'JOIN', 'LEFT', 'RIGHT', 'INNER', 'OUTER', 'ON', 'GROUP', 'BY', 'ORDER', 'LIMIT', 'OFFSET', 'INSERT', 'INTO', 'VALUES', 'UPDATE', 'SET', 'DELETE', 'CREATE', 'TABLE', 'ALTER', 'DROP']
+  const keywords = [
+    'SELECT',
+    'FROM',
+    'WHERE',
+    'AND',
+    'OR',
+    'JOIN',
+    'LEFT',
+    'RIGHT',
+    'INNER',
+    'OUTER',
+    'ON',
+    'GROUP',
+    'BY',
+    'ORDER',
+    'LIMIT',
+    'OFFSET',
+    'INSERT',
+    'INTO',
+    'VALUES',
+    'UPDATE',
+    'SET',
+    'DELETE',
+    'CREATE',
+    'TABLE',
+    'ALTER',
+    'DROP',
+  ]
   let result = sql.toUpperCase()
 
   keywords.forEach((kw) => {
@@ -1849,7 +1991,8 @@ function generateJavaClass(obj: any, className: string): string {
   let code = `public class ${className} {\n`
 
   Object.entries(obj).forEach(([key, value]) => {
-    const type = typeof value === 'number' ? 'int' : typeof value === 'boolean' ? 'boolean' : 'String'
+    const type =
+      typeof value === 'number' ? 'int' : typeof value === 'boolean' ? 'boolean' : 'String'
     code += `  private ${type} ${key};\n`
   })
 
@@ -1980,24 +2123,18 @@ function cleanCode(code: string, language: string): string {
   let cleaned = code
 
   if (language === 'js') {
-    cleaned = cleaned
-      .replace(/\/\*[\s\S]*?\*\//g, '')
-      .replace(/\/\/.*/g, '')
+    cleaned = cleaned.replace(/\/\*[\s\S]*?\*\//g, '').replace(/\/\/.*/g, '')
   } else if (language === 'css') {
-    cleaned = cleaned
-      .replace(/\/\*[\s\S]*?\*\//g, '')
+    cleaned = cleaned.replace(/\/\*[\s\S]*?\*\//g, '')
   } else if (language === 'html') {
-    cleaned = cleaned
-      .replace(/<!--[\s\S]*?-->/g, '')
+    cleaned = cleaned.replace(/<!--[\s\S]*?-->/g, '')
   } else if (language === 'py') {
     cleaned = cleaned
       .replace(/#.*/g, '')
       .replace(/'''[\s\S]*?'''/g, '')
       .replace(/"""[\s\S]*?"""/g, '')
   } else if (language === 'java') {
-    cleaned = cleaned
-      .replace(/\/\*[\s\S]*?\*\//g, '')
-      .replace(/\/\/.*/g, '')
+    cleaned = cleaned.replace(/\/\*[\s\S]*?\*\//g, '').replace(/\/\/.*/g, '')
   }
 
   cleaned = cleaned
@@ -2008,7 +2145,10 @@ function cleanCode(code: string, language: string): string {
   return cleaned
 }
 
-function computeDiff(lines1: string[], lines2: string[]): Array<{ type: string; lineNum: number; content: string }> {
+function computeDiff(
+  lines1: string[],
+  lines2: string[]
+): Array<{ type: string; lineNum: number; content: string }> {
   const diff: Array<{ type: string; lineNum: number; content: string }> = []
   const maxLines = Math.max(lines1.length, lines2.length)
 
@@ -2043,7 +2183,21 @@ function validateHtml(html: string): Array<{ line: number; message: string }> {
   const errors: Array<{ line: number; message: string }> = []
   const lines = html.split('\n')
   const tagStack: string[] = []
-  const selfClosing = ['br', 'hr', 'img', 'input', 'link', 'meta', 'area', 'base', 'col', 'embed', 'source', 'track', 'wbr']
+  const selfClosing = [
+    'br',
+    'hr',
+    'img',
+    'input',
+    'link',
+    'meta',
+    'area',
+    'base',
+    'col',
+    'embed',
+    'source',
+    'track',
+    'wbr',
+  ]
 
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i]!
@@ -2144,7 +2298,12 @@ async function convertCurrency(amount: number, from: string, to: string): Promis
   }
 }
 
-async function testRestApi(url: string, method: string, headersStr: string, bodyStr: string): Promise<any> {
+async function testRestApi(
+  url: string,
+  method: string,
+  headersStr: string,
+  bodyStr: string
+): Promise<any> {
   try {
     let headers: Record<string, string> = {}
     try {
@@ -2158,7 +2317,12 @@ async function testRestApi(url: string, method: string, headersStr: string, body
       headers,
     }
 
-    if (bodyStr && (method.toUpperCase() === 'POST' || method.toUpperCase() === 'PUT' || method.toUpperCase() === 'PATCH')) {
+    if (
+      bodyStr &&
+      (method.toUpperCase() === 'POST' ||
+        method.toUpperCase() === 'PUT' ||
+        method.toUpperCase() === 'PATCH')
+    ) {
       try {
         JSON.parse(bodyStr)
         options.body = bodyStr
@@ -2192,7 +2356,12 @@ async function testRestApi(url: string, method: string, headersStr: string, body
 
 // ─── SQL to MongoDB converter ─────────────────────────────────────────────────
 
-function convertSqlToMongodb(sql: string): { operation: string; collection: string; query: string; explanation: string } {
+function convertSqlToMongodb(sql: string): {
+  operation: string
+  collection: string
+  query: string
+  explanation: string
+} {
   const upper = sql.toUpperCase().trimStart()
 
   if (upper.startsWith('SELECT')) return convertSelect(sql)
@@ -2200,7 +2369,9 @@ function convertSqlToMongodb(sql: string): { operation: string; collection: stri
   if (upper.startsWith('UPDATE')) return convertUpdate(sql)
   if (upper.startsWith('DELETE')) return convertDelete(sql)
 
-  throw new Error('Unsupported SQL statement. Only SELECT, INSERT, UPDATE, and DELETE are supported.')
+  throw new Error(
+    'Unsupported SQL statement. Only SELECT, INSERT, UPDATE, and DELETE are supported.'
+  )
 }
 
 function sqlWhereToMongo(where: string): Record<string, any> {
@@ -2209,7 +2380,9 @@ function sqlWhereToMongo(where: string): Record<string, any> {
 
   const conditions = where.split(/\bAND\b/i).map((c) => c.trim())
   for (const cond of conditions) {
-    const m = cond.match(/^([`'"]?\w+[`'"]?)\s*(=|!=|<>|>=|<=|>|<|LIKE|IS NULL|IS NOT NULL)\s*(.*)$/i)
+    const m = cond.match(
+      /^([`'"]?\w+[`'"]?)\s*(=|!=|<>|>=|<=|>|<|LIKE|IS NULL|IS NOT NULL)\s*(.*)$/i
+    )
     if (!m) continue
     const [, rawField, op, rawVal] = m
     const field = rawField!.replace(/[`'"]/g, '')
@@ -2217,8 +2390,12 @@ function sqlWhereToMongo(where: string): Record<string, any> {
     const upperOp = op!.toUpperCase()
 
     if (upperOp === '=' || upperOp === 'IS NOT NULL') {
-      if (upperOp === 'IS NOT NULL') { filter[field!] = { $exists: true, $ne: null }; continue }
-      const coerced = val === 'true' ? true : val === 'false' ? false : isNaN(Number(val)) ? val : Number(val)
+      if (upperOp === 'IS NOT NULL') {
+        filter[field!] = { $exists: true, $ne: null }
+        continue
+      }
+      const coerced =
+        val === 'true' ? true : val === 'false' ? false : isNaN(Number(val)) ? val : Number(val)
       filter[field!] = coerced
     } else if (upperOp === '!=' || upperOp === '<>') {
       filter[field!] = { $ne: isNaN(Number(val)) ? val : Number(val) }
@@ -2241,7 +2418,9 @@ function sqlWhereToMongo(where: string): Record<string, any> {
 }
 
 function convertSelect(sql: string): ReturnType<typeof convertSqlToMongodb> {
-  const m = sql.match(/SELECT\s+([\s\S]*?)\s+FROM\s+(\w+)(?:\s+WHERE\s+([\s\S]*?))?(?:\s+ORDER\s+BY\s+([\s\S]*?))?(?:\s+LIMIT\s+(\d+))?(?:\s+OFFSET\s+(\d+))?$/i)
+  const m = sql.match(
+    /SELECT\s+([\s\S]*?)\s+FROM\s+(\w+)(?:\s+WHERE\s+([\s\S]*?))?(?:\s+ORDER\s+BY\s+([\s\S]*?))?(?:\s+LIMIT\s+(\d+))?(?:\s+OFFSET\s+(\d+))?$/i
+  )
   if (!m) throw new Error('Could not parse SELECT statement')
   const [, cols, table, where, orderBy, limit, offset] = m
   const collection = table!
@@ -2253,7 +2432,9 @@ function convertSelect(sql: string): ReturnType<typeof convertSqlToMongodb> {
   const colList = cols!.trim()
   if (colList !== '*') {
     const proj: Record<string, number> = {}
-    colList.split(',').forEach((c) => { proj[c.trim().replace(/[`'"]/g, '')] = 1 })
+    colList.split(',').forEach((c) => {
+      proj[c.trim().replace(/[`'"]/g, '')] = 1
+    })
     parts.push(`,\n  ${JSON.stringify(proj)}`)
   }
   parts.push(')')
@@ -2262,7 +2443,7 @@ function convertSelect(sql: string): ReturnType<typeof convertSqlToMongodb> {
     const sort: Record<string, number> = {}
     orderBy.split(',').forEach((s) => {
       const [col, dir] = s.trim().split(/\s+/)
-      sort[col!.replace(/[`'"]/g, '')] = (dir?.toUpperCase() === 'DESC') ? -1 : 1
+      sort[col!.replace(/[`'"]/g, '')] = dir?.toUpperCase() === 'DESC' ? -1 : 1
     })
     parts.push(`\n  .sort(${JSON.stringify(sort)})`)
   }
@@ -2289,7 +2470,9 @@ function convertInsert(sql: string): ReturnType<typeof convertSqlToMongodb> {
     return t === 'true' ? true : t === 'false' ? false : isNaN(Number(t)) ? t : Number(t)
   })
   const doc: Record<string, any> = {}
-  keys.forEach((k, i) => { doc[k] = values[i] })
+  keys.forEach((k, i) => {
+    doc[k] = values[i]
+  })
 
   return {
     operation: 'insertOne',
