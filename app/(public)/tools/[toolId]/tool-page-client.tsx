@@ -29,6 +29,7 @@ import { SqlToMongodbTool } from '@/components/tools/sql-to-mongodb-tool'
 import { PdfEditorTool } from '@/components/tools/pdf-editor-tool'
 import { PdfConverterTool } from '@/components/tools/pdf-converter-tool'
 import { ExcelConverterTool } from '@/components/tools/excel-converter-tool'
+import { AITools } from '@/components/tools/ai-tools/ai-tools'
 
 interface ToolPageClientProps {
   toolId: string
@@ -86,6 +87,16 @@ const CUSTOM_TOOL_REGISTRY: Record<string, (id: string) => React.ReactElement> =
   'docx-to-pdf': (id) => <PdfConverterTool toolId={id} />,
   'excel-to-json': (_id) => <ExcelConverterTool toolId="excel-to-json" />,
   'excel-to-markdown': (_id) => <ExcelConverterTool toolId="excel-to-markdown" />,
+  // AI Tools
+  'ai-chat': (id) => <AITools toolId={id} />,
+  'code-generator': (id) => <AITools toolId={id} />,
+  'content-summarizer': (id) => <AITools toolId={id} />,
+  'sentiment-analyzer': (id) => <AITools toolId={id} />,
+  'ai-code-reviewer': (id) => <AITools toolId={id} />,
+  'ai-doc-generator': (id) => <AITools toolId={id} />,
+  'ai-test-generator': (id) => <AITools toolId={id} />,
+  'ai-sql-builder': (id) => <AITools toolId={id} />,
+  'ai-schema-generator': (id) => <AITools toolId={id} />,
 }
 
 const SINGLE_LINE_TOOLS = new Set(['timestamp-converter', 'url-splitter', 'mime-type-checker'])

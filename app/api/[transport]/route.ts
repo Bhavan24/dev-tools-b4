@@ -1,6 +1,7 @@
 import { createMcpHandler } from 'mcp-handler'
 import { z } from 'zod'
 import { toolHandlers } from '@/lib/tool-handlers'
+import { aiToolHandlers } from '@/lib/ai-tool-handlers'
 
 // Helper to convert JSON Schema property to Zod validator
 function jsonSchemaPropertyToZod(prop: Record<string, any>, isRequired: boolean): z.ZodTypeAny {
@@ -45,10 +46,12 @@ function buildZodShape(
   return shape
 }
 
+const allHandlers = { ...toolHandlers, ...aiToolHandlers }
+
 const handler = createMcpHandler(
   (server) => {
-    // Register all tools from toolHandlers
-    Object.entries(toolHandlers).forEach(([name, config]) => {
+    // Register all tools from toolHandlers and aiToolHandlers
+    Object.entries(allHandlers).forEach(([name, config]) => {
       const shape = buildZodShape(config.schema.properties, config.schema.required)
       const inputSchema = Object.keys(shape).length > 0 ? z.object(shape) : z.object({})
 

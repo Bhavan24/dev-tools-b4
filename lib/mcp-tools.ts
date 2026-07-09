@@ -77,6 +77,16 @@ export const MCP_TOOL_IDS: readonly string[] = [
   'docx-to-markdown',
   'html-to-markdown',
   'markdown-to-html',
+  // AI Tools (credentials passed as parameters in each call)
+  'ai-chat',
+  'code-generator',
+  'content-summarizer',
+  'sentiment-analyzer',
+  'ai-code-reviewer',
+  'ai-doc-generator',
+  'ai-test-generator',
+  'ai-sql-builder',
+  'ai-schema-generator',
 ] as const
 
 export const MCP_TOOL_ID_SET: ReadonlySet<string> = new Set(MCP_TOOL_IDS)
