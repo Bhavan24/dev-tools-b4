@@ -450,6 +450,27 @@ export const TOOLS = [
 
   // Document Converter Tools
   {
+    id: 'image-to-pdf',
+    name: 'Image to PDF',
+    category: TOOLS_CATEGORIES.CONVERTER,
+    description: 'Convert PNG, JPG, or WebP images to a PDF file. Arrange multiple images, choose page size, and download as PDF.',
+    shortDescription: 'Images → PDF',
+  },
+  {
+    id: 'pdf-to-images',
+    name: 'PDF to Images',
+    category: TOOLS_CATEGORIES.CONVERTER,
+    description: 'Convert each page of a PDF to PNG or JPEG images. Choose output scale/resolution and download all pages.',
+    shortDescription: 'PDF → PNG/JPEG images',
+  },
+  {
+    id: 'docx-to-pdf',
+    name: 'DOCX to PDF',
+    category: TOOLS_CATEGORIES.CONVERTER,
+    description: 'Convert Microsoft Word (.docx) documents to PDF files server-side.',
+    shortDescription: 'DOCX → PDF',
+  },
+  {
     id: 'pdf-to-markdown',
     name: 'PDF / Markdown Converter',
     category: TOOLS_CATEGORIES.CONVERTER,
@@ -708,5 +729,13 @@ export const TOOLS = [
     description:
       'Upload a PNG, JPEG, JPG, or WebP image and generate favicons in all standard sizes',
     shortDescription: 'Generate favicons from image',
+  },
+  {
+    id: 'pdf-editor',
+    name: 'PDF Editor',
+    category: TOOLS_CATEGORIES.DEVELOPER,
+    description:
+      'Edit PDF files: add text and image annotations, rotate or delete pages, merge multiple PDFs into one, or split a PDF by page ranges.',
+    shortDescription: 'Edit, merge, and split PDFs',
   },
 ] as const satisfies Tool[]

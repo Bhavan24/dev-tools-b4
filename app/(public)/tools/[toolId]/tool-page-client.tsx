@@ -26,6 +26,8 @@ import { ImageDataUriTool } from '@/components/tools/image-data-uri-tool'
 import { LinkCheckerTool } from '@/components/tools/link-checker-tool'
 import { JsonpathFinderTool } from '@/components/tools/jsonpath-finder-tool'
 import { SqlToMongodbTool } from '@/components/tools/sql-to-mongodb-tool'
+import { PdfEditorTool } from '@/components/tools/pdf-editor-tool'
+import { PdfConverterTool } from '@/components/tools/pdf-converter-tool'
 
 interface ToolPageClientProps {
   toolId: string
@@ -77,6 +79,10 @@ const CUSTOM_TOOL_REGISTRY: Record<string, (id: string) => React.ReactElement> =
   'link-checker': (id) => <LinkCheckerTool toolId={id} />,
   'jsonpath-finder': (id) => <JsonpathFinderTool toolId={id} />,
   'sql-to-mongodb': (id) => <SqlToMongodbTool toolId={id} />,
+  'pdf-editor': (_id) => <PdfEditorTool />,
+  'image-to-pdf': (id) => <PdfConverterTool toolId={id} />,
+  'pdf-to-images': (id) => <PdfConverterTool toolId={id} />,
+  'docx-to-pdf': (id) => <PdfConverterTool toolId={id} />,
 }
 
 const SINGLE_LINE_TOOLS = new Set(['timestamp-converter', 'url-splitter', 'mime-type-checker'])
