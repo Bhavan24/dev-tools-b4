@@ -16,6 +16,8 @@ import { ValidationTools } from '@/components/tools/validation-tools'
 import { ConverterTools } from '@/components/tools/converter-tools'
 import { ApiTesterTool } from '@/components/tools/api-tester-tool'
 import { NotesTool } from '@/components/tools/notes-tool'
+import { TimerTool } from '@/components/tools/timer-tool'
+import { CounterTool } from '@/components/tools/counter-tool'
 import { ImageTools } from '@/components/tools/image-tools'
 import { PdfMarkdownTool } from '@/components/tools/pdf-markdown-tool'
 import { DocxMarkdownTool } from '@/components/tools/docx-markdown-tool'
@@ -69,6 +71,8 @@ const CUSTOM_TOOL_REGISTRY: Record<string, (id: string) => React.ReactElement> =
   'currency-converter': (id) => <ConverterTools toolId={id} />,
   'rest-api-tester': (id) => <ApiTesterTool toolId={id} />,
   notes: (id) => <NotesTool toolId={id} />,
+  stopwatch: () => <TimerTool />,
+  counter: () => <CounterTool />,
   'qr-code-generator': (id) => <ImageTools toolId={id} />,
   'favicon-generator': (id) => <ImageTools toolId={id} />,
   'pdf-to-markdown': (id) => <PdfMarkdownTool toolId={id} />,

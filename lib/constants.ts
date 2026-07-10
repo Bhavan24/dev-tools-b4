@@ -662,6 +662,20 @@ export const TOOLS = [
     shortDescription: 'Save notes locally',
   },
   {
+    id: 'stopwatch',
+    name: 'Stopwatch',
+    category: TOOLS_CATEGORIES.DEVELOPER,
+    description: 'Stopwatch with lap tracking, fastest/slowest lap highlights, and local storage persistence',
+    shortDescription: 'Stopwatch with laps',
+  },
+  {
+    id: 'counter',
+    name: 'Counter',
+    category: TOOLS_CATEGORIES.DEVELOPER,
+    description: 'Multiple counters with custom names, configurable step size, increment/decrement/reset, saved to local storage',
+    shortDescription: 'Multi-counter with persistence',
+  },
+  {
     id: 'qr-code-generator',
     name: 'QR Code Generator',
     category: TOOLS_CATEGORIES.DEVELOPER,

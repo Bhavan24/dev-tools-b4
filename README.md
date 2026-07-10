@@ -90,6 +90,8 @@ curl -X POST https://ai-developer-tools.vercel.app/api/mcp \
 | **QR Code Generator** | ✅ Built | ✅ | Generate QR codes from any text or URL instantly |
 | **REST API Tester** | ✅ Built | ✅ | Test REST APIs with custom headers, authentication, and request body |
 | **Notes** | ✅ Built | — | Simple text notes with local storage persistence (browser-only) |
+| **Stopwatch** | ✅ Built | — | Stopwatch with lap tracking, fastest/slowest highlights, local storage (browser-only) |
+| **Counter** | ✅ Built | — | Multiple counters with custom names, step size, increment/decrement/reset, local storage (browser-only) |
 | **Favicon Generator** | ✅ Built | — | Upload an image and generate favicons in all standard sizes + .ico + ZIP (browser-only) |
 | **SVG Viewer** | ✅ Built | — | Paste or upload SVG code and see a live rendered preview with source editing |
 
@@ -173,8 +175,8 @@ Supported providers: OpenAI, Anthropic, Google Gemini, Groq, Mistral, Azure Open
 
 ## 📊 Stats
 
-- **Total Tools**: 83
-- **Built & Ready**: 81 ✅
+- **Total Tools**: 85
+- **Built & Ready**: 83 ✅
 - **Coming Soon**: 2 🏗️
 - **MCP Enabled**: 77 ✅ (callable via `/api/mcp`)
 - **Categories**: 5 (Developer, Validation, Formatter, Converter, AI Tools)
