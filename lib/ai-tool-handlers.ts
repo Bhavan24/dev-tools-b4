@@ -1,5 +1,6 @@
 import { invokeAI } from './ai-client'
 import type { AIConfig } from './ai-client'
+import { executeResearch } from './ai-researcher-handler'
 
 interface AIToolHandler {
   description: string
@@ -13,14 +14,28 @@ interface AIToolHandler {
 }
 
 const COMMON_AI_SCHEMA_FIELDS = {
-  provider: { type: 'string', description: 'AI provider id (openai, anthropic, google, groq, mistral, azure, bedrock, ollama)' },
+  provider: {
+    type: 'string',
+    description:
+      'AI provider id (openai, anthropic, google, groq, mistral, azure, bedrock, ollama)',
+  },
   modelId: { type: 'string', description: 'Model identifier for the chosen provider' },
   apiKey: { type: 'string', description: 'API key for the provider (not required for Ollama)' },
   streaming: { type: 'boolean', description: 'Whether to stream the response (default: false)' },
 }
 
 function buildAIConfig(input: any): AIConfig {
-  const { provider, modelId, apiKey, resourceName, region, accessKeyId, secretAccessKey, baseUrl, streaming } = input
+  const {
+    provider,
+    modelId,
+    apiKey,
+    resourceName,
+    region,
+    accessKeyId,
+    secretAccessKey,
+    baseUrl,
+    streaming,
+  } = input
 
   let credentials: AIConfig['credentials']
   if (provider === 'bedrock') {
@@ -108,7 +123,10 @@ export const aiToolHandlers: Record<string, AIToolHandler> = {
       type: 'object',
       properties: {
         prompt: { type: 'string', description: 'Describe the code you want to generate' },
-        language: { type: 'string', description: 'Target programming language (e.g. TypeScript, Python, Rust)' },
+        language: {
+          type: 'string',
+          description: 'Target programming language (e.g. TypeScript, Python, Rust)',
+        },
         ...COMMON_AI_SCHEMA_FIELDS,
         resourceName: { type: 'string', description: 'Azure resource name (Azure only)' },
         region: { type: 'string', description: 'AWS region (Bedrock only)' },
@@ -266,8 +284,14 @@ export const aiToolHandlers: Record<string, AIToolHandler> = {
       type: 'object',
       properties: {
         description: { type: 'string', description: 'Natural language description of the query' },
-        dialect: { type: 'string', description: 'SQL dialect (PostgreSQL, MySQL, SQLite, MSSQL, etc.)' },
-        schema: { type: 'string', description: 'Optional table schema context to help generate accurate queries' },
+        dialect: {
+          type: 'string',
+          description: 'SQL dialect (PostgreSQL, MySQL, SQLite, MSSQL, etc.)',
+        },
+        schema: {
+          type: 'string',
+          description: 'Optional table schema context to help generate accurate queries',
+        },
         ...COMMON_AI_SCHEMA_FIELDS,
         resourceName: { type: 'string', description: 'Azure resource name (Azure only)' },
         region: { type: 'string', description: 'AWS region (Bedrock only)' },
@@ -288,13 +312,20 @@ export const aiToolHandlers: Record<string, AIToolHandler> = {
   },
 
   'ai-schema-generator': {
-    description: 'Generate JSON Schema, database schemas, or OpenAPI specs from sample data using AI',
+    description:
+      'Generate JSON Schema, database schemas, or OpenAPI specs from sample data using AI',
     systemPrompt: AI_SYSTEM_PROMPTS['ai-schema-generator'],
     schema: {
       type: 'object',
       properties: {
-        input: { type: 'string', description: 'Sample data or natural language description to generate schema from' },
-        format: { type: 'string', description: 'Output format: json-schema, openapi, sql, or prisma' },
+        input: {
+          type: 'string',
+          description: 'Sample data or natural language description to generate schema from',
+        },
+        format: {
+          type: 'string',
+          description: 'Output format: json-schema, openapi, sql, or prisma',
+        },
         ...COMMON_AI_SCHEMA_FIELDS,
         resourceName: { type: 'string', description: 'Azure resource name (Azure only)' },
         region: { type: 'string', description: 'AWS region (Bedrock only)' },
@@ -310,6 +341,81 @@ export const aiToolHandlers: Record<string, AIToolHandler> = {
       const userInput = `Generate a ${format} schema for:\n\n${input.input}`
       const result = await invokeAI(config, AI_SYSTEM_PROMPTS['ai-schema-generator'], userInput)
       return { result }
+    },
+  },
+
+  'researcher-agent': {
+    description:
+      'Deep research assistant that performs multi-step web search, fact-checking, and synthesis',
+    systemPrompt: '',
+    schema: {
+      type: 'object',
+      properties: {
+        query: { type: 'string', description: 'Research question or topic to investigate' },
+        depth: {
+          type: 'string',
+          description:
+            'Research depth: quick (1-3 searches), standard (3-6 searches), deep (6-10 searches)',
+        },
+        tavilyApiKey: {
+          type: 'string',
+          description: 'Optional Tavily API key for real-time web search (get one at tavily.com)',
+        },
+        ...COMMON_AI_SCHEMA_FIELDS,
+        resourceName: { type: 'string', description: 'Azure resource name (Azure only)' },
+        region: { type: 'string', description: 'AWS region (Bedrock only)' },
+        accessKeyId: { type: 'string', description: 'AWS access key ID (Bedrock only)' },
+        secretAccessKey: { type: 'string', description: 'AWS secret access key (Bedrock only)' },
+        baseUrl: { type: 'string', description: 'Ollama base URL (Ollama only)' },
+      },
+      required: ['query', 'provider', 'modelId'],
+    },
+    handler: async (input) => {
+      const aiConfig = buildAIConfig(input)
+      const result = await executeResearch({
+        aiConfig,
+        tavilyApiKey: input.tavilyApiKey,
+        query: input.query,
+        depth: input.depth || 'standard',
+      })
+      return result
+    },
+  },
+
+  'workflow-builder': {
+    description: 'Execute a visual AI workflow from a JSON workflow definition',
+    systemPrompt: '',
+    schema: {
+      type: 'object',
+      properties: {
+        workflow: {
+          type: 'string',
+          description: 'JSON string of WorkflowDefinition (exported from the Workflow Builder UI)',
+        },
+        input: { type: 'string', description: 'Input data for the workflow entry node' },
+        ...COMMON_AI_SCHEMA_FIELDS,
+        resourceName: { type: 'string', description: 'Azure resource name (Azure only)' },
+        region: { type: 'string', description: 'AWS region (Bedrock only)' },
+        accessKeyId: { type: 'string', description: 'AWS access key ID (Bedrock only)' },
+        secretAccessKey: { type: 'string', description: 'AWS secret access key (Bedrock only)' },
+        baseUrl: { type: 'string', description: 'Ollama base URL (Ollama only)' },
+      },
+      required: ['workflow', 'input', 'provider', 'modelId'],
+    },
+    handler: async (input) => {
+      // Executed via the dedicated /api/tools/ai/workflow-builder route for full streaming support.
+      // Direct handler: parse and execute synchronously.
+      let workflowDef: any
+      try {
+        workflowDef = JSON.parse(input.workflow)
+      } catch {
+        throw new Error('workflow must be a valid JSON string')
+      }
+      const aiConfig = buildAIConfig(input)
+      // Dynamic import to avoid loading ReactFlow on server startup
+      const { executeWorkflow } = await import('./workflow-engine')
+      const result = await executeWorkflow(workflowDef, input.input, aiConfig)
+      return result
     },
   },
 }

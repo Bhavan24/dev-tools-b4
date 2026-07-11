@@ -21,7 +21,7 @@ export type AIConfig = {
   streaming?: boolean
 }
 
-function resolveModel(config: AIConfig): LanguageModel {
+export function resolveModel(config: AIConfig): LanguageModel {
   const { provider, modelId, credentials } = config
 
   switch (provider) {

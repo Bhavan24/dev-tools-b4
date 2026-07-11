@@ -32,6 +32,16 @@ import { PdfEditorTool } from '@/components/tools/pdf-editor-tool'
 import { PdfConverterTool } from '@/components/tools/pdf-converter-tool'
 import { ExcelConverterTool } from '@/components/tools/excel-converter-tool'
 import { AITools } from '@/components/tools/ai-tools/ai-tools'
+import { ResearcherAgentTool } from '@/components/tools/ai-tools/researcher-agent/researcher-agent-tool'
+import dynamic from 'next/dynamic'
+
+const WorkflowBuilderTool = dynamic(
+  () =>
+    import('@/components/tools/ai-tools/workflow-builder/workflow-builder-tool').then(
+      (m) => m.WorkflowBuilderTool
+    ),
+  { ssr: false }
+)
 
 interface ToolPageClientProps {
   toolId: string
@@ -92,6 +102,8 @@ const CUSTOM_TOOL_REGISTRY: Record<string, (id: string) => React.ReactElement> =
   'excel-to-json': (_id) => <ExcelConverterTool toolId="excel-to-json" />,
   'excel-to-markdown': (_id) => <ExcelConverterTool toolId="excel-to-markdown" />,
   // AI Tools
+  'researcher-agent': (_id) => <ResearcherAgentTool />,
+  'workflow-builder': (_id) => <WorkflowBuilderTool />,
   'ai-chat': (id) => <AITools toolId={id} />,
   'code-generator': (id) => <AITools toolId={id} />,
   'content-summarizer': (id) => <AITools toolId={id} />,
@@ -138,15 +150,13 @@ export function ToolPageClient({ toolId }: ToolPageClientProps) {
     )
   }
 
+  const FULL_WIDTH_TOOLS = new Set(['workflow-builder'])
+
   // Check registry for custom components
   const customFactory = CUSTOM_TOOL_REGISTRY[toolId]
   if (customFactory) {
     return (
-      <div className="max-w-4xl">
-        {/* <div className="mb-8">
-          <h2 className="text-2xl font-bold text-foreground">{tool.name}</h2>
-          <p className="text-sm text-muted-foreground">{tool.description}</p>
-        </div> */}
+      <div className={FULL_WIDTH_TOOLS.has(toolId) ? 'w-full' : 'max-w-4xl'}>
         {customFactory(toolId)}
       </div>
     )
@@ -311,7 +321,7 @@ export function ToolPageClient({ toolId }: ToolPageClientProps) {
 
           {error && (
             <div className="mb-4 p-4 bg-red-500/10 border border-red-500/30 rounded-lg flex items-start gap-3">
-              <AlertCircle size={20} className="text-red-500 flex-shrink-0 mt-0.5" />
+              <AlertCircle size={20} className="text-red-500 shrink-0 mt-0.5" />
               <p className="text-sm text-red-600">{error}</p>
             </div>
           )}
@@ -335,7 +345,7 @@ export function ToolPageClient({ toolId }: ToolPageClientProps) {
                       setCopied(true)
                       setTimeout(() => setCopied(false), 2000)
                     }}
-                    className="p-2 hover:bg-primary/10 rounded transition-colors flex-shrink-0 ml-2"
+                    className="p-2 hover:bg-primary/10 rounded transition-colors shrink-0 ml-2"
                   >
                     {copied ? <Check size={16} className="text-green-500" /> : <Copy size={16} />}
                   </button>
@@ -346,7 +356,7 @@ export function ToolPageClient({ toolId }: ToolPageClientProps) {
 
           {result && (typeof result === 'string' || Array.isArray(result)) && (
             <div className="bg-secondary rounded-lg p-4 font-mono text-sm mb-4 max-h-96 overflow-auto">
-              <pre className="whitespace-pre-wrap break-words">
+              <pre className="whitespace-pre-wrap wrap-break-word">
                 {typeof result === 'string' ? result : JSON.stringify(result, null, 2)}
               </pre>
             </div>

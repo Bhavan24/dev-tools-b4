@@ -1838,7 +1838,8 @@ export const toolHandlers: Record<string, ToolHandler> = {
   },
 
   'excel-to-markdown': {
-    description: 'Convert CSV text to a Markdown table (use the browser UI for Excel/CSV file uploads)',
+    description:
+      'Convert CSV text to a Markdown table (use the browser UI for Excel/CSV file uploads)',
     schema: {
       type: 'object',
       properties: {
@@ -2629,9 +2630,7 @@ function mergeHeaderRows(headerRows: string[][]): string[] {
   if (headerRows.length === 1) return headerRows[0]!
   const colCount = Math.max(...headerRows.map((r) => r.length))
   return Array.from({ length: colCount }, (_, i) => {
-    const parts = headerRows
-      .map((r) => (r[i] ?? '').trim())
-      .filter(Boolean)
+    const parts = headerRows.map((r) => (r[i] ?? '').trim()).filter(Boolean)
     return parts.join(' - ')
   })
 }

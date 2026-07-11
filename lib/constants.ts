@@ -453,14 +453,16 @@ export const TOOLS = [
     id: 'image-to-pdf',
     name: 'Image to PDF',
     category: TOOLS_CATEGORIES.CONVERTER,
-    description: 'Convert PNG, JPG, or WebP images to a PDF file. Arrange multiple images, choose page size, and download as PDF.',
+    description:
+      'Convert PNG, JPG, or WebP images to a PDF file. Arrange multiple images, choose page size, and download as PDF.',
     shortDescription: 'Images → PDF',
   },
   {
     id: 'pdf-to-images',
     name: 'PDF to Images',
     category: TOOLS_CATEGORIES.CONVERTER,
-    description: 'Convert each page of a PDF to PNG or JPEG images. Choose output scale/resolution and download all pages.',
+    description:
+      'Convert each page of a PDF to PNG or JPEG images. Choose output scale/resolution and download all pages.',
     shortDescription: 'PDF → PNG/JPEG images',
   },
   {
@@ -500,63 +502,72 @@ export const TOOLS = [
     id: 'ai-chat',
     name: 'AI Chat',
     category: TOOLS_CATEGORIES.AI_TOOLS,
-    description: 'Chat with any AI model using your own API credentials. Supports OpenAI, Anthropic, Google Gemini, Groq, Mistral, Azure, AWS Bedrock, and Ollama.',
+    description:
+      'Chat with any AI model using your own API credentials. Supports OpenAI, Anthropic, Google Gemini, Groq, Mistral, Azure, AWS Bedrock, and Ollama.',
     shortDescription: 'Chat with AI models',
   },
   {
     id: 'code-generator',
     name: 'Code Generator',
     category: TOOLS_CATEGORIES.AI_TOOLS,
-    description: 'Generate production-ready code from natural language descriptions using AI. Supports all major programming languages.',
+    description:
+      'Generate production-ready code from natural language descriptions using AI. Supports all major programming languages.',
     shortDescription: 'Generate code with AI',
   },
   {
     id: 'content-summarizer',
     name: 'Content Summarizer',
     category: TOOLS_CATEGORIES.AI_TOOLS,
-    description: 'Automatically summarize long documents, articles, and transcripts using AI with configurable summary length.',
+    description:
+      'Automatically summarize long documents, articles, and transcripts using AI with configurable summary length.',
     shortDescription: 'Summarize content with AI',
   },
   {
     id: 'sentiment-analyzer',
     name: 'Sentiment Analyzer',
     category: TOOLS_CATEGORIES.AI_TOOLS,
-    description: 'Analyze sentiment and emotion from text using AI. Returns overall sentiment, confidence score, and key emotional signals.',
+    description:
+      'Analyze sentiment and emotion from text using AI. Returns overall sentiment, confidence score, and key emotional signals.',
     shortDescription: 'Analyze sentiment with AI',
   },
   {
     id: 'ai-code-reviewer',
     name: 'AI Code Reviewer',
     category: TOOLS_CATEGORIES.AI_TOOLS,
-    description: 'Automated code review with AI-powered suggestions for bugs, security vulnerabilities, performance issues, and maintainability.',
+    description:
+      'Automated code review with AI-powered suggestions for bugs, security vulnerabilities, performance issues, and maintainability.',
     shortDescription: 'AI code review',
   },
   {
     id: 'ai-doc-generator',
     name: 'AI Documentation Generator',
     category: TOOLS_CATEGORIES.AI_TOOLS,
-    description: 'Generate comprehensive API docs, README files, and inline comments from source code using AI.',
+    description:
+      'Generate comprehensive API docs, README files, and inline comments from source code using AI.',
     shortDescription: 'Generate docs with AI',
   },
   {
     id: 'ai-test-generator',
     name: 'AI Test Generator',
     category: TOOLS_CATEGORIES.AI_TOOLS,
-    description: 'Automatically generate unit tests and test suites from your code using AI. Covers happy path, edge cases, and error scenarios.',
+    description:
+      'Automatically generate unit tests and test suites from your code using AI. Covers happy path, edge cases, and error scenarios.',
     shortDescription: 'Generate tests with AI',
   },
   {
     id: 'ai-sql-builder',
     name: 'AI SQL Query Builder',
     category: TOOLS_CATEGORIES.AI_TOOLS,
-    description: 'Build complex SQL queries from natural language descriptions using AI. Supports PostgreSQL, MySQL, SQLite, MSSQL, and more.',
+    description:
+      'Build complex SQL queries from natural language descriptions using AI. Supports PostgreSQL, MySQL, SQLite, MSSQL, and more.',
     shortDescription: 'Build SQL with AI',
   },
   {
     id: 'ai-schema-generator',
     name: 'AI Schema Generator',
     category: TOOLS_CATEGORIES.AI_TOOLS,
-    description: 'Generate JSON Schema, database schemas, or OpenAPI specs from sample data or natural language descriptions with AI.',
+    description:
+      'Generate JSON Schema, database schemas, or OpenAPI specs from sample data or natural language descriptions with AI.',
     shortDescription: 'Generate schemas with AI',
   },
   {
@@ -565,7 +576,6 @@ export const TOOLS = [
     category: TOOLS_CATEGORIES.AI_TOOLS,
     description: 'Design and automate complex AI-powered workflows with visual editor',
     shortDescription: 'Build AI workflows',
-    comingSoon: true,
   },
   {
     id: 'researcher-agent',
@@ -573,7 +583,6 @@ export const TOOLS = [
     category: TOOLS_CATEGORIES.AI_TOOLS,
     description: 'AI-powered research assistant for deep analysis and information gathering',
     shortDescription: 'AI research assistant',
-    comingSoon: true,
   },
 
   // Spreadsheet Converter Tools
@@ -665,14 +674,16 @@ export const TOOLS = [
     id: 'stopwatch',
     name: 'Stopwatch',
     category: TOOLS_CATEGORIES.DEVELOPER,
-    description: 'Stopwatch with lap tracking, fastest/slowest lap highlights, and local storage persistence',
+    description:
+      'Stopwatch with lap tracking, fastest/slowest lap highlights, and local storage persistence',
     shortDescription: 'Stopwatch with laps',
   },
   {
     id: 'counter',
     name: 'Counter',
     category: TOOLS_CATEGORIES.DEVELOPER,
-    description: 'Multiple counters with custom names, configurable step size, increment/decrement/reset, saved to local storage',
+    description:
+      'Multiple counters with custom names, configurable step size, increment/decrement/reset, saved to local storage',
     shortDescription: 'Multi-counter with persistence',
   },
   {

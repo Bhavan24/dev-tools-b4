@@ -44,11 +44,7 @@ export function ExcelConverterTool({ toolId }: ExcelConverterToolProps) {
 
   const processFile = useCallback(async (file: File) => {
     const name = file.name.toLowerCase()
-    if (
-      !name.endsWith('.xlsx') &&
-      !name.endsWith('.xls') &&
-      !name.endsWith('.csv')
-    ) {
+    if (!name.endsWith('.xlsx') && !name.endsWith('.xls') && !name.endsWith('.csv')) {
       setError('Please upload a .xlsx, .xls, or .csv file.')
       return
     }
@@ -63,7 +59,10 @@ export function ExcelConverterTool({ toolId }: ExcelConverterToolProps) {
 
       const parsed: SheetData[] = workbook.SheetNames.map((sheetName) => {
         const ws = workbook.Sheets[sheetName]!
-        const aoa: string[][] = XLSX.utils.sheet_to_json(ws, { header: 1, defval: '' }) as string[][]
+        const aoa: string[][] = XLSX.utils.sheet_to_json(ws, {
+          header: 1,
+          defval: '',
+        }) as string[][]
         return { name: sheetName, rows: aoa }
       })
 
@@ -331,7 +330,7 @@ export function ExcelConverterTool({ toolId }: ExcelConverterToolProps) {
                 {activeResult.rowCount} data rows · {activeResult.colCount} columns
               </div>
               <div className="bg-secondary rounded-xl p-4 font-mono text-sm max-h-[28rem] overflow-auto">
-                <pre className="whitespace-pre-wrap break-words">{outputText}</pre>
+                <pre className="whitespace-pre-wrap wrap-break-word">{outputText}</pre>
               </div>
             </div>
           )}
@@ -411,7 +410,9 @@ function SheetConfigCard({ sheet, config, onChange }: SheetConfigCardProps) {
                 {config.headerRows}
               </span>
               <button
-                onClick={() => onChange({ headerRows: Math.min(maxHeaderRows, config.headerRows + 1) })}
+                onClick={() =>
+                  onChange({ headerRows: Math.min(maxHeaderRows, config.headerRows + 1) })
+                }
                 disabled={config.headerRows >= maxHeaderRows}
                 className="w-7 h-7 rounded-md bg-background border border-border flex items-center justify-center hover:bg-secondary disabled:opacity-30 transition-colors"
               >
@@ -447,7 +448,10 @@ function SheetConfigCard({ sheet, config, onChange }: SheetConfigCardProps) {
                     {ri < config.headerRows ? `H${ri + 1}` : ri - config.headerRows + 1}
                   </td>
                   {row.map((cell, ci) => (
-                    <td key={ci} className="px-2 py-1 border-r border-border last:border-r-0 max-w-32 truncate">
+                    <td
+                      key={ci}
+                      className="px-2 py-1 border-r border-border last:border-r-0 max-w-32 truncate"
+                    >
                       {String(cell)}
                     </td>
                   ))}
@@ -455,10 +459,7 @@ function SheetConfigCard({ sheet, config, onChange }: SheetConfigCardProps) {
               ))}
               {sheet.rows.length > 6 && (
                 <tr>
-                  <td
-                    colSpan={99}
-                    className="px-2 py-1 text-center text-muted-foreground italic"
-                  >
+                  <td colSpan={99} className="px-2 py-1 text-center text-muted-foreground italic">
                     …{sheet.rows.length - 6} more rows
                   </td>
                 </tr>
@@ -513,9 +514,7 @@ function convertToMarkdown(sheet: SheetData, headerRowCount: number): Conversion
   const sepLine = '|' + Array(colCount).fill(' --- ').join('|') + '|'
   const dataLines = dataRows.map(
     (row) =>
-      '|' +
-      Array.from({ length: colCount }, (_, i) => pad(String(row[i] ?? ''))).join('|') +
-      '|'
+      '|' + Array.from({ length: colCount }, (_, i) => pad(String(row[i] ?? ''))).join('|') + '|'
   )
   const markdown = [headerLine, sepLine, ...dataLines].join('\n')
   return { data: markdown, rowCount: dataRows.length, colCount }

@@ -183,7 +183,7 @@ function PdfToMarkdownPanel() {
               <span>{result.wordCount.toLocaleString()} words</span>
             </div>
             <div className="bg-secondary rounded-xl p-4 font-mono text-sm max-h-96 overflow-auto">
-              <pre className="whitespace-pre-wrap break-words">{result.markdown}</pre>
+              <pre className="whitespace-pre-wrap wrap-break-word">{result.markdown}</pre>
             </div>
             <div className="flex gap-2">
               <button

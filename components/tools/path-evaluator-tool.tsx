@@ -184,7 +184,7 @@ export function PathEvaluatorTool({ toolId }: PathEvaluatorToolProps) {
                 className="bg-secondary rounded-xl p-4 font-mono text-sm overflow-auto"
                 style={{ height: '360px' }}
               >
-                <pre className="whitespace-pre-wrap break-words">{resultText}</pre>
+                <pre className="whitespace-pre-wrap wrap-break-word">{resultText}</pre>
               </div>
             </div>
           ) : (

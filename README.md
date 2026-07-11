@@ -168,17 +168,17 @@ Supported providers: OpenAI, Anthropic, Google Gemini, Groq, Mistral, Azure Open
 | **AI Test Generator** | ✅ Built | ✅ | Generate unit tests covering happy path, edge cases, and error scenarios from source code. |
 | **AI SQL Query Builder** | ✅ Built | ✅ | Build SQL queries from natural language. Supports PostgreSQL, MySQL, SQLite, MSSQL, BigQuery, and more. |
 | **AI Schema Generator** | ✅ Built | ✅ | Generate JSON Schema, OpenAPI specs, SQL CREATE TABLE, or Prisma schemas from sample data or descriptions. |
-| **Workflow Builder** | 🏗️ Coming Soon | — | Design and automate complex AI-powered workflows with visual editor |
-| **Researcher Agent** | 🏗️ Coming Soon | — | AI-powered research assistant for deep analysis and information gathering |
+| **Workflow Builder** | ✅ Built | ✅ | ReactFlow-based visual workflow builder. Drag-and-drop LLM, conditional, loop, transform, and tool-call nodes. Export/import workflows as JSON. MCP-callable for server-side execution. |
+| **Researcher Agent** | ✅ Built | ✅ | Multi-step AI research with optional Tavily web search (BYOK). Streams search progress, collects sources with citations, and synthesizes a Markdown report. Supports quick/standard/deep depth modes. |
 
 ---
 
 ## 📊 Stats
 
 - **Total Tools**: 85
-- **Built & Ready**: 83 ✅
-- **Coming Soon**: 2 🏗️
-- **MCP Enabled**: 77 ✅ (callable via `/api/mcp`)
+- **Built & Ready**: 85 ✅
+- **Coming Soon**: 0 🏗️
+- **MCP Enabled**: 79 ✅ (callable via `/api/mcp`)
 - **Categories**: 5 (Developer, Validation, Formatter, Converter, AI Tools)
 
 ---
@@ -338,9 +338,9 @@ POST /api/mcp
 - AI SQL Query Builder - natural language to SQL
 - AI Schema Generator - JSON Schema, OpenAPI, Prisma from data
 
-### Phase 5: Advanced AI Tools 🏗️ Planned
-- Workflow Builder - visual AI workflow editor
-- Researcher Agent - multi-step research assistant
+### Phase 5: Advanced AI Tools ✅ Shipped
+- Workflow Builder - ReactFlow visual AI workflow editor with LLM/conditional/loop nodes
+- Researcher Agent - multi-step research with Tavily search, citations, and streaming progress
 
 ---
 

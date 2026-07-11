@@ -122,8 +122,7 @@ function parseHtmlBlocks(html: string): HtmlBlock[] {
   const normalized = html.replace(/\r\n/g, '\n').replace(/\r/g, '\n')
 
   // Match block-level elements
-  const tagPattern =
-    /<(h[1-6]|p|li|hr|div|blockquote|pre)[^>]*>([\s\S]*?)<\/\1>|<hr\s*\/?>/gi
+  const tagPattern = /<(h[1-6]|p|li|hr|div|blockquote|pre)[^>]*>([\s\S]*?)<\/\1>|<hr\s*\/?>/gi
 
   let lastIndex = 0
   let match: RegExpExecArray | null
@@ -138,7 +137,10 @@ function parseHtmlBlocks(html: string): HtmlBlock[] {
 
     const tag = match[1]?.toLowerCase() ?? 'p'
     const inner = match[2] ?? ''
-    const text = stripTags(inner).replace(/&nbsp;/g, ' ').replace(/&amp;/g, '&').trim()
+    const text = stripTags(inner)
+      .replace(/&nbsp;/g, ' ')
+      .replace(/&amp;/g, '&')
+      .trim()
 
     if (tag === 'hr') {
       blocks.push({ type: 'hr', text: '' })

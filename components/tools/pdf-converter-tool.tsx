@@ -265,7 +265,7 @@ function ImageToPdf() {
 
       {error && (
         <div className="flex items-start gap-2 p-3 bg-red-500/10 border border-red-500/30 rounded-lg text-sm text-red-600">
-          <AlertCircle size={16} className="flex-shrink-0 mt-0.5" />
+          <AlertCircle size={16} className="shrink-0 mt-0.5" />
           {error}
         </div>
       )}
@@ -410,7 +410,7 @@ function PdfToImages() {
 
       {error && (
         <div className="flex items-start gap-2 p-3 bg-red-500/10 border border-red-500/30 rounded-lg text-sm text-red-600">
-          <AlertCircle size={16} className="flex-shrink-0 mt-0.5" />
+          <AlertCircle size={16} className="shrink-0 mt-0.5" />
           {error}
         </div>
       )}
@@ -449,7 +449,10 @@ function PdfToImages() {
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
             {previews.map((url, i) => (
-              <div key={i} className="group relative rounded-xl overflow-hidden border border-border">
+              <div
+                key={i}
+                className="group relative rounded-xl overflow-hidden border border-border"
+              >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src={url} alt={`Page ${i + 1}`} className="w-full" />
                 <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors flex items-center justify-center">
@@ -542,7 +545,7 @@ function DocxToPdf() {
 
       {error && (
         <div className="flex items-start gap-2 p-3 bg-red-500/10 border border-red-500/30 rounded-lg text-sm text-red-600">
-          <AlertCircle size={16} className="flex-shrink-0 mt-0.5" />
+          <AlertCircle size={16} className="shrink-0 mt-0.5" />
           {error}
         </div>
       )}
@@ -574,8 +577,8 @@ function DocxToPdf() {
       <div className="p-4 bg-secondary rounded-xl text-sm text-muted-foreground space-y-1">
         <p className="font-medium text-foreground">Note</p>
         <p>
-          DOCX to PDF conversion happens server-side via Mammoth + PDFKit.
-          Complex layouts, custom fonts, and embedded objects may render differently.
+          DOCX to PDF conversion happens server-side via Mammoth + PDFKit. Complex layouts, custom
+          fonts, and embedded objects may render differently.
         </p>
       </div>
     </div>

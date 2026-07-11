@@ -41,9 +41,9 @@ export function AIToolShell({
   const effectiveSystemPrompt = customSystemPrompt.trim() || defaultSystemPrompt
 
   const isConfigured =
-    providerConfig.provider !== '' &&
-    providerConfig.modelId !== '' &&
-    Object.values(providerConfig.credentials).some((v) => v.trim() !== '') ||
+    (providerConfig.provider !== '' &&
+      providerConfig.modelId !== '' &&
+      Object.values(providerConfig.credentials).some((v) => v.trim() !== '')) ||
     providerConfig.provider === 'ollama'
 
   const handleSubmit = async () => {
@@ -189,7 +189,7 @@ export function AIToolShell({
       {/* Error */}
       {error && (
         <div className="p-4 bg-red-500/10 border border-red-500/30 rounded-lg flex items-start gap-3">
-          <AlertCircle size={20} className="text-red-500 flex-shrink-0 mt-0.5" />
+          <AlertCircle size={20} className="text-red-500 shrink-0 mt-0.5" />
           <p className="text-sm text-red-600">{error}</p>
         </div>
       )}
@@ -216,7 +216,7 @@ export function AIToolShell({
               )}
             </button>
           </div>
-          <div className="bg-secondary rounded-xl p-5 font-mono text-sm whitespace-pre-wrap break-words max-h-[600px] overflow-auto leading-relaxed">
+          <div className="bg-secondary rounded-xl p-5 font-mono text-sm whitespace-pre-wrap wrap-break-word max-h-[600px] overflow-auto leading-relaxed">
             {result}
           </div>
         </div>

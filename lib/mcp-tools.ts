@@ -87,6 +87,8 @@ export const MCP_TOOL_IDS: readonly string[] = [
   'ai-test-generator',
   'ai-sql-builder',
   'ai-schema-generator',
+  'researcher-agent',
+  'workflow-builder',
 ] as const
 
 export const MCP_TOOL_ID_SET: ReadonlySet<string> = new Set(MCP_TOOL_IDS)

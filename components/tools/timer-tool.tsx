@@ -97,10 +97,7 @@ export function TimerTool() {
     if (!isRunning && elapsed === 0) return
     const lastTotal = laps.length > 0 ? laps[laps.length - 1].totalTime : 0
     const lapTime = elapsed - lastTotal
-    setLaps((prev) => [
-      ...prev,
-      { id: prev.length + 1, lapTime, totalTime: elapsed },
-    ])
+    setLaps((prev) => [...prev, { id: prev.length + 1, lapTime, totalTime: elapsed }])
   }
 
   const handleClearLaps = () => {
@@ -108,12 +105,8 @@ export function TimerTool() {
     localStorage.removeItem(STORAGE_KEY)
   }
 
-  const fastestLap = laps.length > 1
-    ? Math.min(...laps.map((l) => l.lapTime))
-    : null
-  const slowestLap = laps.length > 1
-    ? Math.max(...laps.map((l) => l.lapTime))
-    : null
+  const fastestLap = laps.length > 1 ? Math.min(...laps.map((l) => l.lapTime)) : null
+  const slowestLap = laps.length > 1 ? Math.max(...laps.map((l) => l.lapTime)) : null
 
   if (!isHydrated) {
     return <div className="h-64 bg-muted animate-pulse rounded-lg" />
@@ -194,8 +187,8 @@ export function TimerTool() {
                     isFastest
                       ? 'bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400'
                       : isSlowest
-                      ? 'bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400'
-                      : 'bg-background'
+                        ? 'bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400'
+                        : 'bg-background'
                   }`}
                 >
                   <span className="font-medium">

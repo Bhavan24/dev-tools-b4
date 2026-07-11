@@ -77,7 +77,7 @@ function JwtDecoderTool() {
 
       {error && (
         <div className="p-4 bg-red-500/10 border border-red-500/30 rounded-lg flex items-start gap-3">
-          <AlertCircle size={20} className="text-red-500 flex-shrink-0" />
+          <AlertCircle size={20} className="text-red-500 shrink-0" />
           <p className="text-sm text-red-600">{error}</p>
         </div>
       )}
@@ -100,7 +100,7 @@ function JwtDecoderTool() {
               </button>
             </div>
             <div className="bg-background rounded p-3 font-mono text-xs overflow-auto max-h-32">
-              <pre className="whitespace-pre-wrap break-words">
+              <pre className="whitespace-pre-wrap wrap-break-word">
                 {JSON.stringify(result.header, null, 2)}
               </pre>
             </div>
@@ -122,7 +122,7 @@ function JwtDecoderTool() {
               </button>
             </div>
             <div className="bg-background rounded p-3 font-mono text-xs overflow-auto max-h-32">
-              <pre className="whitespace-pre-wrap break-words">
+              <pre className="whitespace-pre-wrap wrap-break-word">
                 {JSON.stringify(result.payload, null, 2)}
               </pre>
             </div>
@@ -238,7 +238,7 @@ function TextCaseConverterTool() {
       <div className="space-y-4">
         {error && (
           <div className="p-4 bg-red-500/10 border border-red-500/30 rounded-lg flex items-start gap-3">
-            <AlertCircle size={20} className="text-red-500 flex-shrink-0" />
+            <AlertCircle size={20} className="text-red-500 shrink-0" />
             <p className="text-sm text-red-600">{error}</p>
           </div>
         )}
@@ -247,7 +247,7 @@ function TextCaseConverterTool() {
           <div className="bg-secondary rounded-lg p-4 space-y-4">
             <div>
               <p className="text-sm text-muted-foreground mb-2">Converted Text</p>
-              <div className="bg-background rounded p-4 font-mono text-sm break-words max-h-32 overflow-auto">
+              <div className="bg-background rounded p-4 font-mono text-sm wrap-break-word max-h-32 overflow-auto">
                 {result.converted}
               </div>
             </div>
@@ -361,7 +361,7 @@ function RegexParserTool() {
       <div className="space-y-4">
         {error && (
           <div className="p-4 bg-red-500/10 border border-red-500/30 rounded-lg flex items-start gap-3">
-            <AlertCircle size={20} className="text-red-500 flex-shrink-0" />
+            <AlertCircle size={20} className="text-red-500 shrink-0" />
             <p className="text-sm text-red-600">{error}</p>
           </div>
         )}
@@ -385,7 +385,7 @@ function RegexParserTool() {
                   {result.matches.map((match, idx) => (
                     <div
                       key={idx}
-                      className="bg-secondary rounded px-3 py-1 font-mono text-xs break-words"
+                      className="bg-secondary rounded px-3 py-1 font-mono text-xs wrap-break-word"
                     >
                       {match}
                     </div>
@@ -396,7 +396,7 @@ function RegexParserTool() {
 
             <div>
               <p className="text-sm text-muted-foreground mb-2">Test String</p>
-              <div className="bg-secondary rounded p-3 font-mono text-xs max-h-20 overflow-auto break-words">
+              <div className="bg-secondary rounded p-3 font-mono text-xs max-h-20 overflow-auto wrap-break-word">
                 {testString}
               </div>
             </div>

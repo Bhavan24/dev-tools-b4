@@ -145,7 +145,7 @@ function RgbToHexTool({ onCopy, copied }: { onCopy: (text: string) => void; copi
 
         {error && (
           <div className="p-3 bg-red-500/10 border border-red-500/30 rounded-lg flex items-start gap-2">
-            <AlertCircle size={18} className="text-red-500 flex-shrink-0 mt-0.5" />
+            <AlertCircle size={18} className="text-red-500 shrink-0 mt-0.5" />
             <p className="text-sm text-red-600">{error}</p>
           </div>
         )}
@@ -287,7 +287,7 @@ function HexToRgbTool({ onCopy, copied }: { onCopy: (text: string) => void; copi
 
         {error && (
           <div className="p-3 bg-red-500/10 border border-red-500/30 rounded-lg flex items-start gap-2">
-            <AlertCircle size={18} className="text-red-500 flex-shrink-0" />
+            <AlertCircle size={18} className="text-red-500 shrink-0" />
             <p className="text-sm text-red-600">{error}</p>
           </div>
         )}
@@ -425,7 +425,7 @@ function ColorCodePickerTool({
 
         {error && (
           <div className="p-3 bg-red-500/10 border border-red-500/30 rounded-lg flex items-start gap-2">
-            <AlertCircle size={18} className="text-red-500 flex-shrink-0" />
+            <AlertCircle size={18} className="text-red-500 shrink-0" />
             <p className="text-sm text-red-600">{error}</p>
           </div>
         )}

@@ -10,7 +10,12 @@ interface ModelComboboxProps {
   placeholder?: string
 }
 
-export function ModelCombobox({ value, onChange, suggestions, placeholder = 'Enter or select a model...' }: ModelComboboxProps) {
+export function ModelCombobox({
+  value,
+  onChange,
+  suggestions,
+  placeholder = 'Enter or select a model...',
+}: ModelComboboxProps) {
   const [open, setOpen] = useState(false)
   const [query, setQuery] = useState(value)
   const containerRef = useRef<HTMLDivElement>(null)
@@ -66,7 +71,10 @@ export function ModelCombobox({ value, onChange, suggestions, placeholder = 'Ent
           }}
           className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
         >
-          <ChevronDown size={14} className={`transition-transform duration-150 ${open ? 'rotate-180' : ''}`} />
+          <ChevronDown
+            size={14}
+            className={`transition-transform duration-150 ${open ? 'rotate-180' : ''}`}
+          />
         </button>
       </div>
 

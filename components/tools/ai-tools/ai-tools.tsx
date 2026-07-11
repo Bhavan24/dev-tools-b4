@@ -37,8 +37,20 @@ function CodeGeneratorTool() {
   const [language, setLanguage] = useState('TypeScript')
 
   const languages = [
-    'TypeScript', 'JavaScript', 'Python', 'Rust', 'Go', 'Java',
-    'C#', 'C++', 'Ruby', 'PHP', 'Swift', 'Kotlin', 'SQL', 'Shell',
+    'TypeScript',
+    'JavaScript',
+    'Python',
+    'Rust',
+    'Go',
+    'Java',
+    'C#',
+    'C++',
+    'Ruby',
+    'PHP',
+    'Swift',
+    'Kotlin',
+    'SQL',
+    'Shell',
   ]
 
   return (
@@ -83,11 +95,7 @@ function ContentSummarizerTool() {
       extraFields={
         <div>
           <label className="block font-medium text-foreground mb-2">Summary length</label>
-          <select
-            value={length}
-            onChange={(e) => setLength(e.target.value)}
-            className="input-base"
-          >
+          <select value={length} onChange={(e) => setLength(e.target.value)} className="input-base">
             <option value="short">Short (1-2 paragraphs)</option>
             <option value="medium">Medium (3-5 bullet points)</option>
             <option value="detailed">Detailed (comprehensive breakdown)</option>
@@ -115,8 +123,19 @@ function AICodeReviewerTool() {
   const [language, setLanguage] = useState('')
 
   const languages = [
-    '', 'TypeScript', 'JavaScript', 'Python', 'Rust', 'Go', 'Java',
-    'C#', 'C++', 'Ruby', 'PHP', 'Swift', 'Kotlin',
+    '',
+    'TypeScript',
+    'JavaScript',
+    'Python',
+    'Rust',
+    'Go',
+    'Java',
+    'C#',
+    'C++',
+    'Ruby',
+    'PHP',
+    'Swift',
+    'Kotlin',
   ]
 
   return (
@@ -166,11 +185,7 @@ function AIDocGeneratorTool() {
       extraFields={
         <div>
           <label className="block font-medium text-foreground mb-2">Output format</label>
-          <select
-            value={format}
-            onChange={(e) => setFormat(e.target.value)}
-            className="input-base"
-          >
+          <select value={format} onChange={(e) => setFormat(e.target.value)} className="input-base">
             <option value="markdown">Markdown (README / API docs)</option>
             <option value="jsdoc">JSDoc comments</option>
             <option value="inline">Inline comments</option>
@@ -196,7 +211,8 @@ function AITestGeneratorTool() {
       extraFields={
         <div>
           <label className="block font-medium text-foreground mb-2">
-            Testing framework <span className="text-muted-foreground text-xs font-normal">(optional)</span>
+            Testing framework{' '}
+            <span className="text-muted-foreground text-xs font-normal">(optional)</span>
           </label>
           <input
             type="text"
@@ -232,16 +248,19 @@ function AISqlBuilderTool() {
               onChange={(e) => setDialect(e.target.value)}
               className="input-base"
             >
-              {['PostgreSQL', 'MySQL', 'SQLite', 'MSSQL', 'Oracle', 'BigQuery', 'Snowflake'].map((d) => (
-                <option key={d} value={d}>
-                  {d}
-                </option>
-              ))}
+              {['PostgreSQL', 'MySQL', 'SQLite', 'MSSQL', 'Oracle', 'BigQuery', 'Snowflake'].map(
+                (d) => (
+                  <option key={d} value={d}>
+                    {d}
+                  </option>
+                )
+              )}
             </select>
           </div>
           <div>
             <label className="block font-medium text-foreground mb-2">
-              Schema context <span className="text-muted-foreground text-xs font-normal">(optional)</span>
+              Schema context{' '}
+              <span className="text-muted-foreground text-xs font-normal">(optional)</span>
             </label>
             <textarea
               value={schema}
@@ -270,11 +289,7 @@ function AISchemaGeneratorTool() {
       extraFields={
         <div>
           <label className="block font-medium text-foreground mb-2">Output format</label>
-          <select
-            value={format}
-            onChange={(e) => setFormat(e.target.value)}
-            className="input-base"
-          >
+          <select value={format} onChange={(e) => setFormat(e.target.value)} className="input-base">
             <option value="json-schema">JSON Schema (draft-07)</option>
             <option value="openapi">OpenAPI 3.0 spec</option>
             <option value="sql">SQL CREATE TABLE</option>

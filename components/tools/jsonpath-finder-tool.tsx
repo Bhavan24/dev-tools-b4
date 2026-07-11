@@ -188,7 +188,7 @@ export function JsonpathFinderTool({ toolId }: JsonpathFinderToolProps) {
                 className="bg-secondary rounded-xl p-4 font-mono text-sm overflow-auto"
                 style={{ height: '320px' }}
               >
-                <pre className="whitespace-pre-wrap break-words">{resultText}</pre>
+                <pre className="whitespace-pre-wrap wrap-break-word">{resultText}</pre>
               </div>
               {result.paths.length > 0 && (
                 <div>

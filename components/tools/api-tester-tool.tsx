@@ -208,7 +208,7 @@ export function ApiTesterTool({ toolId }: ApiTesterToolProps) {
 
         {error && (
           <div className="p-4 bg-red-500/10 border border-red-500/30 rounded-lg flex items-start gap-3">
-            <AlertCircle size={20} className="text-red-500 flex-shrink-0 mt-0.5" />
+            <AlertCircle size={20} className="text-red-500 shrink-0 mt-0.5" />
             <p className="text-sm text-red-600">{error}</p>
           </div>
         )}
@@ -259,7 +259,7 @@ export function ApiTesterTool({ toolId }: ApiTesterToolProps) {
               <div className="space-y-2">
                 <p className="text-sm font-medium text-muted-foreground">Response Body</p>
                 <div className="bg-secondary rounded-lg p-3 font-mono text-sm max-h-48 overflow-auto">
-                  <pre className="whitespace-pre-wrap break-words text-xs">
+                  <pre className="whitespace-pre-wrap wrap-break-word text-xs">
                     {typeof result.body === 'string'
                       ? result.body
                       : JSON.stringify(result.body, null, 2)}

@@ -122,7 +122,7 @@ export function MockDataGenerator({ toolId }: MockDataGeneratorProps) {
                 </button>
               </div>
               <div
-                className="font-mono text-sm bg-background p-2 rounded border border-border break-words"
+                className="font-mono text-sm bg-background p-2 rounded border border-border wrap-break-word"
                 title={String(value)}
               >
                 {String(value)}

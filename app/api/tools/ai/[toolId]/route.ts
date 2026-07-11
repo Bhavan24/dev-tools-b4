@@ -6,8 +6,17 @@ import type { AIConfig } from '@/lib/ai-client'
 export const maxDuration = 60
 
 function buildAIConfig(input: any): AIConfig {
-  const { provider, modelId, apiKey, resourceName, region, accessKeyId, secretAccessKey, baseUrl, streaming } =
-    input
+  const {
+    provider,
+    modelId,
+    apiKey,
+    resourceName,
+    region,
+    accessKeyId,
+    secretAccessKey,
+    baseUrl,
+    streaming,
+  } = input
 
   let credentials: AIConfig['credentials']
   if (provider === 'bedrock') {
@@ -42,7 +51,14 @@ export async function POST(
       const systemPrompt = body.systemPrompt || handler.systemPrompt
 
       // Build user input per tool
-      let userInput = body.input || body.text || body.message || body.code || body.prompt || body.description || ''
+      let userInput =
+        body.input ||
+        body.text ||
+        body.message ||
+        body.code ||
+        body.prompt ||
+        body.description ||
+        ''
       if (toolId === 'code-generator') {
         userInput = `Language: ${body.language || 'auto-detect'}\n\n${body.prompt || ''}`
       } else if (toolId === 'content-summarizer') {
@@ -70,6 +86,9 @@ export async function POST(
     const result = await handler.handler(body)
     return NextResponse.json({ result })
   } catch (error: any) {
-    return NextResponse.json({ error: error.message || 'AI tool execution failed' }, { status: 400 })
+    return NextResponse.json(
+      { error: error.message || 'AI tool execution failed' },
+      { status: 400 }
+    )
   }
 }

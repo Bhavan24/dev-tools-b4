@@ -47,17 +47,13 @@ export function CounterTool() {
     setCounters((prev) => prev.map((c) => (c.id === id ? fn(c) : c)))
   }
 
-  const handleIncrement = (id: string) =>
-    update(id, (c) => ({ ...c, value: c.value + c.step }))
+  const handleIncrement = (id: string) => update(id, (c) => ({ ...c, value: c.value + c.step }))
 
-  const handleDecrement = (id: string) =>
-    update(id, (c) => ({ ...c, value: c.value - c.step }))
+  const handleDecrement = (id: string) => update(id, (c) => ({ ...c, value: c.value - c.step }))
 
-  const handleReset = (id: string) =>
-    update(id, (c) => ({ ...c, value: 0 }))
+  const handleReset = (id: string) => update(id, (c) => ({ ...c, value: 0 }))
 
-  const handleDelete = (id: string) =>
-    setCounters((prev) => prev.filter((c) => c.id !== id))
+  const handleDelete = (id: string) => setCounters((prev) => prev.filter((c) => c.id !== id))
 
   const handleAdd = () =>
     setCounters((prev) => [...prev, makeCounter(`Counter ${prev.length + 1}`)])
@@ -161,8 +157,8 @@ export function CounterTool() {
                   counter.value < 0
                     ? 'text-red-500 dark:text-red-400'
                     : counter.value > 0
-                    ? 'text-green-600 dark:text-green-400'
-                    : 'text-foreground'
+                      ? 'text-green-600 dark:text-green-400'
+                      : 'text-foreground'
                 }`}
               >
                 {counter.value}

@@ -174,7 +174,7 @@ export function SqlToMongodbTool({ toolId }: SqlToMongodbToolProps) {
                   className="bg-secondary rounded-xl p-4 font-mono text-sm overflow-auto"
                   style={{ minHeight: '200px' }}
                 >
-                  <pre className="whitespace-pre-wrap break-words">{result.query}</pre>
+                  <pre className="whitespace-pre-wrap wrap-break-word">{result.query}</pre>
                 </div>
               </div>
 

@@ -232,8 +232,8 @@ function MergeTab() {
                 dragOverIdx === idx ? 'border-primary' : 'border-transparent'
               }`}
             >
-              <GripVertical size={16} className="text-muted-foreground cursor-grab flex-shrink-0" />
-              <FileText size={16} className="text-primary flex-shrink-0" />
+              <GripVertical size={16} className="text-muted-foreground cursor-grab shrink-0" />
+              <FileText size={16} className="text-primary shrink-0" />
               <span className="flex-1 text-sm font-medium truncate">{f.name}</span>
               <span className="text-xs text-muted-foreground">
                 {f.pageCount} page{f.pageCount !== 1 ? 's' : ''}
@@ -251,7 +251,7 @@ function MergeTab() {
 
       {error && (
         <div className="flex items-start gap-2 p-3 bg-red-500/10 border border-red-500/30 rounded-lg text-sm text-red-600">
-          <AlertCircle size={16} className="flex-shrink-0 mt-0.5" />
+          <AlertCircle size={16} className="shrink-0 mt-0.5" />
           {error}
         </div>
       )}
@@ -486,7 +486,7 @@ function SplitTab() {
 
       {error && (
         <div className="flex items-start gap-2 p-3 bg-red-500/10 border border-red-500/30 rounded-lg text-sm text-red-600">
-          <AlertCircle size={16} className="flex-shrink-0 mt-0.5" />
+          <AlertCircle size={16} className="shrink-0 mt-0.5" />
           {error}
         </div>
       )}
@@ -774,12 +774,7 @@ function EditTab() {
 
   // ── Drag to move ─────────────────────────────────────────────────────────────
 
-  const startDrag = (
-    e: React.MouseEvent,
-    id: string,
-    kind: 'move' | 'resize',
-    ov: Overlay
-  ) => {
+  const startDrag = (e: React.MouseEvent, id: string, kind: 'move' | 'resize', ov: Overlay) => {
     e.preventDefault()
     e.stopPropagation()
     setSelectedId(id)
@@ -1027,7 +1022,9 @@ function EditTab() {
                 <input
                   type="number"
                   value={newFontSize}
-                  onChange={(e) => setNewFontSize(Math.max(6, Math.min(72, Number(e.target.value))))}
+                  onChange={(e) =>
+                    setNewFontSize(Math.max(6, Math.min(72, Number(e.target.value))))
+                  }
                   className="input-base w-16 py-1.5 text-sm"
                   min={6}
                   max={72}
@@ -1059,7 +1056,9 @@ function EditTab() {
                   <span className="text-xs font-medium text-muted-foreground">Edit:</span>
                   <input
                     value={selected.text}
-                    onChange={(e) => updateOverlay(selected.id, { text: e.target.value, modified: true })}
+                    onChange={(e) =>
+                      updateOverlay(selected.id, { text: e.target.value, modified: true })
+                    }
                     className="input-base flex-1 min-w-40 py-1.5 text-sm"
                   />
                   <div className="flex items-center gap-1.5">
@@ -1131,13 +1130,16 @@ function EditTab() {
                         : 'bg-secondary hover:bg-secondary/80 border border-transparent'
                     }`}
                   >
-                    <div className="w-8 h-10 bg-white border border-border rounded flex items-center justify-center flex-shrink-0">
+                    <div className="w-8 h-10 bg-white border border-border rounded flex items-center justify-center shrink-0">
                       <FileText size={12} className="text-muted-foreground" />
                     </div>
                     <span className="text-xs flex-1 truncate">{p.label}</span>
-                    <div className="flex items-center gap-1 flex-shrink-0">
+                    <div className="flex items-center gap-1 shrink-0">
                       <button
-                        onClick={(e) => { e.stopPropagation(); rotatePage(p.id) }}
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          rotatePage(p.id)
+                        }}
                         className="p-0.5 hover:bg-primary/10 rounded text-muted-foreground hover:text-primary transition-colors"
                         title="Rotate 90°"
                       >
@@ -1145,7 +1147,10 @@ function EditTab() {
                       </button>
                       {pages.length > 1 && (
                         <button
-                          onClick={(e) => { e.stopPropagation(); deletePage(p.id) }}
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            deletePage(p.id)
+                          }}
                           className="p-0.5 hover:bg-destructive/10 rounded text-muted-foreground hover:text-destructive transition-colors"
                           title="Delete page"
                         >
@@ -1213,93 +1218,108 @@ function EditTab() {
                 )}
 
                 {/* Overlays */}
-                {pageDataUrl && currentOverlays.map((ov) => {
-                  const isSelected = selectedId === ov.id
-                  const containerH = pagePixelSize.h
-                  // Extracted text that hasn't been modified is invisible - it's a hit zone
-                  // over the already-rendered PDF canvas text. Only show it when selected
-                  // or when it's been changed (at which point save will white-out the original).
-                  const isExtractedUnchanged = ov.source === 'extracted' && !ov.modified
+                {pageDataUrl &&
+                  currentOverlays.map((ov) => {
+                    const isSelected = selectedId === ov.id
+                    const containerH = pagePixelSize.h
+                    // Extracted text that hasn't been modified is invisible - it's a hit zone
+                    // over the already-rendered PDF canvas text. Only show it when selected
+                    // or when it's been changed (at which point save will white-out the original).
+                    const isExtractedUnchanged = ov.source === 'extracted' && !ov.modified
 
-                  return (
-                    <div
-                      key={ov.id}
-                      onMouseDown={(e) => startDrag(e, ov.id, 'move', ov)}
-                      onClick={(e) => { e.stopPropagation(); setSelectedId(ov.id); setEditingId(null) }}
-                      style={{
-                        position: 'absolute',
-                        left: `${ov.x * 100}%`,
-                        top: `${ov.y * 100}%`,
-                        width: `${ov.w * 100}%`,
-                        minHeight: `${ov.h * 100}%`,
-                        cursor: 'move',
-                        // Show selection ring for all selected overlays.
-                        // For unmodified extracted text, use a faint hover ring so user
-                        // can see it's clickable without doubling the rendered text.
-                        outline: isSelected
-                          ? '2px solid #3b82f6'
-                          : isExtractedUnchanged
-                            ? 'none'
-                            : 'none',
-                        outlineOffset: '1px',
-                        boxSizing: 'border-box',
-                        userSelect: 'none',
-                        // Subtle highlight on the selected extracted-text hit zone
-                        background: isSelected && isExtractedUnchanged
-                          ? 'rgba(59,130,246,0.15)'
-                          : 'transparent',
-                      }}
-                    >
-                      {ov.type === 'text' ? (
-                        <span
-                          style={{
-                            display: 'block',
-                            fontSize: `${(ov.fontSize / pdfPageSize.h) * containerH}px`,
-                            // Invisible when it's unmodified extracted text (PDF canvas already shows it)
-                            // Visible once user has changed text/style/position
-                            color: isExtractedUnchanged ? 'transparent' : ov.color,
-                            fontFamily: 'Helvetica, Arial, sans-serif',
-                            fontWeight: ov.bold ? 'bold' : 'normal',
-                            fontStyle: ov.italic ? 'italic' : 'normal',
-                            whiteSpace: 'pre-wrap',
-                            wordBreak: 'break-word',
-                            lineHeight: 1.2,
-                            pointerEvents: 'none',
-                          }}
-                        >
-                          {ov.text}
-                        </span>
-                      ) : (
-                        ov.imageData && (
-                          // eslint-disable-next-line @next/next/no-img-element
-                          <img
-                            src={ov.imageData}
-                            alt="overlay"
-                            style={{ width: '100%', height: '100%', objectFit: 'contain', display: 'block', pointerEvents: 'none' }}
+                    return (
+                      <div
+                        key={ov.id}
+                        onMouseDown={(e) => startDrag(e, ov.id, 'move', ov)}
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          setSelectedId(ov.id)
+                          setEditingId(null)
+                        }}
+                        style={{
+                          position: 'absolute',
+                          left: `${ov.x * 100}%`,
+                          top: `${ov.y * 100}%`,
+                          width: `${ov.w * 100}%`,
+                          minHeight: `${ov.h * 100}%`,
+                          cursor: 'move',
+                          // Show selection ring for all selected overlays.
+                          // For unmodified extracted text, use a faint hover ring so user
+                          // can see it's clickable without doubling the rendered text.
+                          outline: isSelected
+                            ? '2px solid #3b82f6'
+                            : isExtractedUnchanged
+                              ? 'none'
+                              : 'none',
+                          outlineOffset: '1px',
+                          boxSizing: 'border-box',
+                          userSelect: 'none',
+                          // Subtle highlight on the selected extracted-text hit zone
+                          background:
+                            isSelected && isExtractedUnchanged
+                              ? 'rgba(59,130,246,0.15)'
+                              : 'transparent',
+                        }}
+                      >
+                        {ov.type === 'text' ? (
+                          <span
+                            style={{
+                              display: 'block',
+                              fontSize: `${(ov.fontSize / pdfPageSize.h) * containerH}px`,
+                              // Invisible when it's unmodified extracted text (PDF canvas already shows it)
+                              // Visible once user has changed text/style/position
+                              color: isExtractedUnchanged ? 'transparent' : ov.color,
+                              fontFamily: 'Helvetica, Arial, sans-serif',
+                              fontWeight: ov.bold ? 'bold' : 'normal',
+                              fontStyle: ov.italic ? 'italic' : 'normal',
+                              whiteSpace: 'pre-wrap',
+                              wordBreak: 'break-word',
+                              lineHeight: 1.2,
+                              pointerEvents: 'none',
+                            }}
+                          >
+                            {ov.text}
+                          </span>
+                        ) : (
+                          ov.imageData && (
+                            // eslint-disable-next-line @next/next/no-img-element
+                            <img
+                              src={ov.imageData}
+                              alt="overlay"
+                              style={{
+                                width: '100%',
+                                height: '100%',
+                                objectFit: 'contain',
+                                display: 'block',
+                                pointerEvents: 'none',
+                              }}
+                            />
+                          )
+                        )}
+
+                        {/* Resize handle (bottom-right corner) */}
+                        {isSelected && (
+                          <div
+                            onMouseDown={(e) => {
+                              e.stopPropagation()
+                              startDrag(e, ov.id, 'resize', ov)
+                            }}
+                            style={{
+                              position: 'absolute',
+                              right: -5,
+                              bottom: -5,
+                              width: 12,
+                              height: 12,
+                              background: '#3b82f6',
+                              borderRadius: 3,
+                              cursor: 'se-resize',
+                              zIndex: 10,
+                            }}
                           />
-                        )
-                      )}
-
-                      {/* Resize handle (bottom-right corner) */}
-                      {isSelected && (
-                        <div
-                          onMouseDown={(e) => { e.stopPropagation(); startDrag(e, ov.id, 'resize', ov) }}
-                          style={{
-                            position: 'absolute',
-                            right: -5,
-                            bottom: -5,
-                            width: 12,
-                            height: 12,
-                            background: '#3b82f6',
-                            borderRadius: 3,
-                            cursor: 'se-resize',
-                            zIndex: 10,
-                          }}
-                        />
-                      )}
-                    </div>
-                  )
-                })}
+                        )}
+                      </div>
+                    )
+                  })}
               </div>
 
               <p className="text-xs text-muted-foreground">
@@ -1314,7 +1334,7 @@ function EditTab() {
 
       {error && (
         <div className="flex items-start gap-2 p-3 bg-red-500/10 border border-red-500/30 rounded-lg text-sm text-red-600">
-          <AlertCircle size={16} className="flex-shrink-0 mt-0.5" />
+          <AlertCircle size={16} className="shrink-0 mt-0.5" />
           {error}
         </div>
       )}
