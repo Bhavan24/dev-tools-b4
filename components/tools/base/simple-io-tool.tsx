@@ -51,9 +51,7 @@ export function SimpleIOTool({
           <ExecuteButton onClick={handleExecute} loading={loading} label={executeLabel} />
         </>
       }
-      right={
-        <OutputPanel result={result} error={error} copied={copied} onCopy={handleCopy} />
-      }
+      right={<OutputPanel result={result} error={error} copied={copied} onCopy={handleCopy} />}
     />
   )
 }

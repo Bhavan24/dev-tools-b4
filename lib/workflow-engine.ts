@@ -4,12 +4,13 @@ import type {
   WorkflowEdge,
   ExecutionStep,
   ExecutionResult,
+  AgentNodeData,
+  ToolNodeData,
 } from './workflow-types'
-import type { AIConfig } from './ai-client'
 
 type ProgressCallback = (step: ExecutionStep) => void
 
-// Interpolate {{varName}} in a template string using the variable map
+// Interpolate {{varName}} in a template string
 function interpolate(template: string, vars: Record<string, any>): string {
   return template.replace(/\{\{(\w+)\}\}/g, (_, key) => {
     const val = vars[key]
@@ -18,26 +19,23 @@ function interpolate(template: string, vars: Record<string, any>): string {
   })
 }
 
+// Simple topological sort (Kahn's algorithm)
 function topologicalSort(nodes: WorkflowNode[], edges: WorkflowEdge[]): WorkflowNode[] {
-  const inDegree: Map<string, number> = new Map()
-  const adj: Map<string, string[]> = new Map()
+  const inDegree = new Map<string, number>()
+  const adj = new Map<string, string[]>()
 
   for (const n of nodes) {
     inDegree.set(n.id, 0)
     adj.set(n.id, [])
   }
-
   for (const e of edges) {
     adj.get(e.source)?.push(e.target)
     inDegree.set(e.target, (inDegree.get(e.target) ?? 0) + 1)
   }
 
-  const queue: string[] = []
-  for (const [id, deg] of inDegree) {
-    if (deg === 0) queue.push(id)
-  }
-
+  const queue = [...inDegree.entries()].filter(([, d]) => d === 0).map(([id]) => id)
   const sorted: WorkflowNode[] = []
+
   while (queue.length > 0) {
     const id = queue.shift()!
     const node = nodes.find((n) => n.id === id)
@@ -48,23 +46,46 @@ function topologicalSort(nodes: WorkflowNode[], edges: WorkflowEdge[]): Workflow
       if (deg === 0) queue.push(next)
     }
   }
-
   return sorted
 }
 
-async function executeLLMNode(
-  data: Extract<WorkflowDefinition['nodes'][number]['data'], { type: 'llm-call' }>,
-  vars: Record<string, any>,
-  aiConfig: AIConfig
-): Promise<any> {
+// Evaluate an edge condition (TypeScript/JS code)
+function evalCondition(code: string, state: Record<string, any>, allowUnsafe: boolean): boolean {
+  if (!allowUnsafe) {
+    throw new Error('Conditional edges with code are disabled in server-side execution.')
+  }
+  try {
+    // eslint-disable-next-line no-new-func
+    const fn = new Function('state', `"use strict"; ${code}`)
+    return !!fn(state)
+  } catch (err: any) {
+    throw new Error(`Edge condition error: ${err.message}`)
+  }
+}
+
+// ---- Agent node execution ----
+
+async function executeAgentNode(data: AgentNodeData, vars: Record<string, any>): Promise<any> {
+  if (!data.provider) throw new Error(`Agent "${data.label}" has no provider configured`)
+  if (!data.modelId) throw new Error(`Agent "${data.label}" has no model configured`)
+
   const userPrompt = interpolate(data.userPromptTemplate, vars)
+
   const body: Record<string, any> = {
     message: userPrompt,
     systemPrompt: data.systemPrompt,
-    provider: aiConfig.provider,
-    modelId: data.modelOverride || aiConfig.modelId,
-    ...(aiConfig.credentials as Record<string, any>),
+    provider: data.provider,
+    modelId: data.modelId,
+    ...data.credentials,
     streaming: false,
+  }
+
+  if (data.outputSchema) {
+    try {
+      body.outputSchema = JSON.parse(data.outputSchema)
+    } catch {
+      // ignore malformed schema
+    }
   }
 
   const res = await fetch('/api/tools/ai/ai-chat', {
@@ -73,225 +94,215 @@ async function executeLLMNode(
     body: JSON.stringify(body),
   })
   const json = await res.json()
-  if (!res.ok) throw new Error(json.error || 'LLM call failed')
+  if (!res.ok) throw new Error(json.error || 'Agent call failed')
   return json.result?.result ?? json.result ?? ''
 }
 
-async function executeToolCallNode(
-  data: Extract<WorkflowDefinition['nodes'][number]['data'], { type: 'tool-call' }>,
-  vars: Record<string, any>
-): Promise<any> {
-  if (!data.toolId) throw new Error('Tool ID is required for tool-call node')
+// ---- Tool node execution ----
 
-  const inputBody: Record<string, any> = {}
-  for (const [param, varName] of Object.entries(data.inputMapping)) {
-    inputBody[param] = vars[varName] ?? vars['input'] ?? ''
-  }
-
-  const res = await fetch(`/api/tools/${data.toolId}`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(inputBody),
-  })
-  const json = await res.json()
-  if (!res.ok) throw new Error(json.error || 'Tool call failed')
-  return json.result
-}
-
-// Transform and JS-conditional nodes execute user-authored code.
-// This is only permitted client-side (browser sandbox, user controls their own workflow).
-// Server-side execution (MCP handler) must pass allowUnsafeNodes: false to reject these.
-async function executeTransformNode(
-  data: Extract<WorkflowDefinition['nodes'][number]['data'], { type: 'transform' }>,
+async function executeToolNode(
+  data: ToolNodeData,
   vars: Record<string, any>,
-  allowUnsafeNodes: boolean
+  allowUnsafe: boolean
 ): Promise<any> {
-  if (!allowUnsafeNodes) {
-    throw new Error('Transform nodes with custom code are disabled in MCP/server-side execution.')
-  }
-  try {
-    // User is the author of `data.code` — this is an intentional client-side code sandbox.
-    // eslint-disable-next-line no-new-func
-    const fn = new Function('input', `"use strict"; ${data.code}`)
-    return fn(vars)
-  } catch (err: any) {
-    throw new Error(`Transform error: ${err.message}`)
-  }
-}
+  const { toolKind } = data
 
-async function executeConditionalNode(
-  data: Extract<WorkflowDefinition['nodes'][number]['data'], { type: 'conditional' }>,
-  vars: Record<string, any>,
-  aiConfig: AIConfig,
-  allowUnsafeNodes: boolean
-): Promise<boolean> {
-  if (data.mode === 'js') {
-    if (!allowUnsafeNodes) {
-      throw new Error(
-        'JS-mode conditional nodes are disabled in MCP/server-side execution. Use "llm" mode instead.'
-      )
-    }
+  if (toolKind === 'api') {
+    const url = interpolate(data.apiUrl ?? '', vars)
+    if (!url) throw new Error('REST API tool requires a URL')
+
+    const rawHeaders = data.apiHeaders ?? '{}'
+    let headers: Record<string, string> = {}
     try {
-      const input = vars[data.inputVariable] ?? vars['input']
-      // User is the author of `data.condition` — intentional client-side code sandbox.
-      // eslint-disable-next-line no-new-func
-      const fn = new Function('input', `"use strict"; return !!(${data.condition})`)
-      return fn(input)
-    } catch (err: any) {
-      throw new Error(`Condition eval error: ${err.message}`)
+      headers = JSON.parse(interpolate(rawHeaders, vars))
+    } catch {
+      throw new Error('API Headers must be valid JSON')
+    }
+
+    const method = data.apiMethod ?? 'GET'
+    const reqInit: RequestInit = {
+      method,
+      headers: { 'Content-Type': 'application/json', ...headers },
+    }
+
+    if (method !== 'GET' && data.apiBodyTemplate) {
+      reqInit.body = interpolate(data.apiBodyTemplate, vars)
+    }
+
+    const res = await fetch(url, reqInit)
+    const text = await res.text()
+    if (!res.ok) throw new Error(`API ${method} ${url} → ${res.status}: ${text}`)
+    try {
+      return JSON.parse(text)
+    } catch {
+      return text
     }
   }
 
-  // LLM-based decision
-  const userPrompt = `Given this context: ${JSON.stringify(vars)}\n\nEvaluate if this condition is true or false: "${data.condition}"\nRespond with only "true" or "false".`
-  const body = {
-    message: userPrompt,
-    provider: aiConfig.provider,
-    modelId: aiConfig.modelId,
-    ...(aiConfig.credentials as Record<string, any>),
-    streaming: false,
+  if (toolKind === 'mcp') {
+    const serverUrl = data.mcpServerUrl
+    if (!serverUrl) throw new Error('MCP tool requires a server URL')
+
+    const rawArgs = data.mcpArgumentsTemplate ?? '{}'
+    let args: Record<string, any> = {}
+    try {
+      args = JSON.parse(interpolate(rawArgs, vars))
+    } catch {
+      throw new Error('MCP arguments must be valid JSON')
+    }
+
+    const res = await fetch(serverUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        method: 'tools/call',
+        name: data.mcpToolName ?? '',
+        arguments: args,
+      }),
+    })
+    const json = await res.json()
+    if (!res.ok) throw new Error(json.error || 'MCP call failed')
+    return json.result
   }
-  const res = await fetch('/api/tools/ai/ai-chat', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(body),
-  })
-  const json = await res.json()
-  const answer = (json.result?.result ?? json.result ?? '').toLowerCase().trim()
-  return answer.startsWith('true')
+
+  if (toolKind === 'devtool') {
+    if (!data.devToolId) throw new Error('Dev tool requires a tool ID')
+
+    let inputMapping: Record<string, string> = {}
+    try {
+      inputMapping = JSON.parse(data.devToolInputMapping ?? '{}')
+    } catch {
+      throw new Error('Dev tool input mapping must be valid JSON')
+    }
+
+    const body: Record<string, any> = {}
+    for (const [param, varName] of Object.entries(inputMapping)) {
+      body[param] = vars[varName] ?? vars['input'] ?? ''
+    }
+    if (Object.keys(body).length === 0) {
+      body['input'] = vars['input'] ?? ''
+    }
+
+    const res = await fetch(`/api/tools/${data.devToolId}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    })
+    const json = await res.json()
+    if (!res.ok) throw new Error(json.error || 'Dev tool call failed')
+    return json.result
+  }
+
+  if (toolKind === 'function') {
+    if (!allowUnsafe) {
+      throw new Error('Custom function tools are disabled in server-side execution.')
+    }
+    if (!data.functionCode) throw new Error('Custom function tool requires code')
+    try {
+      // eslint-disable-next-line no-new-func
+      const fn = new Function('state', `"use strict"; ${data.functionCode}`)
+      return fn(vars)
+    } catch (err: any) {
+      throw new Error(`Function tool error: ${err.message}`)
+    }
+  }
+
+  throw new Error(`Unknown tool kind: ${toolKind}`)
 }
+
+// ---- Engine ----
 
 export class WorkflowEngine {
   private workflow: WorkflowDefinition
-  private variables: Record<string, any>
-  private aiConfig: AIConfig
+  private state: Record<string, any>
   private onProgress: ProgressCallback
   private steps: ExecutionStep[]
-  // true only in browser/client context where the user authored the workflow themselves
-  private allowUnsafeNodes: boolean
+  private allowUnsafe: boolean
 
   constructor(
     workflow: WorkflowDefinition,
-    aiConfig: AIConfig,
     onProgress: ProgressCallback = () => {},
-    allowUnsafeNodes = false
+    allowUnsafe = false
   ) {
     this.workflow = workflow
-    this.variables = {}
-    this.aiConfig = aiConfig
+    this.state = {}
     this.onProgress = onProgress
     this.steps = []
-    this.allowUnsafeNodes = allowUnsafeNodes
+    this.allowUnsafe = allowUnsafe
   }
 
-  private emitStep(step: ExecutionStep) {
-    this.steps.push(step)
-    this.onProgress(step)
+  private emit(step: ExecutionStep) {
+    const idx = this.steps.findIndex((s) => s.nodeId === step.nodeId)
+    if (idx >= 0) this.steps[idx] = step
+    else this.steps.push(step)
+    this.onProgress({ ...step })
   }
 
-  private outgoingEdges(nodeId: string): WorkflowEdge[] {
+  private outgoing(nodeId: string): WorkflowEdge[] {
     return this.workflow.edges.filter((e) => e.source === nodeId)
   }
 
-  async execute(input: any): Promise<ExecutionResult> {
-    this.variables['input'] = input
+  async execute(input: string): Promise<ExecutionResult> {
+    this.state = { input }
     this.steps = []
 
     const sorted = topologicalSort(this.workflow.nodes, this.workflow.edges)
-    const skipNodes = new Set<string>()
+    const skipped = new Set<string>()
 
     for (const node of sorted) {
-      if (skipNodes.has(node.id)) continue
+      if (skipped.has(node.id)) continue
 
       const step: ExecutionStep = {
         nodeId: node.id,
         nodeLabel: node.data.label,
         status: 'running',
       }
-      this.emitStep({ ...step })
+      this.emit({ ...step })
 
       try {
         const d = node.data
 
-        if (d.type === 'input') {
-          // Already set
+        if (d.type === 'start') {
           step.output = input
-        } else if (d.type === 'output') {
-          const raw = this.variables['input']
-          step.output = d.format === 'json' ? JSON.stringify(raw, null, 2) : String(raw ?? '')
-          this.variables['output'] = step.output
-        } else if (d.type === 'llm-call') {
-          const result = await executeLLMNode(d, this.variables, this.aiConfig)
-          this.variables[d.outputVariable] = result
-          this.variables['input'] = result
+        } else if (d.type === 'end') {
+          step.output = this.state['input']
+          this.state['output'] = step.output
+        } else if (d.type === 'agent') {
+          const result = await executeAgentNode(d, this.state)
+          this.state[d.outputVariable] = result
+          this.state['input'] = result
           step.output = result
-        } else if (d.type === 'tool-call') {
-          const result = await executeToolCallNode(d, this.variables)
-          this.variables[d.outputVariable] = result
-          this.variables['input'] = result
+        } else if (d.type === 'tool') {
+          const result = await executeToolNode(d, this.state, this.allowUnsafe)
+          this.state[d.outputVariable] = result
+          this.state['input'] = result
           step.output = result
-        } else if (d.type === 'transform') {
-          const result = await executeTransformNode(d, this.variables, this.allowUnsafeNodes)
-          this.variables[d.outputVariable] = result
-          this.variables['input'] = result
-          step.output = result
-        } else if (d.type === 'conditional') {
-          const result = await executeConditionalNode(
-            d,
-            this.variables,
-            this.aiConfig,
-            this.allowUnsafeNodes
-          )
-          step.output = result
-          // Skip nodes on the branch that was NOT taken
-          const edges = this.outgoingEdges(node.id)
-          for (const edge of edges) {
-            if (edge.sourceHandle === 'true' && !result) skipNodes.add(edge.target)
-            if (edge.sourceHandle === 'false' && result) skipNodes.add(edge.target)
-          }
-        } else if (d.type === 'loop') {
-          const items = this.variables[d.iterateOver]
-          if (Array.isArray(items)) {
-            const results: any[] = []
-            const limit = Math.min(items.length, d.maxIterations)
-            for (let i = 0; i < limit; i++) {
-              this.variables[d.itemVariable] = items[i]
-              this.variables['input'] = items[i]
-              results.push(items[i])
-            }
-            step.output = results
-          }
-        } else if (d.type === 'merge') {
-          const edges = this.workflow.edges.filter((e) => e.target === node.id)
-          const values = edges.map((e) => {
-            const src = this.workflow.nodes.find((n) => n.id === e.source)
-            if (!src) return undefined
-            const srcData = src.data as any
-            return this.variables[srcData.outputVariable ?? 'input']
-          })
-          let merged: any
-          if (d.strategy === 'concat') {
-            merged = values.flat()
-          } else if (d.strategy === 'first') {
-            merged = values[0]
-          } else {
-            merged = Object.fromEntries(edges.map((e, i) => [e.source, values[i]]))
-          }
-          this.variables[d.outputVariable] = merged
-          this.variables['input'] = merged
-          step.output = merged
         }
 
         step.status = 'done'
-        this.emitStep({ ...step })
+        this.emit({ ...step })
+
+        // Evaluate outgoing conditional edges
+        const outEdges = this.outgoing(node.id)
+        const hasConditions = outEdges.some((e) => e.conditionCode)
+        if (hasConditions) {
+          for (const edge of outEdges) {
+            if (!edge.conditionCode) continue
+            const pass = evalCondition(edge.conditionCode, this.state, this.allowUnsafe)
+            if (!pass) {
+              // Mark target and all reachable nodes from it as skipped
+              this.markSkipped(edge.target, skipped)
+            }
+          }
+        }
       } catch (err: any) {
         step.status = 'error'
         step.error = err.message
-        this.emitStep({ ...step })
+        this.emit({ ...step })
         return {
           success: false,
           output: null,
-          steps: this.steps,
+          steps: [...this.steps],
           error: `Node "${node.data.label}" failed: ${err.message}`,
         }
       }
@@ -299,29 +310,33 @@ export class WorkflowEngine {
 
     return {
       success: true,
-      output: this.variables['output'] ?? this.variables['input'],
-      steps: this.steps,
+      output: this.state['output'] ?? this.state['input'],
+      steps: [...this.steps],
+    }
+  }
+
+  private markSkipped(nodeId: string, skipped: Set<string>) {
+    if (skipped.has(nodeId)) return
+    skipped.add(nodeId)
+    for (const edge of this.outgoing(nodeId)) {
+      this.markSkipped(edge.target, skipped)
     }
   }
 }
 
-// Server-side execution (MCP handler) - unsafe nodes disabled
 export async function executeWorkflow(
   workflow: WorkflowDefinition,
-  input: any,
-  aiConfig: AIConfig
+  input: string
 ): Promise<ExecutionResult> {
-  const engine = new WorkflowEngine(workflow, aiConfig, undefined, false)
+  const engine = new WorkflowEngine(workflow, undefined, false)
   return engine.execute(input)
 }
 
-// Client-side execution - user authored the workflow, unsafe nodes permitted
 export async function executeWorkflowClient(
   workflow: WorkflowDefinition,
-  input: any,
-  aiConfig: AIConfig,
+  input: string,
   onProgress?: ProgressCallback
 ): Promise<ExecutionResult> {
-  const engine = new WorkflowEngine(workflow, aiConfig, onProgress, true)
+  const engine = new WorkflowEngine(workflow, onProgress, true)
   return engine.execute(input)
 }

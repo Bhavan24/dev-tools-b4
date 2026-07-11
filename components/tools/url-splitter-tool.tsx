@@ -34,9 +34,7 @@ export function UrlSplitterTool() {
           <ExecuteButton onClick={handleExecute} loading={loading} label="Parse URL" />
         </div>
       }
-      right={
-        <OutputPanel result={result} error={error} copied={copied} onCopy={handleCopy} />
-      }
+      right={<OutputPanel result={result} error={error} copied={copied} onCopy={handleCopy} />}
     />
   )
 }

@@ -84,37 +84,42 @@ export function OutputPanel({
 
       {error && (
         <div className="mb-4 p-4 bg-red-500/10 border border-red-500/30 rounded-lg flex items-start gap-3">
-          <AlertCircle size={20} className="text-red-500 flex-shrink-0 mt-0.5" />
+          <AlertCircle size={20} className="text-red-500 shrink-0 mt-0.5" />
           <p className="text-sm text-red-600">{error}</p>
         </div>
       )}
 
-      {result !== null && result !== undefined && typeof result === 'object' && !Array.isArray(result) && (
-        <div className="mb-4 space-y-2 max-h-64 overflow-auto">
-          {Object.entries(result as Record<string, unknown>).map(([key, val]) => (
-            <div
-              key={key}
-              className="bg-secondary rounded-lg p-3 flex justify-between items-center text-sm"
-            >
-              <div>
-                <p className="text-xs text-muted-foreground capitalize font-medium">
-                  {key.replace(/([A-Z])/g, ' $1').trim()}
-                </p>
-                <p className="font-mono text-sm mt-1 break-all">{String(val)}</p>
+      {result !== null &&
+        result !== undefined &&
+        typeof result === 'object' &&
+        !Array.isArray(result) && (
+          <div className="mb-4 space-y-2 max-h-64 overflow-auto">
+            {Object.entries(result as Record<string, unknown>).map(([key, val]) => (
+              <div
+                key={key}
+                className="bg-secondary rounded-lg p-3 flex justify-between items-center text-sm"
+              >
+                <div>
+                  <p className="text-xs text-muted-foreground capitalize font-medium">
+                    {key.replace(/([A-Z])/g, ' $1').trim()}
+                  </p>
+                  <p className="font-mono text-sm mt-1 break-all">{String(val)}</p>
+                </div>
+                <CopyButton text={String(val)} copied={copied} onCopy={onCopy} />
               </div>
-              <CopyButton text={String(val)} copied={copied} onCopy={onCopy} />
-            </div>
-          ))}
-        </div>
-      )}
+            ))}
+          </div>
+        )}
 
-      {result !== null && result !== undefined && (typeof result === 'string' || Array.isArray(result)) && (
-        <div className="bg-secondary rounded-lg p-4 font-mono text-sm mb-4 max-h-96 overflow-auto">
-          <pre className="whitespace-pre-wrap break-words">
-            {typeof result === 'string' ? result : JSON.stringify(result, null, 2)}
-          </pre>
-        </div>
-      )}
+      {result !== null &&
+        result !== undefined &&
+        (typeof result === 'string' || Array.isArray(result)) && (
+          <div className="bg-secondary rounded-lg p-4 font-mono text-sm mb-4 max-h-96 overflow-auto">
+            <pre className="whitespace-pre-wrap break-word">
+              {typeof result === 'string' ? result : JSON.stringify(result, null, 2)}
+            </pre>
+          </div>
+        )}
 
       {(result === null || result === undefined) && !error && (
         <div
@@ -194,13 +199,9 @@ export function CopyButton({ text, copied, onCopy, size = 16 }: CopyButtonProps)
   return (
     <button
       onClick={() => onCopy(text)}
-      className="p-2 hover:bg-primary/10 rounded transition-colors flex-shrink-0 ml-2"
+      className="p-2 hover:bg-primary/10 rounded transition-colors shrink-0 ml-2"
     >
-      {copied ? (
-        <Check size={size} className="text-green-500" />
-      ) : (
-        <Copy size={size} />
-      )}
+      {copied ? <Check size={size} className="text-green-500" /> : <Copy size={size} />}
     </button>
   )
 }
@@ -241,7 +242,7 @@ export function InlineError({ message }: { message: string }) {
   if (!message) return null
   return (
     <div className="p-4 bg-red-500/10 border border-red-500/30 rounded-lg flex items-start gap-3">
-      <AlertCircle size={20} className="text-red-500 flex-shrink-0 mt-0.5" />
+      <AlertCircle size={20} className="text-red-500 shrink-0 mt-0.5" />
       <p className="text-sm text-red-600">{message}</p>
     </div>
   )

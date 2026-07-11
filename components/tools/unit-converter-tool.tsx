@@ -52,7 +52,9 @@ export function UnitConverterTool() {
                 className="input-base"
               >
                 {ALL_UNITS.map((u) => (
-                  <option key={u} value={u}>{u}</option>
+                  <option key={u} value={u}>
+                    {u}
+                  </option>
                 ))}
               </select>
             </div>
@@ -64,7 +66,9 @@ export function UnitConverterTool() {
                 className="input-base"
               >
                 {ALL_UNITS.map((u) => (
-                  <option key={u} value={u}>{u}</option>
+                  <option key={u} value={u}>
+                    {u}
+                  </option>
                 ))}
               </select>
             </div>
@@ -72,9 +76,7 @@ export function UnitConverterTool() {
           <ExecuteButton onClick={handleConvert} loading={loading} label="Convert" />
         </div>
       }
-      right={
-        <OutputPanel result={result} error={error} copied={copied} onCopy={handleCopy} />
-      }
+      right={<OutputPanel result={result} error={error} copied={copied} onCopy={handleCopy} />}
     />
   )
 }

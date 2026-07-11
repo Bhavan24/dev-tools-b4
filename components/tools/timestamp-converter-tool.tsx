@@ -40,9 +40,7 @@ export function TimestampConverterTool() {
           <ExecuteButton onClick={handleExecute} loading={loading} label="Convert" />
         </div>
       }
-      right={
-        <OutputPanel result={result} error={error} copied={copied} onCopy={handleCopy} />
-      }
+      right={<OutputPanel result={result} error={error} copied={copied} onCopy={handleCopy} />}
     />
   )
 }

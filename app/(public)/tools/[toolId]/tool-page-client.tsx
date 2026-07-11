@@ -239,9 +239,5 @@ export function ToolPageClient({ toolId }: ToolPageClientProps) {
     )
   }
 
-  return (
-    <div className={FULL_WIDTH_TOOLS.has(toolId) ? 'w-full' : 'max-w-4xl'}>
-      {factory()}
-    </div>
-  )
+  return <div className={FULL_WIDTH_TOOLS.has(toolId) ? 'w-full' : 'max-w-4xl'}>{factory()}</div>
 }

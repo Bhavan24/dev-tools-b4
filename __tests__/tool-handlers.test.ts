@@ -230,9 +230,9 @@ describe('regex-parser', () => {
   })
 
   it('throws on invalid pattern', async () => {
-    await expect(
-      run('regex-parser', { pattern: '[invalid', testString: 'test' })
-    ).rejects.toThrow('Invalid regex pattern')
+    await expect(run('regex-parser', { pattern: '[invalid', testString: 'test' })).rejects.toThrow(
+      'Invalid regex pattern'
+    )
   })
 })
 
@@ -274,7 +274,9 @@ describe('mime-type-checker', () => {
   })
 
   it('returns octet-stream for unknown ext', async () => {
-    expect(await run('mime-type-checker', { filename: 'file.xyz' })).toBe('application/octet-stream')
+    expect(await run('mime-type-checker', { filename: 'file.xyz' })).toBe(
+      'application/octet-stream'
+    )
   })
 })
 
@@ -342,9 +344,7 @@ describe('text-case-converter', () => {
   })
 
   it('throws on unknown case', async () => {
-    await expect(
-      run('text-case-converter', { text: 'hi', case: 'unknownCase' })
-    ).rejects.toThrow()
+    await expect(run('text-case-converter', { text: 'hi', case: 'unknownCase' })).rejects.toThrow()
   })
 })
 
@@ -362,11 +362,15 @@ describe('unit-converter', () => {
   })
 
   it('throws on unknown unit', async () => {
-    await expect(run('unit-converter', { value: 1, fromUnit: 'xyz', toUnit: 'm' })).rejects.toThrow()
+    await expect(
+      run('unit-converter', { value: 1, fromUnit: 'xyz', toUnit: 'm' })
+    ).rejects.toThrow()
   })
 
   it('throws on incompatible units', async () => {
-    await expect(run('unit-converter', { value: 1, fromUnit: 'km', toUnit: 'kg' })).rejects.toThrow()
+    await expect(
+      run('unit-converter', { value: 1, fromUnit: 'km', toUnit: 'kg' })
+    ).rejects.toThrow()
   })
 })
 
@@ -395,9 +399,7 @@ describe('uuid-generator', () => {
 describe('hash-generator', () => {
   it('generates sha256 hash', async () => {
     const result = await run('hash-generator', { text: 'hello', algorithm: 'sha256' })
-    expect(result.hash).toBe(
-      '2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824'
-    )
+    expect(result.hash).toBe('2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824')
   })
 
   it('generates md5 hash', async () => {
@@ -406,9 +408,7 @@ describe('hash-generator', () => {
   })
 
   it('throws on invalid algorithm', async () => {
-    await expect(
-      run('hash-generator', { text: 'x', algorithm: 'sha999' })
-    ).rejects.toThrow()
+    await expect(run('hash-generator', { text: 'x', algorithm: 'sha999' })).rejects.toThrow()
   })
 })
 
@@ -438,9 +438,7 @@ describe('password-generator', () => {
   })
 
   it('throws when length is out of range', async () => {
-    await expect(
-      run('password-generator', { length: 4 })
-    ).rejects.toThrow()
+    await expect(run('password-generator', { length: 4 })).rejects.toThrow()
   })
 
   it('throws when no character types selected', async () => {

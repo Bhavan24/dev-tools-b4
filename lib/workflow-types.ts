@@ -1,77 +1,56 @@
 // ---- Node data shapes ----
 
-export interface InputNodeData {
-  type: 'input'
+export interface StartNodeData {
+  type: 'start'
   label: string
   description?: string
 }
 
-export interface OutputNodeData {
-  type: 'output'
+export interface EndNodeData {
+  type: 'end'
   label: string
-  format: 'text' | 'json'
 }
 
-export interface LLMCallNodeData {
-  type: 'llm-call'
+export interface AgentNodeData {
+  type: 'agent'
   label: string
+  // Per-agent AI provider config
+  provider: string
+  modelId: string
+  // Credential fields keyed by provider field key (e.g. apiKey, region, etc.)
+  credentials: Record<string, string>
+  // Prompts
   systemPrompt: string
   userPromptTemplate: string
-  outputVariable: string
-  // Per-node model override (empty = use global provider config)
-  modelOverride?: string
-}
-
-export interface ConditionalNodeData {
-  type: 'conditional'
-  label: string
-  // 'js' evaluates a JS expression; 'llm' asks the LLM to decide true/false
-  mode: 'js' | 'llm'
-  condition: string
-  inputVariable: string
-}
-
-export interface LoopNodeData {
-  type: 'loop'
-  label: string
-  iterateOver: string
-  itemVariable: string
-  maxIterations: number
-}
-
-export interface ToolCallNodeData {
-  type: 'tool-call'
-  label: string
-  toolId: string
-  inputMapping: Record<string, string>
+  // Optional JSON Schema for structured output (stored as JSON string)
+  outputSchema?: string
   outputVariable: string
 }
 
-export interface TransformNodeData {
-  type: 'transform'
+export type ToolKind = 'api' | 'mcp' | 'devtool' | 'function'
+
+export interface ToolNodeData {
+  type: 'tool'
   label: string
-  // JS function body: receives `input` (current workflow variables), returns any
-  code: string
+  toolKind: ToolKind
   outputVariable: string
+  // REST API
+  apiUrl?: string
+  apiMethod?: string
+  apiHeaders?: string
+  apiBodyTemplate?: string
+  // MCP server
+  mcpServerUrl?: string
+  mcpToolName?: string
+  mcpArgumentsTemplate?: string
+  // Built-in devtool
+  devToolId?: string
+  devToolInputMapping?: string
+  // Custom JS/TS function (client-side only)
+  functionCode?: string
 }
 
-export interface MergeNodeData {
-  type: 'merge'
-  label: string
-  strategy: 'concat' | 'object' | 'first'
-  outputVariable: string
-}
-
-export type NodeData =
-  | InputNodeData
-  | OutputNodeData
-  | LLMCallNodeData
-  | ConditionalNodeData
-  | LoopNodeData
-  | ToolCallNodeData
-  | TransformNodeData
-  | MergeNodeData
-
+export type NodeData = StartNodeData | EndNodeData | AgentNodeData | ToolNodeData
 export type NodeType = NodeData['type']
 
 export interface WorkflowNode {
@@ -85,15 +64,16 @@ export interface WorkflowEdge {
   id: string
   source: string
   target: string
-  // Used for conditional nodes: 'true' | 'false'
   sourceHandle?: string
+  // Optional TypeScript/JS code: receives `state`, returns boolean
+  conditionCode?: string
   label?: string
 }
 
 export interface WorkflowDefinition {
   id: string
   name: string
-  version: '1.0'
+  version: '2.0'
   nodes: WorkflowNode[]
   edges: WorkflowEdge[]
 }
@@ -115,124 +95,71 @@ export interface ExecutionResult {
   error?: string
 }
 
-// ---- Node palette metadata (for sidebar display) ----
+// ---- Palette ----
 
 export interface NodePaletteItem {
   type: NodeType
   label: string
   description: string
-  icon: string
-  category: 'ai' | 'logic' | 'io' | 'data'
-  color: string
+  category: 'flow' | 'ai' | 'tools'
+  accentColor: string
   defaultData: Record<string, any>
 }
 
 export const NODE_PALETTE: NodePaletteItem[] = [
   {
-    type: 'input',
-    label: 'Input',
-    description: 'Entry point - receives initial data',
-    icon: 'Play',
-    category: 'io',
-    color: 'bg-green-500',
-    defaultData: { label: 'Input', description: '' },
+    type: 'start',
+    label: 'Start',
+    description: 'Entry point of the graph (LangGraph START)',
+    category: 'flow',
+    accentColor: 'emerald',
+    defaultData: { label: 'Start', description: '' },
   },
   {
-    type: 'output',
-    label: 'Output',
-    description: 'Terminal node - emits final result',
-    icon: 'Flag',
-    category: 'io',
-    color: 'bg-blue-500',
-    defaultData: { label: 'Output', format: 'text' },
+    type: 'end',
+    label: 'End',
+    description: 'Terminal node of the graph (LangGraph END)',
+    category: 'flow',
+    accentColor: 'slate',
+    defaultData: { label: 'End' },
   },
   {
-    type: 'llm-call',
-    label: 'LLM Call',
-    description: 'Invoke an AI model with a prompt',
-    icon: 'Sparkles',
+    type: 'agent',
+    label: 'Agent',
+    description: 'AI agent with provider config, prompts, and optional structured output',
     category: 'ai',
-    color: 'bg-purple-500',
+    accentColor: 'violet',
     defaultData: {
-      label: 'LLM Call',
+      label: 'Agent',
+      provider: '',
+      modelId: '',
+      credentials: {},
       systemPrompt: 'You are a helpful assistant.',
       userPromptTemplate: '{{input}}',
-      outputVariable: 'llmOutput',
+      outputSchema: '',
+      outputVariable: 'agentOutput',
     },
   },
   {
-    type: 'conditional',
-    label: 'Conditional',
-    description: 'Route flow based on true/false condition',
-    icon: 'GitBranch',
-    category: 'logic',
-    color: 'bg-amber-500',
+    type: 'tool',
+    label: 'Tool',
+    description: 'Invoke an API, MCP server, built-in devtool, or custom function',
+    category: 'tools',
+    accentColor: 'sky',
     defaultData: {
-      label: 'Condition',
-      mode: 'js',
-      condition: 'input.length > 0',
-      inputVariable: 'input',
-    },
-  },
-  {
-    type: 'loop',
-    label: 'Loop',
-    description: 'Iterate over an array of items',
-    icon: 'RefreshCw',
-    category: 'logic',
-    color: 'bg-orange-500',
-    defaultData: {
-      label: 'Loop',
-      iterateOver: 'items',
-      itemVariable: 'item',
-      maxIterations: 10,
-    },
-  },
-  {
-    type: 'tool-call',
-    label: 'Tool Call',
-    description: 'Call any built-in developer tool',
-    icon: 'Wrench',
-    category: 'ai',
-    color: 'bg-cyan-500',
-    defaultData: {
-      label: 'Tool Call',
-      toolId: '',
-      inputMapping: {},
+      label: 'Tool',
+      toolKind: 'api' as ToolKind,
       outputVariable: 'toolOutput',
-    },
-  },
-  {
-    type: 'transform',
-    label: 'Transform',
-    description: 'Transform data with JavaScript',
-    icon: 'Code2',
-    category: 'data',
-    color: 'bg-gray-500',
-    defaultData: {
-      label: 'Transform',
-      code: 'return input',
-      outputVariable: 'transformed',
-    },
-  },
-  {
-    type: 'merge',
-    label: 'Merge',
-    description: 'Combine outputs from parallel branches',
-    icon: 'Merge',
-    category: 'logic',
-    color: 'bg-teal-500',
-    defaultData: {
-      label: 'Merge',
-      strategy: 'object',
-      outputVariable: 'merged',
+      apiUrl: '',
+      apiMethod: 'GET',
+      apiHeaders: '{}',
+      apiBodyTemplate: '',
     },
   },
 ]
 
 export const PALETTE_CATEGORY_LABELS: Record<string, string> = {
-  io: 'Input / Output',
-  ai: 'AI & Tools',
-  logic: 'Logic & Flow',
-  data: 'Data',
+  flow: 'Flow Control',
+  ai: 'AI',
+  tools: 'Tools',
 }

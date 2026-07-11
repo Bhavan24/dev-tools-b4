@@ -34,9 +34,7 @@ export function MimeTypeCheckerTool() {
           <ExecuteButton onClick={handleExecute} loading={loading} label="Check MIME Type" />
         </div>
       }
-      right={
-        <OutputPanel result={result} error={error} copied={copied} onCopy={handleCopy} />
-      }
+      right={<OutputPanel result={result} error={error} copied={copied} onCopy={handleCopy} />}
     />
   )
 }

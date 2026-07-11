@@ -12,8 +12,7 @@ type DiffRow =
 
 // Pair up consecutive removed+added into a "modified" group for inline char diff
 type DisplayRow =
-  | DiffRow
-  | { type: 'modified'; leftNum: number; rightNum: number; left: string; right: string }
+  DiffRow | { type: 'modified'; leftNum: number; rightNum: number; left: string; right: string }
 
 type CharPart = { text: string; changed: boolean }
 
@@ -53,10 +52,22 @@ function computeLineDiff(leftLines: string[], rightLines: string[]): DiffRow[] {
       i--
       j--
     } else if (j > 0 && (i === 0 || dp[i]![j - 1]! >= dp[i - 1]![j]!)) {
-      rows.unshift({ type: 'added', leftNum: null, rightNum: j, left: null, right: rightLines[j - 1]! })
+      rows.unshift({
+        type: 'added',
+        leftNum: null,
+        rightNum: j,
+        left: null,
+        right: rightLines[j - 1]!,
+      })
       j--
     } else {
-      rows.unshift({ type: 'removed', leftNum: i, rightNum: null, left: leftLines[i - 1]!, right: null })
+      rows.unshift({
+        type: 'removed',
+        leftNum: i,
+        rightNum: null,
+        left: leftLines[i - 1]!,
+        right: null,
+      })
       i--
     }
   }
@@ -125,7 +136,8 @@ function charDiff(a: string, b: string): { left: CharPart[]; right: CharPart[] }
   const dp: number[][] = Array.from({ length: m + 1 }, () => new Array(n + 1).fill(0))
   for (let i = 1; i <= m; i++) {
     for (let j = 1; j <= n; j++) {
-      dp[i]![j] = a[i - 1] === b[j - 1] ? dp[i - 1]![j - 1]! + 1 : Math.max(dp[i - 1]![j]!, dp[i]![j - 1]!)
+      dp[i]![j] =
+        a[i - 1] === b[j - 1] ? dp[i - 1]![j - 1]! + 1 : Math.max(dp[i - 1]![j]!, dp[i]![j - 1]!)
     }
   }
 
@@ -178,7 +190,10 @@ interface DiffStats {
 }
 
 function computeStats(rows: DisplayRow[]): DiffStats {
-  let unchanged = 0, removed = 0, added = 0, modified = 0
+  let unchanged = 0,
+    removed = 0,
+    added = 0,
+    modified = 0
   for (const row of rows) {
     if (row.type === 'unchanged') unchanged++
     else if (row.type === 'removed') removed++
@@ -211,7 +226,8 @@ function renderCharParts(parts: CharPart[], side: 'left' | 'right') {
   )
 }
 
-const LINE_NUM_CLS = 'w-10 shrink-0 text-right pr-3 text-muted-foreground/50 select-none font-mono text-xs'
+const LINE_NUM_CLS =
+  'w-10 shrink-0 text-right pr-3 text-muted-foreground/50 select-none font-mono text-xs'
 
 function LineNum({ n }: { n: number | null }) {
   return <span className={LINE_NUM_CLS}>{n ?? ''}</span>
@@ -278,7 +294,11 @@ export function DiffCheckerTool() {
               onClick={() => handleCopy('left')}
               className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors"
             >
-              {copied === 'left' ? <Check size={12} className="text-green-500" /> : <Copy size={12} />}
+              {copied === 'left' ? (
+                <Check size={12} className="text-green-500" />
+              ) : (
+                <Copy size={12} />
+              )}
               Copy
             </button>
           </div>
@@ -297,7 +317,11 @@ export function DiffCheckerTool() {
               onClick={() => handleCopy('right')}
               className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors"
             >
-              {copied === 'right' ? <Check size={12} className="text-green-500" /> : <Copy size={12} />}
+              {copied === 'right' ? (
+                <Check size={12} className="text-green-500" />
+              ) : (
+                <Copy size={12} />
+              )}
               Copy
             </button>
           </div>
@@ -389,7 +413,9 @@ export function DiffCheckerTool() {
       {/* Side-by-side diff */}
       {rows && visibleRows.length === 0 && (
         <div className="bg-secondary rounded-lg p-6 text-center text-muted-foreground text-sm">
-          {rows.length === 0 ? 'No differences found - texts are identical.' : 'All lines are unchanged. Toggle "Show unchanged" to see them.'}
+          {rows.length === 0
+            ? 'No differences found - texts are identical.'
+            : 'All lines are unchanged. Toggle "Show unchanged" to see them.'}
         </div>
       )}
 
@@ -408,18 +434,25 @@ export function DiffCheckerTool() {
           </div>
 
           {/* Diff rows */}
-          <div className="overflow-auto max-h-[600px] font-mono text-xs leading-5">
+          <div className="overflow-auto max-h-150 font-mono text-xs leading-5">
             {visibleRows.map((row, idx) => {
               if (row.type === 'unchanged') {
                 return (
-                  <div key={idx} className="grid grid-cols-2 border-b border-border/40 last:border-0">
+                  <div
+                    key={idx}
+                    className="grid grid-cols-2 border-b border-border/40 last:border-0"
+                  >
                     <div className="flex items-start px-1 py-0.5 border-r border-border/40">
                       <LineNum n={row.leftNum} />
-                      <span className="text-foreground/70 whitespace-pre wrap-break-word min-w-0">{row.left || ' '}</span>
+                      <span className="text-foreground/70 whitespace-pre wrap-break-word min-w-0">
+                        {row.left || ' '}
+                      </span>
                     </div>
                     <div className="flex items-start px-1 py-0.5">
                       <LineNum n={row.rightNum} />
-                      <span className="text-foreground/70 whitespace-pre wrap-break-word min-w-0">{row.right || ' '}</span>
+                      <span className="text-foreground/70 whitespace-pre wrap-break-word min-w-0">
+                        {row.right || ' '}
+                      </span>
                     </div>
                   </div>
                 )
@@ -427,7 +460,10 @@ export function DiffCheckerTool() {
 
               if (row.type === 'removed') {
                 return (
-                  <div key={idx} className="grid grid-cols-2 border-b border-border/40 last:border-0 bg-red-500/5">
+                  <div
+                    key={idx}
+                    className="grid grid-cols-2 border-b border-border/40 last:border-0 bg-red-500/5"
+                  >
                     <div className="flex items-start px-1 py-0.5 border-r border-border/40 bg-red-500/10">
                       <LineNum n={row.leftNum} />
                       <span className="text-red-700 dark:text-red-400 whitespace-pre wrap-break-word min-w-0">
@@ -445,7 +481,10 @@ export function DiffCheckerTool() {
 
               if (row.type === 'added') {
                 return (
-                  <div key={idx} className="grid grid-cols-2 border-b border-border/40 last:border-0 bg-green-500/5">
+                  <div
+                    key={idx}
+                    className="grid grid-cols-2 border-b border-border/40 last:border-0 bg-green-500/5"
+                  >
                     <div className="flex items-start px-1 py-0.5 border-r border-border/40">
                       <LineNum n={null} />
                       <span className="text-muted-foreground/30 select-none">·</span>
