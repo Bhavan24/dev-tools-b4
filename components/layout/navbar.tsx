@@ -58,6 +58,7 @@ export function Navbar() {
             className="flex items-center gap-1.5 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
           >
             <GitPullRequest size={15} />
+            Source
           </Link>
           {/* Theme Toggle */}
           {mounted && (
@@ -100,6 +101,7 @@ export function Navbar() {
               className="flex items-center gap-2 text-foreground hover:text-primary transition-colors py-2"
             >
               <GitPullRequest size={18} />
+              Source
             </Link>
             {/* Mobile Theme Toggle */}
             {mounted && (

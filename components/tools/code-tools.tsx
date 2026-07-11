@@ -15,26 +15,14 @@ export function CodeTools({ toolId }: CodeToolsProps) {
   const [copied, setCopied] = useState(false)
   const [language, setLanguage] = useState('js')
 
-  const isCodeCleaner = toolId === 'code-cleaner'
-  const isDiffChecker = toolId === 'diff-checker'
-
   const handleExecute = async () => {
     setLoading(true)
     setError('')
     try {
-      const body: Record<string, any> = isCodeCleaner
-        ? { code: input, language }
-        : isDiffChecker
-          ? {
-              text1: input.split('\n\n---\n\n')[0] || '',
-              text2: input.split('\n\n---\n\n')[1] || '',
-            }
-          : {}
-
       const response = await fetch(`/api/tools/${toolId}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body),
+        body: JSON.stringify({ code: input, language }),
       })
 
       if (!response.ok) {
@@ -64,45 +52,29 @@ export function CodeTools({ toolId }: CodeToolsProps) {
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
       <div className="space-y-4">
-        {isCodeCleaner ? (
-          <>
-            <div>
-              <label className="block font-medium text-foreground mb-3">Language</label>
-              <select
-                value={language}
-                onChange={(e) => setLanguage(e.target.value)}
-                className="input-base"
-              >
-                <option value="js">JavaScript</option>
-                <option value="css">CSS</option>
-                <option value="html">HTML</option>
-                <option value="py">Python</option>
-                <option value="java">Java</option>
-              </select>
-            </div>
-            <div>
-              <label className="block font-medium text-foreground mb-3">Code to Clean</label>
-              <textarea
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                placeholder="Paste your code here..."
-                className="input-base h-96 font-mono text-sm resize-none"
-              />
-            </div>
-          </>
-        ) : (
-          <div>
-            <label className="block font-medium text-foreground mb-3">
-              Compare Two Texts (separated by a blank line with ---)
-            </label>
-            <textarea
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              placeholder={'First text here\n\n---\n\nSecond text here'}
-              className="input-base h-96 font-mono text-sm resize-none"
-            />
-          </div>
-        )}
+        <div>
+          <label className="block font-medium text-foreground mb-3">Language</label>
+          <select
+            value={language}
+            onChange={(e) => setLanguage(e.target.value)}
+            className="input-base"
+          >
+            <option value="js">JavaScript</option>
+            <option value="css">CSS</option>
+            <option value="html">HTML</option>
+            <option value="py">Python</option>
+            <option value="java">Java</option>
+          </select>
+        </div>
+        <div>
+          <label className="block font-medium text-foreground mb-3">Code to Clean</label>
+          <textarea
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            placeholder="Paste your code here..."
+            className="input-base h-96 font-mono text-sm resize-none"
+          />
+        </div>
 
         <button
           onClick={handleExecute}
@@ -132,41 +104,11 @@ export function CodeTools({ toolId }: CodeToolsProps) {
 
         {result && (
           <div className="space-y-4">
-            {isDiffChecker && result.diff ? (
-              <div className="space-y-3">
-                <div className="bg-secondary rounded-lg p-3 space-y-2 max-h-96 overflow-auto">
-                  <div className="text-xs font-medium text-muted-foreground">
-                    Similarity: <span className="text-foreground">{result.similarity}%</span>
-                  </div>
-                  <div className="text-xs font-medium text-muted-foreground">
-                    Lines: {result.text1_lines} vs {result.text2_lines}
-                  </div>
-                  <div className="space-y-1">
-                    {result.diff.map((item: any, idx: number) => (
-                      <div
-                        key={idx}
-                        className={`p-2 rounded text-xs font-mono ${
-                          item.type === 'removed'
-                            ? 'bg-red-500/20 text-red-700 dark:text-red-400'
-                            : 'bg-green-500/20 text-green-700 dark:text-green-400'
-                        }`}
-                      >
-                        <span className="font-semibold">
-                          {item.type === 'removed' ? '- ' : '+ '}
-                        </span>
-                        <span className="break-all">{item.content}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            ) : (
-              <div className="bg-secondary rounded-lg p-4 font-mono text-sm mb-4 max-h-96 overflow-auto">
-                <pre className="whitespace-pre-wrap wrap-break-word">
-                  {typeof result === 'string' ? result : JSON.stringify(result, null, 2)}
-                </pre>
-              </div>
-            )}
+            <div className="bg-secondary rounded-lg p-4 font-mono text-sm mb-4 max-h-96 overflow-auto">
+              <pre className="whitespace-pre-wrap wrap-break-word">
+                {typeof result === 'string' ? result : JSON.stringify(result, null, 2)}
+              </pre>
+            </div>
 
             <button
               onClick={copyToClipboard}

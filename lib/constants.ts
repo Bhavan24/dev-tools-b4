@@ -4,6 +4,7 @@ export const TOOLS_CATEGORIES = {
   FORMATTER: 'formatter',
   CONVERTER: 'converter',
   AI_TOOLS: 'ai-tools',
+  UTILITIES: 'utilities',
 } as const
 
 export interface Tool {
@@ -41,6 +42,11 @@ export const CATEGORY_INFO = {
     description: 'AI-powered utilities for enhanced productivity',
     icon: 'Sparkles',
   },
+  [TOOLS_CATEGORIES.UTILITIES]: {
+    name: 'Utilities',
+    description: 'Personal productivity tools for everyday tasks',
+    icon: 'Wrench',
+  },
 } as const
 
 export const TOOLS = [
@@ -55,49 +61,49 @@ export const TOOLS = [
   {
     id: 'js-minifier',
     name: 'JavaScript Minifier',
-    category: TOOLS_CATEGORIES.DEVELOPER,
+    category: TOOLS_CATEGORIES.FORMATTER,
     description: 'Minify JavaScript code to reduce file size',
     shortDescription: 'Minify JavaScript',
   },
   {
     id: 'js-beautifier',
     name: 'JavaScript Beautifier',
-    category: TOOLS_CATEGORIES.DEVELOPER,
+    category: TOOLS_CATEGORIES.FORMATTER,
     description: 'Format and beautify JavaScript code',
     shortDescription: 'Beautify JavaScript',
   },
   {
     id: 'css-minifier',
     name: 'CSS Minifier',
-    category: TOOLS_CATEGORIES.DEVELOPER,
+    category: TOOLS_CATEGORIES.FORMATTER,
     description: 'Minify CSS code to reduce file size',
     shortDescription: 'Minify CSS',
   },
   {
     id: 'css-beautifier',
     name: 'CSS Beautifier',
-    category: TOOLS_CATEGORIES.DEVELOPER,
+    category: TOOLS_CATEGORIES.FORMATTER,
     description: 'Format and beautify CSS code',
     shortDescription: 'Beautify CSS',
   },
   {
     id: 'json-minifier',
     name: 'JSON Minifier',
-    category: TOOLS_CATEGORIES.DEVELOPER,
+    category: TOOLS_CATEGORIES.FORMATTER,
     description: 'Minify JSON to reduce file size',
     shortDescription: 'Minify JSON',
   },
   {
     id: 'json-beautifier',
     name: 'JSON Beautifier',
-    category: TOOLS_CATEGORIES.DEVELOPER,
+    category: TOOLS_CATEGORIES.FORMATTER,
     description: 'Format and beautify JSON data',
     shortDescription: 'Beautify JSON',
   },
   {
     id: 'timestamp-converter',
     name: 'Timestamp Converter',
-    category: TOOLS_CATEGORIES.DEVELOPER,
+    category: TOOLS_CATEGORIES.CONVERTER,
     description: 'Convert between Unix timestamps and readable dates',
     shortDescription: 'Convert timestamps',
   },
@@ -111,7 +117,7 @@ export const TOOLS = [
   {
     id: 'color-code-picker',
     name: 'Color Code Picker',
-    category: TOOLS_CATEGORIES.DEVELOPER,
+    category: TOOLS_CATEGORIES.CONVERTER,
     description: 'Convert between HEX, RGB, and HSL color formats',
     shortDescription: 'Pick color codes',
   },
@@ -146,7 +152,7 @@ export const TOOLS = [
   {
     id: 'url-encoder-decoder',
     name: 'URL Encoder/Decoder',
-    category: TOOLS_CATEGORIES.DEVELOPER,
+    category: TOOLS_CATEGORIES.CONVERTER,
     description: 'Encode and decode URLs and special characters',
     shortDescription: 'Encode/decode URLs',
   },
@@ -160,28 +166,28 @@ export const TOOLS = [
   {
     id: 'html-encoder-decoder',
     name: 'HTML Encoder/Decoder',
-    category: TOOLS_CATEGORIES.DEVELOPER,
+    category: TOOLS_CATEGORIES.CONVERTER,
     description: 'Encode and decode HTML entities',
     shortDescription: 'Encode/decode HTML',
   },
   {
     id: 'js-string-escaper',
     name: 'JavaScript String Escaper',
-    category: TOOLS_CATEGORIES.DEVELOPER,
+    category: TOOLS_CATEGORIES.CONVERTER,
     description: 'Escape special characters in JavaScript strings',
     shortDescription: 'Escape JS strings',
   },
   {
     id: 'base64-encoder',
     name: 'Base64 Encoder',
-    category: TOOLS_CATEGORIES.DEVELOPER,
+    category: TOOLS_CATEGORIES.CONVERTER,
     description: 'Encode text to Base64 format',
     shortDescription: 'Encode to Base64',
   },
   {
     id: 'base64-decoder',
     name: 'Base64 Decoder',
-    category: TOOLS_CATEGORIES.DEVELOPER,
+    category: TOOLS_CATEGORIES.CONVERTER,
     description: 'Decode Base64 text back to plain text',
     shortDescription: 'Decode Base64',
   },
@@ -195,7 +201,7 @@ export const TOOLS = [
   {
     id: 'xml-string-escaper',
     name: 'XML String Escaper',
-    category: TOOLS_CATEGORIES.DEVELOPER,
+    category: TOOLS_CATEGORIES.CONVERTER,
     description: 'Escape special characters in XML strings',
     shortDescription: 'Escape XML strings',
   },
@@ -614,7 +620,7 @@ export const TOOLS = [
   {
     id: 'text-case-converter',
     name: 'Text Case Converter',
-    category: TOOLS_CATEGORIES.DEVELOPER,
+    category: TOOLS_CATEGORIES.CONVERTER,
     description:
       'Convert text between different cases (uppercase, lowercase, camelCase, snake_case, etc.)',
     shortDescription: 'Convert text case',
@@ -666,14 +672,14 @@ export const TOOLS = [
   {
     id: 'notes',
     name: 'Notes',
-    category: TOOLS_CATEGORIES.DEVELOPER,
+    category: TOOLS_CATEGORIES.UTILITIES,
     description: 'Simple text notes that persist in your browser using local storage',
     shortDescription: 'Save notes locally',
   },
   {
     id: 'stopwatch',
     name: 'Stopwatch',
-    category: TOOLS_CATEGORIES.DEVELOPER,
+    category: TOOLS_CATEGORIES.UTILITIES,
     description:
       'Stopwatch with lap tracking, fastest/slowest lap highlights, and local storage persistence',
     shortDescription: 'Stopwatch with laps',
@@ -681,7 +687,7 @@ export const TOOLS = [
   {
     id: 'counter',
     name: 'Counter',
-    category: TOOLS_CATEGORIES.DEVELOPER,
+    category: TOOLS_CATEGORIES.UTILITIES,
     description:
       'Multiple counters with custom names, configurable step size, increment/decrement/reset, saved to local storage',
     shortDescription: 'Multi-counter with persistence',
@@ -704,7 +710,7 @@ export const TOOLS = [
   {
     id: 'pdf-editor',
     name: 'PDF Editor',
-    category: TOOLS_CATEGORIES.DEVELOPER,
+    category: TOOLS_CATEGORIES.CONVERTER,
     description:
       'Edit PDF files: add text and image annotations, rotate or delete pages, merge multiple PDFs into one, or split a PDF by page ranges.',
     shortDescription: 'Edit, merge, and split PDFs',
