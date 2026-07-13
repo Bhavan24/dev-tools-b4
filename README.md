@@ -42,8 +42,8 @@ curl -X POST https://ai-developer-tools.vercel.app/api/mcp \
 
 ## 🚀 Features
 
-- **83 Tools** across multiple categories
-- **77 MCP-Enabled Tools** callable by Claude AI via `/api/mcp`
+- **89 Tools** across multiple categories
+- **79 MCP-Enabled Tools** callable by Claude AI via `/api/mcp`
 - **Pinnable Tools** - Pin your frequently used tools for quick access
 - **Search & Filter** - Find tools by name, description, or category
 - **9 AI Tools** - Bring your own API key; supports OpenAI, Anthropic, Google, Groq, Mistral, Azure, Bedrock, and Ollama
@@ -57,7 +57,7 @@ curl -X POST https://ai-developer-tools.vercel.app/api/mcp \
 
 > **MCP column key:** `✅` = callable via `/api/mcp` · `—` = browser-only or coming soon
 
-### Developer Tools (15 tools)
+### Developer Tools (18 tools)
 
 | Tool | Status | MCP | Description |
 |------|--------|-----|-------------|
@@ -74,6 +74,9 @@ curl -X POST https://ai-developer-tools.vercel.app/api/mcp \
 | **Diff Checker** | ✅ Built | ✅ | Compare two texts and highlight differences |
 | **QR Code Generator** | ✅ Built | ✅ | Generate QR codes from any text or URL instantly |
 | **REST API Tester** | ✅ Built | ✅ | Test REST APIs with custom headers, authentication, and request body |
+| **Base64 Encoder** | ✅ Built | ✅ | Encode text or binary data to Base64 format |
+| **Base64 Decoder** | ✅ Built | ✅ | Decode Base64 encoded data back to plain text |
+| **Color Code Picker** | ✅ Built | ✅ | Convert between HEX, RGB, and HSL color formats with visual picker |
 | **Favicon Generator** | ✅ Built | — | Upload an image and generate favicons in all standard sizes + .ico + ZIP (browser-only) |
 | **SVG Viewer** | ✅ Built | — | Paste or upload SVG code and see a live rendered preview with source editing |
 
@@ -107,18 +110,15 @@ curl -X POST https://ai-developer-tools.vercel.app/api/mcp \
 | **HTML Formatter** | ✅ Built | ✅ | Format and beautify HTML markup |
 | **HTML Beautifier** | ✅ Built | ✅ | Alias to HTML Formatter with preset options |
 
-### Converter Tools (42 tools)
+### Converter Tools (36 tools)
 
 | Tool | Status | MCP | Description |
 |------|--------|-----|-------------|
 | **Timestamp Converter** | ✅ Built | ✅ | Convert between Unix timestamps and readable dates |
-| **Color Code Picker** | ✅ Built | ✅ | Convert between HEX, RGB, and HSL color formats |
 | **URL Encoder/Decoder** | ✅ Built | ✅ | Encode and decode URLs and special characters |
 | **HTML Encoder/Decoder** | ✅ Built | ✅ | Encode and decode HTML entities |
 | **JavaScript String Escaper** | ✅ Built | ✅ | Escape special characters in JavaScript strings |
 | **XML String Escaper** | ✅ Built | ✅ | Escape special characters in XML strings |
-| **Base64 Encoder** | ✅ Built | ✅ | Encode data to Base64 format |
-| **Base64 Decoder** | ✅ Built | ✅ | Decode Base64 encoded data |
 | **Text Case Converter** | ✅ Built | ✅ | Convert text between different cases (uppercase, camelCase, snake_case, etc.) |
 | **JSON to Java** | ✅ Built | ✅ | Generate Java POJO classes from JSON |
 | **JSON to XML** | ✅ Built | ✅ | Convert JSON to XML format |
@@ -150,7 +150,6 @@ curl -X POST https://ai-developer-tools.vercel.app/api/mcp \
 | **HTML / Markdown Converter** | ✅ Built | ✅ | Convert HTML to clean Markdown, or render Markdown to styled HTML |
 | **Excel / CSV to JSON** | ✅ Built | ✅ | Convert Excel (.xlsx, .xls) or CSV files to JSON; multi-sheet with per-sheet header row config |
 | **Excel / CSV to Markdown** | ✅ Built | ✅ | Convert Excel (.xlsx, .xls) or CSV files to Markdown tables; multi-sheet with per-sheet header row config |
-| **PDF Editor** | ✅ Built | — | Edit PDF files: add annotations, rotate or delete pages, merge or split PDFs (browser-only) |
 
 ### AI Tools (11 tools)
 
@@ -172,10 +171,11 @@ Supported providers: OpenAI, Anthropic, Google Gemini, Groq, Mistral, Azure Open
 | **Workflow Builder** | ✅ Built | ✅ | ReactFlow-based visual workflow builder. Drag-and-drop LLM, conditional, loop, transform, and tool-call nodes. Export/import workflows as JSON. MCP-callable for server-side execution. |
 | **Researcher Agent** | ✅ Built | ✅ | Multi-step AI research with optional Tavily web search (BYOK). Streams search progress, collects sources with citations, and synthesizes a Markdown report. Supports quick/standard/deep depth modes. |
 
-### Utilities (3 tools)
+### Utilities (4 tools)
 
 | Tool | Status | MCP | Description |
 |------|--------|-----|-------------|
+| **PDF Editor** | ✅ Built | — | Edit PDF files: add annotations, rotate or delete pages, merge or split PDFs (browser-only) |
 | **Notes** | ✅ Built | — | Simple text notes with local storage persistence (browser-only) |
 | **Stopwatch** | ✅ Built | — | Stopwatch with lap tracking, fastest/slowest highlights, local storage (browser-only) |
 | **Counter** | ✅ Built | — | Multiple counters with custom names, step size, increment/decrement/reset, local storage (browser-only) |
@@ -184,8 +184,8 @@ Supported providers: OpenAI, Anthropic, Google Gemini, Groq, Mistral, Azure Open
 
 ## 📊 Stats
 
-- **Total Tools**: 85
-- **Built & Ready**: 85 ✅
+- **Total Tools**: 89
+- **Built & Ready**: 89 ✅
 - **Coming Soon**: 0 🏗️
 - **MCP Enabled**: 79 ✅ (callable via `/api/mcp`)
 - **Categories**: 6 (Developer, Validation, Formatter, Converter, AI Tools, Utilities)

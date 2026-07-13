@@ -68,7 +68,7 @@ pnpm run lint && pnpm tsc --noEmit
 Tools are defined as objects in `constants.ts` with:
 - `id` — unique identifier used in URLs and API routes
 - `name` — display name
-- `category` — one of: `developer`, `validation`, `formatter`, `converter`
+- `category` — one of: `developer`, `validation`, `formatter`, `converter`, `ai-tools`, `utilities`
 - `description` — long description
 - `shortDescription` — brief text
 - `comingSoon` — optional flag for UI only
