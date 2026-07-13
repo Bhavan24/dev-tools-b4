@@ -16,10 +16,12 @@ interface ToolCardProps {
 }
 
 const categoryGradients: Record<string, string> = {
+  'ai-tools': 'from-violet-500 to-purple-600',
   developer: 'from-blue-500 to-blue-600',
-  validation: 'from-purple-500 to-purple-600',
   formatter: 'from-cyan-500 to-cyan-600',
   converter: 'from-orange-500 to-orange-600',
+  validation: 'from-emerald-500 to-green-600',
+  utilities: 'from-rose-500 to-pink-600',
 }
 
 export function ToolCard({

@@ -412,11 +412,23 @@ This ensures the documentation stays accurate and in sync with the codebase.
 
 ---
 
+## 🤝 Contributing
+
+Contributions are welcome!
+If you have ideas for new tools, improvements, or bug fixes, feel free to get involved.
+
+- **Report a bug or request a feature** - [Open an issue on GitHub](https://github.com/Bhavan24/dev-tools-b4/issues)
+- **Submit a fix or new tool** - Fork the repo, make your changes, and open a pull request
+- **Discuss ideas** - Use GitHub Issues to start a conversation before building
+
+When adding a new tool, follow the implementation steps in the [CLAUDE.md](./CLAUDE.md) guide and make sure to update this README simultaneously.
+
+---
+
 ## 🙋 Support
 
-- **Issues**: Report bugs or request features
 - **Questions**: Check the tool descriptions for usage details
-- **Feedback**: Your suggestions help us improve!
+- **Feedback**: Your suggestions help improve the project - open an issue!
 
 ---
 
