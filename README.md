@@ -1,6 +1,6 @@
 # AI Developer Tools
 
-A comprehensive collection of **96 free developer and AI-powered tools** for developers and creators. All tools are instant, require no signup, and work completely in your browser.
+A comprehensive collection of **105 free developer and AI-powered tools** for developers and creators. All tools are instant, require no signup, and work completely in your browser.
 
 [Visit Live](ai-developer-tools.vercel.app/)
 
@@ -42,8 +42,8 @@ curl -X POST https://ai-developer-tools.vercel.app/api/mcp \
 
 ## 🚀 Features
 
-- **96 Tools** across multiple categories
-- **87 MCP-Enabled Tools** callable by Claude AI via `/api/mcp`
+- **105 Tools** across multiple categories
+- **96 MCP-Enabled Tools** callable by Claude AI via `/api/mcp`
 - **Pinnable Tools** - Pin your frequently used tools for quick access
 - **Search & Filter** - Find tools by name, description, or category
 - **9 AI Tools** - Bring your own API key; supports OpenAI, Anthropic, Google, Groq, Mistral, Azure, Bedrock, and Ollama
@@ -57,7 +57,7 @@ curl -X POST https://ai-developer-tools.vercel.app/api/mcp \
 
 > **MCP column key:** `✅` = callable via `/api/mcp` · `—` = browser-only or coming soon
 
-### Developer Tools (28 tools)
+### Developer Tools (34 tools)
 
 | Tool | Status | MCP | Description |
 |------|--------|-----|-------------|
@@ -73,25 +73,17 @@ curl -X POST https://ai-developer-tools.vercel.app/api/mcp \
 | **Code Cleaner** | ✅ Built | ✅ | Remove comments and unnecessary whitespace from code |
 | **Diff Checker** | ✅ Built | ✅ | Compare two texts and highlight differences |
 | **QR Code Generator** | ✅ Built | ✅ | Generate QR codes from any text or URL instantly |
-| **REST API Tester** | ✅ Built | ✅ | Test REST APIs with custom headers, authentication, and request body. Includes "Copy as cURL" and "Import cURL" |
-| **Base64 Encoder/Decoder** | ✅ Built | ✅ | Encode text to Base64 or decode Base64 back to plain text |
-| **Color Code Picker** | ✅ Built | ✅ | Convert between HEX, RGB, and HSL color formats with visual picker |
+| **REST API Tester** | ✅ Built | ✅ | Test REST APIs with custom headers, authentication, and request body |
 | **Favicon Generator** | ✅ Built | — | Upload an image and generate favicons in all standard sizes + .ico + ZIP (browser-only) |
 | **SVG Viewer** | ✅ Built | — | Paste or upload SVG code and see a live rendered preview with source editing |
-| **Cron Expression Builder** | ✅ Built | ✅ | Build and parse cron expressions with human-readable descriptions and next N run times |
-| **JWT Generator** | ✅ Built | ✅ | Generate signed JWT tokens (HS256/HS512) with custom payload and expiry |
-| **URL Builder** | ✅ Built | ✅ | Build URLs visually from protocol, host, path, and query parameters |
-| **Query String Parser** | ✅ Built | ✅ | Parse query strings or full URLs into a key-value table; handles arrays and encoded values |
-| **Word & Character Counter** | ✅ Built | ✅ | Live text stats: words, characters, sentences, paragraphs, and reading time |
-| **Lorem Ipsum Generator** | ✅ Built | ✅ | Generate placeholder text by paragraph, sentence, or word count |
-| **Color Contrast Checker** | ✅ Built | ✅ | Check WCAG AA/AAA contrast ratios between foreground and background colors |
-| **Color Palette Generator** | ✅ Built | ✅ | Generate complementary, analogous, triadic, and tetradic palettes from a base color |
-| **CSS Gradient Builder** | ✅ Built | ✅ | Build linear/radial CSS gradients visually with color stops; outputs ready-to-use CSS |
-| **Random String Generator** | ✅ Built | ✅ | Generate random strings with configurable length, count, and charset |
-| **Slug Generator** | ✅ Built | ✅ | Convert any string to a URL-safe slug with configurable separator and case |
-| **Line Utilities** | ✅ Built | ✅ | Sort, reverse, deduplicate, shuffle, number, trim, or remove empty lines |
+| **Business Day Calculator** | ✅ Built | ✅ | Add or subtract N business days from a date, with optional holiday exclusions |
+| **Relative Date Calculator** | ✅ Built | ✅ | Calculate difference between two dates, or add/subtract days from a date |
+| **Age Calculator** | ✅ Built | ✅ | Calculate exact age in years, months, and days from a birthdate |
+| **Env File Parser** | ✅ Built | ✅ | Parse .env files into a key-value table; detects duplicates, empty values, and quoted strings |
+| **Gitignore Generator** | ✅ Built | ✅ | Generate .gitignore from curated templates for languages, frameworks, and editors |
+| **Conventional Commit Generator** | ✅ Built | ✅ | Fill in type/scope/description/body/breaking-change; outputs a formatted Conventional Commit message |
 
-### Validation Tools (11 tools)
+### Validation Tools (12 tools)
 
 | Tool | Status | MCP | Description |
 |------|--------|-----|-------------|
@@ -104,10 +96,9 @@ curl -X POST https://ai-developer-tools.vercel.app/api/mcp \
 | **XPath Evaluator** | ✅ Built | ✅ | Query XML documents using XPath expressions |
 | **Link Checker** | ✅ Built | ✅ | Check if URLs are reachable, see HTTP status and response time |
 | **JSONPath Finder** | ✅ Built | ✅ | Find all matches and paths in JSON using JSONPath expressions |
-| **JSON Schema Validator** | ✅ Built | ✅ | Validate a JSON document against a JSON Schema; shows errors with property paths |
-| **JSON Schema Generator** | ✅ Built | ✅ | Infer a draft-07 JSON Schema from a sample JSON document |
+| **Semver Comparator** | ✅ Built | ✅ | Compare two semantic version strings; shows which is higher and what changed (major/minor/patch/pre-release) |
 
-### Formatter Tools (9 tools)
+### Formatter Tools (11 tools)
 
 | Tool | Status | MCP | Description |
 |------|--------|-----|-------------|
@@ -116,20 +107,27 @@ curl -X POST https://ai-developer-tools.vercel.app/api/mcp \
 | **CSS Minifier** | ✅ Built | ✅ | Minify CSS code to reduce file size |
 | **CSS Beautifier** | ✅ Built | ✅ | Format and beautify CSS code |
 | **JSON Minifier** | ✅ Built | ✅ | Minify JSON to reduce file size |
-| **JSON Formatter** | ✅ Built | ✅ | Format and beautify JSON with custom indentation |
+| **JSON Beautifier** | ✅ Built | ✅ | Format and beautify JSON data |
+| **JSON Formatter** | ✅ Built | ✅ | Format and validate JSON with custom indentation |
 | **XML Formatter** | ✅ Built | ✅ | Format and pretty-print XML |
 | **SQL Formatter** | ✅ Built | ✅ | Format SQL queries with proper indentation |
-| **HTML Formatter** | ✅ Built | ✅ | Format and beautify HTML markup with custom indentation |
+| **HTML Formatter** | ✅ Built | ✅ | Format and beautify HTML markup |
+| **HTML Beautifier** | ✅ Built | ✅ | Alias to HTML Formatter with preset options |
 
-### Converter Tools (31 tools)
+### Converter Tools (33 tools)
 
 | Tool | Status | MCP | Description |
 |------|--------|-----|-------------|
 | **Timestamp Converter** | ✅ Built | ✅ | Convert between Unix timestamps and readable dates |
+| **Timezone Converter** | ✅ Built | ✅ | Convert a datetime between any two IANA timezones with DST-awareness |
+| **ISO 8601 Converter** | ✅ Built | ✅ | Convert date/time strings between ISO 8601, RFC 2822, human-readable, and Unix timestamp formats |
+| **Color Code Picker** | ✅ Built | ✅ | Convert between HEX, RGB, and HSL color formats |
 | **URL Encoder/Decoder** | ✅ Built | ✅ | Encode and decode URLs and special characters |
 | **HTML Encoder/Decoder** | ✅ Built | ✅ | Encode and decode HTML entities |
 | **JavaScript String Escaper** | ✅ Built | ✅ | Escape special characters in JavaScript strings |
 | **XML String Escaper** | ✅ Built | ✅ | Escape special characters in XML strings |
+| **Base64 Encoder** | ✅ Built | ✅ | Encode data to Base64 format |
+| **Base64 Decoder** | ✅ Built | ✅ | Decode Base64 encoded data |
 | **Text Case Converter** | ✅ Built | ✅ | Convert text between different cases (uppercase, camelCase, snake_case, etc.) |
 | **JSON to Java** | ✅ Built | ✅ | Generate Java POJO classes from JSON |
 | **JSON to XML** | ✅ Built | ✅ | Convert JSON to XML format |
@@ -137,10 +135,17 @@ curl -X POST https://ai-developer-tools.vercel.app/api/mcp \
 | **JSON to C#** | ✅ Built | ✅ | Generate C# classes from JSON |
 | **XML to YAML** | ✅ Built | ✅ | Convert XML to YAML format |
 | **XML to JSON** | ✅ Built | ✅ | Convert XML to JSON format |
-| **INI Converter** | ✅ Built | ✅ | Convert INI configuration to JSON, XML, or YAML with format selector |
-| **CSV Converter** | ✅ Built | ✅ | Convert CSV data to JSON, XML, YAML, or SQL INSERT statements |
+| **INI to JSON** | ✅ Built | ✅ | Convert INI configuration to JSON |
+| **INI to XML** | ✅ Built | ✅ | Convert INI to XML format |
+| **INI to YAML** | ✅ Built | ✅ | Convert INI to YAML format |
+| **CSV to JSON** | ✅ Built | ✅ | Convert CSV data to JSON |
+| **CSV to XML** | ✅ Built | ✅ | Convert CSV to XML format |
+| **CSV to YAML** | ✅ Built | ✅ | Convert CSV to YAML format |
+| **CSV to SQL** | ✅ Built | ✅ | Generate SQL INSERT statements from CSV |
 | **YAML to JSON** | ✅ Built | ✅ | Convert YAML to JSON format |
 | **JSON to YAML** | ✅ Built | ✅ | Convert JSON to YAML format |
+| **RGB to HEX** | ✅ Built | ✅ | Convert RGB color values to HEX format |
+| **HEX to RGB** | ✅ Built | ✅ | Convert HEX color values to RGB format |
 | **IDN Converter** | ✅ Built | ✅ | Convert between Unicode and Punycode domains |
 | **Unit Converter** | ✅ Built | ✅ | Convert between different units (length, weight, temperature) |
 | **Currency Converter** | ✅ Built | ✅ | Convert between different currencies with real-time exchange rates |
@@ -154,9 +159,7 @@ curl -X POST https://ai-developer-tools.vercel.app/api/mcp \
 | **HTML / Markdown Converter** | ✅ Built | ✅ | Convert HTML to clean Markdown, or render Markdown to styled HTML |
 | **Excel / CSV to JSON** | ✅ Built | ✅ | Convert Excel (.xlsx, .xls) or CSV files to JSON; multi-sheet with per-sheet header row config |
 | **Excel / CSV to Markdown** | ✅ Built | ✅ | Convert Excel (.xlsx, .xls) or CSV files to Markdown tables; multi-sheet with per-sheet header row config |
-| **Hex / Text Converter** | ✅ Built | ✅ | Encode any string to its hexadecimal byte representation and decode hex back to text |
-| **Unicode Escape Converter** | ✅ Built | ✅ | Convert between literal characters and \\uXXXX, \\UXXXXXXXX, U+XXXX, or HTML entity escapes |
-| **ROT13** | ✅ Built | ✅ | Apply ROT13 substitution cipher - also reverses a previous ROT13 |
+| **PDF Editor** | ✅ Built | — | Edit PDF files: add annotations, rotate or delete pages, merge or split PDFs (browser-only) |
 
 ### AI Tools (11 tools)
 
@@ -178,11 +181,10 @@ Supported providers: OpenAI, Anthropic, Google Gemini, Groq, Mistral, Azure Open
 | **Workflow Builder** | ✅ Built | ✅ | ReactFlow-based visual workflow builder. Drag-and-drop LLM, conditional, loop, transform, and tool-call nodes. Export/import workflows as JSON. MCP-callable for server-side execution. |
 | **Researcher Agent** | ✅ Built | ✅ | Multi-step AI research with optional Tavily web search (BYOK). Streams search progress, collects sources with citations, and synthesizes a Markdown report. Supports quick/standard/deep depth modes. |
 
-### Utilities (4 tools)
+### Utilities (3 tools)
 
 | Tool | Status | MCP | Description |
 |------|--------|-----|-------------|
-| **PDF Editor** | ✅ Built | — | Edit PDF files: add annotations, rotate or delete pages, merge or split PDFs (browser-only) |
 | **Notes** | ✅ Built | — | Simple text notes with local storage persistence (browser-only) |
 | **Stopwatch** | ✅ Built | — | Stopwatch with lap tracking, fastest/slowest highlights, local storage (browser-only) |
 | **Counter** | ✅ Built | — | Multiple counters with custom names, step size, increment/decrement/reset, local storage (browser-only) |
@@ -191,10 +193,10 @@ Supported providers: OpenAI, Anthropic, Google Gemini, Groq, Mistral, Azure Open
 
 ## 📊 Stats
 
-- **Total Tools**: 96
-- **Built & Ready**: 96 ✅
+- **Total Tools**: 105
+- **Built & Ready**: 105 ✅
 - **Coming Soon**: 0 🏗️
-- **MCP Enabled**: 87 ✅ (callable via `/api/mcp`)
+- **MCP Enabled**: 96 ✅ (callable via `/api/mcp`)
 - **Categories**: 6 (Developer, Validation, Formatter, Converter, AI Tools, Utilities)
 
 ---

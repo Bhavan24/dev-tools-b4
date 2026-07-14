@@ -161,11 +161,18 @@ export const TOOLS = [
     shortDescription: 'Decode JWT',
   },
   {
-    id: 'base64-encoder-decoder',
-    name: 'Base64 Encoder/Decoder',
+    id: 'base64-encoder',
+    name: 'Base64 Encoder',
     category: TOOLS_CATEGORIES.DEVELOPER,
-    description: 'Encode text to Base64 format or decode Base64 back to plain text',
-    shortDescription: 'Encode/decode Base64',
+    description: 'Encode text to Base64 format',
+    shortDescription: 'Encode to Base64',
+  },
+  {
+    id: 'base64-decoder',
+    name: 'Base64 Decoder',
+    category: TOOLS_CATEGORIES.DEVELOPER,
+    description: 'Decode Base64 text back to plain text',
+    shortDescription: 'Decode Base64',
   },
   {
     id: 'color-code-picker',
@@ -261,100 +268,52 @@ export const TOOLS = [
     shortDescription: 'Find your public IP',
   },
   {
-    id: 'cron-expression-builder',
-    name: 'Cron Expression Builder',
+    id: 'business-day-calculator',
+    name: 'Business Day Calculator',
     category: TOOLS_CATEGORIES.DEVELOPER,
     description:
-      'Build, parse, and describe cron expressions visually. Enter fields or use the visual selector, get a human-readable description, and see the next N run times.',
-    shortDescription: 'Build and parse cron expressions',
+      'Add or subtract N business days from a start date, with optional holiday list to skip. Returns the result date and calendar day count.',
+    shortDescription: 'Add/subtract business days',
   },
   {
-    id: 'jwt-generator',
-    name: 'JWT Generator',
+    id: 'relative-date-calculator',
+    name: 'Relative Date Calculator',
     category: TOOLS_CATEGORIES.DEVELOPER,
     description:
-      'Generate signed JWT tokens with custom payload using HS256 or HS512 algorithms. Complement to the existing JWT Decoder.',
-    shortDescription: 'Generate signed JWTs',
+      'Calculate the difference between two dates, or find what date is N days from a given date. Outputs days, weeks, months, and years.',
+    shortDescription: 'Calculate date differences',
   },
   {
-    id: 'url-builder',
-    name: 'URL Builder',
+    id: 'age-calculator',
+    name: 'Age Calculator',
     category: TOOLS_CATEGORIES.DEVELOPER,
     description:
-      'Build URLs visually by filling in protocol, host, path, and query parameters as key-value rows. Live URL preview updates as fields change.',
-    shortDescription: 'Build URLs from components',
+      'Input a birthdate and get exact age in years, months, and days, plus total days lived and days until the next birthday.',
+    shortDescription: 'Calculate exact age',
   },
   {
-    id: 'query-string-parser',
-    name: 'Query String Parser',
+    id: 'env-file-parser',
+    name: 'Env File Parser',
     category: TOOLS_CATEGORIES.DEVELOPER,
     description:
-      'Parse a raw query string or full URL into a formatted key-value table. Handles arrays, encoded values, and duplicate keys.',
-    shortDescription: 'Parse query strings',
+      'Parse a .env file into a key-value table. Detects duplicates, empty values, missing equals signs, and quoted strings.',
+    shortDescription: 'Parse .env files',
   },
   {
-    id: 'word-counter',
-    name: 'Word & Character Counter',
+    id: 'gitignore-generator',
+    name: 'Gitignore Generator',
     category: TOOLS_CATEGORIES.DEVELOPER,
     description:
-      'Live text statistics: word count, character count, characters without spaces, sentence count, paragraph count, and estimated reading time.',
-    shortDescription: 'Count words and characters',
+      'Select languages, frameworks, and editors to generate a .gitignore file from curated templates. Supports Node, Python, Go, Rust, VSCode, JetBrains, and more.',
+    shortDescription: 'Generate .gitignore from templates',
   },
   {
-    id: 'lorem-ipsum-generator',
-    name: 'Lorem Ipsum Generator',
+    id: 'conventional-commit-generator',
+    name: 'Conventional Commit Generator',
     category: TOOLS_CATEGORIES.DEVELOPER,
     description:
-      'Generate lorem ipsum placeholder text by paragraph, sentence, or word count. Choose classic latin or random English words.',
-    shortDescription: 'Generate placeholder text',
-  },
-  {
-    id: 'color-contrast-checker',
-    name: 'Color Contrast Checker',
-    category: TOOLS_CATEGORIES.DEVELOPER,
-    description:
-      'Check WCAG AA and AAA contrast ratios between a foreground and background color. Supports HEX, RGB, and HSL input.',
-    shortDescription: 'Check WCAG color contrast',
-  },
-  {
-    id: 'color-palette-generator',
-    name: 'Color Palette Generator',
-    category: TOOLS_CATEGORIES.DEVELOPER,
-    description:
-      'Generate complementary, analogous, triadic, and tetradic color palettes from a base color. Outputs HEX, RGB, and HSL values.',
-    shortDescription: 'Generate color palettes',
-  },
-  {
-    id: 'css-gradient-builder',
-    name: 'CSS Gradient Builder',
-    category: TOOLS_CATEGORIES.DEVELOPER,
-    description:
-      'Build linear and radial CSS gradients visually. Add color stops, set angle/direction, and copy the ready-to-use CSS string.',
-    shortDescription: 'Build CSS gradients visually',
-  },
-  {
-    id: 'random-string-generator',
-    name: 'Random String Generator',
-    category: TOOLS_CATEGORIES.DEVELOPER,
-    description:
-      'Generate random strings with configurable length, count, and character set (alphanumeric, hex, base58, or fully custom).',
-    shortDescription: 'Generate random strings',
-  },
-  {
-    id: 'slug-generator',
-    name: 'Slug Generator',
-    category: TOOLS_CATEGORIES.DEVELOPER,
-    description:
-      'Convert any string to a URL-safe slug with configurable separator (hyphen, underscore, dot) and case (lower, upper, title).',
-    shortDescription: 'Convert text to URL slug',
-  },
-  {
-    id: 'line-utilities',
-    name: 'Line Utilities',
-    category: TOOLS_CATEGORIES.DEVELOPER,
-    description:
-      'Sort, reverse, deduplicate, shuffle, or number lines of text. One tool with action tabs for common line-by-line operations.',
-    shortDescription: 'Sort, dedup, and transform lines',
+      'Fill in type, scope, description, body, breaking change, and issue references; outputs a properly formatted Conventional Commit message.',
+    shortDescription: 'Generate conventional commit messages',
   },
 
   // Formatter Tools
@@ -362,8 +321,15 @@ export const TOOLS = [
     id: 'json-formatter',
     name: 'JSON Formatter',
     category: TOOLS_CATEGORIES.FORMATTER,
-    description: 'Format and beautify JSON with custom indentation',
+    description: 'Format JSON with custom indentation',
     shortDescription: 'Format JSON',
+  },
+  {
+    id: 'json-beautifier',
+    name: 'JSON Beautifier',
+    category: TOOLS_CATEGORIES.FORMATTER,
+    description: 'Format and beautify JSON data',
+    shortDescription: 'Beautify JSON',
   },
   {
     id: 'json-minifier',
@@ -390,8 +356,15 @@ export const TOOLS = [
     id: 'html-formatter',
     name: 'HTML Formatter',
     category: TOOLS_CATEGORIES.FORMATTER,
-    description: 'Format and beautify HTML with consistent indentation',
+    description: 'Format HTML with consistent indentation',
     shortDescription: 'Format HTML',
+  },
+  {
+    id: 'html-beautifier',
+    name: 'HTML Beautifier',
+    category: TOOLS_CATEGORIES.FORMATTER,
+    description: 'Beautify and clean up HTML code',
+    shortDescription: 'Beautify HTML',
   },
   {
     id: 'js-beautifier',
@@ -530,11 +503,32 @@ export const TOOLS = [
     shortDescription: 'XML to YAML',
   },
   {
-    id: 'csv-converter',
-    name: 'CSV Converter',
+    id: 'csv-to-json',
+    name: 'CSV to JSON',
     category: TOOLS_CATEGORIES.CONVERTER,
-    description: 'Convert CSV data to JSON, XML, YAML, or SQL INSERT statements',
-    shortDescription: 'Convert CSV to any format',
+    description: 'Convert CSV data to JSON array',
+    shortDescription: 'CSV to JSON',
+  },
+  {
+    id: 'csv-to-xml',
+    name: 'CSV to XML',
+    category: TOOLS_CATEGORIES.CONVERTER,
+    description: 'Convert CSV data to XML format',
+    shortDescription: 'CSV to XML',
+  },
+  {
+    id: 'csv-to-yaml',
+    name: 'CSV to YAML',
+    category: TOOLS_CATEGORIES.CONVERTER,
+    description: 'Convert CSV data to YAML format',
+    shortDescription: 'CSV to YAML',
+  },
+  {
+    id: 'csv-to-sql',
+    name: 'CSV to SQL',
+    category: TOOLS_CATEGORIES.CONVERTER,
+    description: 'Convert CSV data to SQL INSERT statements',
+    shortDescription: 'CSV to SQL',
   },
   {
     id: 'json-to-java',
@@ -565,37 +559,43 @@ export const TOOLS = [
       'Convert SQL SELECT, INSERT, UPDATE, and DELETE queries to equivalent MongoDB operations',
     shortDescription: 'SQL to MongoDB query',
   },
+
   {
-    id: 'hex-text-converter',
-    name: 'Hex / Text Converter',
+    id: 'ini-to-json',
+    name: 'INI to JSON',
     category: TOOLS_CATEGORIES.CONVERTER,
-    description: 'Encode any string to its hexadecimal byte representation and decode hex back to plain text.',
-    shortDescription: 'Encode/decode hex and text',
+    description: 'Convert INI configuration to JSON',
+    shortDescription: 'INI to JSON',
   },
   {
-    id: 'unicode-escape-converter',
-    name: 'Unicode Escape Converter',
+    id: 'ini-to-xml',
+    name: 'INI to XML',
     category: TOOLS_CATEGORIES.CONVERTER,
-    description:
-      'Convert between literal Unicode characters and escape sequences. Supports \\uXXXX (JS/Java), \\UXXXXXXXX (Python), U+XXXX (display), and HTML entities.',
-    shortDescription: 'Convert Unicode to/from escapes',
+    description: 'Convert INI configuration to XML',
+    shortDescription: 'INI to XML',
   },
   {
-    id: 'rot13',
-    name: 'ROT13',
+    id: 'ini-to-yaml',
+    name: 'INI to YAML',
     category: TOOLS_CATEGORIES.CONVERTER,
-    description: 'Apply ROT13 substitution cipher to text. Letters are shifted 13 positions; numbers and symbols are preserved.',
-    shortDescription: 'ROT13 encode/decode',
+    description: 'Convert INI configuration to YAML',
+    shortDescription: 'INI to YAML',
   },
 
   {
-    id: 'ini-converter',
-    name: 'INI Converter',
+    id: 'rgb-to-hex',
+    name: 'RGB to HEX',
     category: TOOLS_CATEGORIES.CONVERTER,
-    description: 'Convert INI configuration to JSON, XML, or YAML',
-    shortDescription: 'Convert INI to any format',
+    description: 'Convert RGB color values to HEX format',
+    shortDescription: 'RGB to HEX',
   },
-
+  {
+    id: 'hex-to-rgb',
+    name: 'HEX to RGB',
+    category: TOOLS_CATEGORIES.CONVERTER,
+    description: 'Convert HEX color values to RGB format',
+    shortDescription: 'HEX to RGB',
+  },
   {
     id: 'timestamp-converter',
     name: 'Timestamp Converter',
@@ -610,6 +610,22 @@ export const TOOLS = [
     description:
       'Convert between different units of measurement (length, weight, temperature, etc.)',
     shortDescription: 'Convert units',
+  },
+  {
+    id: 'timezone-converter',
+    name: 'Timezone Converter',
+    category: TOOLS_CATEGORIES.CONVERTER,
+    description:
+      'Convert a datetime between any two IANA timezones with full DST-awareness. Outputs the converted time, UTC offset, and ISO 8601 UTC time.',
+    shortDescription: 'Convert between timezones',
+  },
+  {
+    id: 'iso8601-converter',
+    name: 'ISO 8601 Converter',
+    category: TOOLS_CATEGORIES.CONVERTER,
+    description:
+      'Convert any date/time string between ISO 8601, RFC 2822, human-readable, and Unix timestamp formats.',
+    shortDescription: 'Convert date/time formats',
   },
   {
     id: 'currency-converter',
@@ -663,22 +679,6 @@ export const TOOLS = [
   },
 
   // Validation Tools
-  {
-    id: 'json-schema-validator',
-    name: 'JSON Schema Validator',
-    category: TOOLS_CATEGORIES.VALIDATION,
-    description:
-      'Validate a JSON document against a JSON Schema. Shows all validation errors with property paths.',
-    shortDescription: 'Validate JSON against schema',
-  },
-  {
-    id: 'json-schema-generator',
-    name: 'JSON Schema Generator',
-    category: TOOLS_CATEGORIES.VALIDATION,
-    description:
-      'Infer a JSON Schema from a sample JSON document. Produces a draft-07 schema with types, required fields, and nested object definitions.',
-    shortDescription: 'Generate schema from JSON',
-  },
   {
     id: 'regex-parser',
     name: 'Regex Parser',
@@ -743,6 +743,14 @@ export const TOOLS = [
     description:
       'Check if a list of URLs are reachable and see their HTTP status codes and response times',
     shortDescription: 'Check links',
+  },
+  {
+    id: 'semver-comparator',
+    name: 'Semver Comparator',
+    category: TOOLS_CATEGORIES.VALIDATION,
+    description:
+      'Compare two semantic version strings and see which is higher and what changed (major, minor, patch, pre-release).',
+    shortDescription: 'Compare semver versions',
   },
 
   // Utilities

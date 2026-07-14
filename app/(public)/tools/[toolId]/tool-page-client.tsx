@@ -5,6 +5,7 @@ import { MockDataGenerator } from '@/components/tools/mock-data-generator'
 import { EncodeDecodeTool } from '@/components/tools/encode-decode-tool'
 import { IndentFormatterTool } from '@/components/tools/indent-formatter-tool'
 import { JsonClassConverterTool } from '@/components/tools/json-class-converter-tool'
+import { CsvOptionsConverterTool } from '@/components/tools/csv-options-converter-tool'
 import { ColorTools } from '@/components/tools/color-tools'
 import { GeneratorTools } from '@/components/tools/generator-tools'
 import { SpecialtyTools } from '@/components/tools/specialty-tools'
@@ -31,26 +32,10 @@ import { PdfConverterTool } from '@/components/tools/pdf-converter-tool'
 import { ExcelConverterTool } from '@/components/tools/excel-converter-tool'
 import { AITools } from '@/components/tools/ai-tools/ai-tools'
 import { ResearcherAgentTool } from '@/components/tools/ai-tools/researcher-agent/researcher-agent-tool'
-import { IniConverterTool } from '@/components/tools/ini-converter-tool'
-import { CsvConverterTool } from '@/components/tools/csv-converter-tool'
+import { Base64EncoderTool } from '@/components/tools/base64-encoder-tool'
+import { Base64DecoderTool } from '@/components/tools/base64-decoder-tool'
 import { JsStringEscaperTool } from '@/components/tools/js-string-escaper-tool'
 import { YamlValidatorTool } from '@/components/tools/yaml-validator-tool'
-import { CronExpressionTool } from '@/components/tools/cron-expression-tool'
-import { JwtGeneratorTool } from '@/components/tools/jwt-generator-tool'
-import { UrlBuilderTool } from '@/components/tools/url-builder-tool'
-import { QueryStringParserTool } from '@/components/tools/query-string-parser-tool'
-import { WordCounterTool } from '@/components/tools/word-counter-tool'
-import { LoremIpsumTool } from '@/components/tools/lorem-ipsum-tool'
-import { JsonSchemaValidatorTool, JsonSchemaGeneratorTool } from '@/components/tools/json-schema-tools'
-import { ColorContrastTool } from '@/components/tools/color-contrast-tool'
-import { ColorPaletteTool } from '@/components/tools/color-palette-tool'
-import { CssGradientTool } from '@/components/tools/css-gradient-tool'
-import { RandomStringGeneratorTool } from '@/components/tools/random-string-generator-tool'
-import { SlugGeneratorTool } from '@/components/tools/slug-generator-tool'
-import { LineUtilitiesTool } from '@/components/tools/line-utilities-tool'
-import { HexTextConverterTool } from '@/components/tools/hex-text-converter-tool'
-import { UnicodeEscapeTool } from '@/components/tools/unicode-escape-tool'
-import { Rot13Tool } from '@/components/tools/rot13-tool'
 import { JsValidatorTool } from '@/components/tools/js-validator-tool'
 import { JsonMinifierTool } from '@/components/tools/json-minifier-tool'
 import { JsMinifierTool } from '@/components/tools/js-minifier-tool'
@@ -60,12 +45,24 @@ import { XmlToYamlTool } from '@/components/tools/xml-to-yaml-tool'
 import { YamlToJsonTool } from '@/components/tools/yaml-to-json-tool'
 import { JsonToYamlTool } from '@/components/tools/json-to-yaml-tool'
 import { JsonToPhpTool } from '@/components/tools/json-to-php-tool'
+import { HtmlBeautifierTool } from '@/components/tools/html-beautifier-tool'
 import { SqlFormatterTool } from '@/components/tools/sql-formatter-tool'
+import { IniConverterTool } from '@/components/tools/ini-converter-tool'
+import { CsvToXmlTool, CsvToYamlTool } from '@/components/tools/csv-extra-converter-tool'
 import { UnitConverterTool } from '@/components/tools/unit-converter-tool'
 import { TimestampConverterTool } from '@/components/tools/timestamp-converter-tool'
 import { UrlSplitterTool } from '@/components/tools/url-splitter-tool'
 import { MimeTypeCheckerTool } from '@/components/tools/mime-type-checker-tool'
 import { PublicIpLookupTool } from '@/components/tools/public-ip-lookup-tool'
+import { TimezoneConverterTool } from '@/components/tools/timezone-converter-tool'
+import { Iso8601ConverterTool } from '@/components/tools/iso8601-converter-tool'
+import { BusinessDayCalculatorTool } from '@/components/tools/business-day-calculator-tool'
+import { RelativeDateCalculatorTool } from '@/components/tools/relative-date-calculator-tool'
+import { AgeCalculatorTool } from '@/components/tools/age-calculator-tool'
+import { EnvFileParserTool } from '@/components/tools/env-file-parser-tool'
+import { GitignoreGeneratorTool } from '@/components/tools/gitignore-generator-tool'
+import { ConventionalCommitTool } from '@/components/tools/conventional-commit-tool'
+import { SemverComparatorTool } from '@/components/tools/semver-comparator-tool'
 import dynamic from 'next/dynamic'
 
 const WorkflowBuilderTool = dynamic(
@@ -87,15 +84,18 @@ const TOOL_REGISTRY: Record<string, () => React.ReactElement> = {
   'html-encoder-decoder': () => <EncodeDecodeTool toolId="html-encoder-decoder" />,
   'xml-string-escaper': () => <EncodeDecodeTool toolId="xml-string-escaper" />,
   'idn-converter': () => <EncodeDecodeTool toolId="idn-converter" />,
-  'base64-encoder-decoder': () => <EncodeDecodeTool toolId="base64-encoder-decoder" />,
+  'base64-encoder': () => <Base64EncoderTool />,
+  'base64-decoder': () => <Base64DecoderTool />,
   'js-string-escaper': () => <JsStringEscaperTool />,
 
   // Formatters
   'js-beautifier': () => <IndentFormatterTool toolId="js-beautifier" />,
   'css-beautifier': () => <IndentFormatterTool toolId="css-beautifier" />,
+  'json-beautifier': () => <IndentFormatterTool toolId="json-beautifier" />,
   'json-formatter': () => <IndentFormatterTool toolId="json-formatter" />,
   'xml-formatter': () => <IndentFormatterTool toolId="xml-formatter" />,
   'html-formatter': () => <IndentFormatterTool toolId="html-formatter" />,
+  'html-beautifier': () => <HtmlBeautifierTool />,
   'sql-formatter': () => <SqlFormatterTool />,
   'js-minifier': () => <JsMinifierTool />,
   'css-minifier': () => <CssMinifierTool />,
@@ -108,17 +108,24 @@ const TOOL_REGISTRY: Record<string, () => React.ReactElement> = {
   'json-to-php': () => <JsonToPhpTool />,
   'json-to-yaml': () => <JsonToYamlTool />,
 
-  // CSV converter
-  'csv-converter': () => <CsvConverterTool />,
+  // CSV converters
+  'csv-to-json': () => <CsvOptionsConverterTool toolId="csv-to-json" />,
+  'csv-to-sql': () => <CsvOptionsConverterTool toolId="csv-to-sql" />,
+  'csv-to-xml': () => <CsvToXmlTool />,
+  'csv-to-yaml': () => <CsvToYamlTool />,
 
   // XML / YAML / INI converters
   'xml-to-json': () => <XmlToJsonTool />,
   'xml-to-yaml': () => <XmlToYamlTool />,
   'yaml-to-json': () => <YamlToJsonTool />,
-  'ini-converter': () => <IniConverterTool />,
+  'ini-to-json': () => <IniConverterTool />,
+  'ini-to-xml': () => <IniConverterTool />,
+  'ini-to-yaml': () => <IniConverterTool />,
 
   // Colors
   'color-code-picker': () => <ColorTools toolId="color-code-picker" />,
+  'rgb-to-hex': () => <ColorTools toolId="rgb-to-hex" />,
+  'hex-to-rgb': () => <ColorTools toolId="hex-to-rgb" />,
 
   // Generators
   'uuid-generator': () => <GeneratorTools toolId="uuid-generator" />,
@@ -161,27 +168,6 @@ const TOOL_REGISTRY: Record<string, () => React.ReactElement> = {
   'xpath-evaluator': () => <PathEvaluatorTool toolId="xpath-evaluator" />,
   'jsonpath-finder': () => <JsonpathFinderTool toolId="jsonpath-finder" />,
 
-  // Phase 2 tools
-  'color-contrast-checker': () => <ColorContrastTool />,
-  'color-palette-generator': () => <ColorPaletteTool />,
-  'css-gradient-builder': () => <CssGradientTool />,
-  'random-string-generator': () => <RandomStringGeneratorTool />,
-  'slug-generator': () => <SlugGeneratorTool />,
-  'line-utilities': () => <LineUtilitiesTool />,
-  'hex-text-converter': () => <HexTextConverterTool />,
-  'unicode-escape-converter': () => <UnicodeEscapeTool />,
-  rot13: () => <Rot13Tool />,
-
-  // Phase 1 tools
-  'cron-expression-builder': () => <CronExpressionTool />,
-  'jwt-generator': () => <JwtGeneratorTool />,
-  'url-builder': () => <UrlBuilderTool />,
-  'query-string-parser': () => <QueryStringParserTool />,
-  'word-counter': () => <WordCounterTool />,
-  'lorem-ipsum-generator': () => <LoremIpsumTool />,
-  'json-schema-validator': () => <JsonSchemaValidatorTool />,
-  'json-schema-generator': () => <JsonSchemaGeneratorTool />,
-
   // SQL
   'sql-to-mongodb': () => <SqlToMongodbTool toolId="sql-to-mongodb" />,
 
@@ -209,6 +195,17 @@ const TOOL_REGISTRY: Record<string, () => React.ReactElement> = {
   stopwatch: () => <TimerTool />,
   counter: () => <CounterTool />,
 
+  // Phase 3 tools
+  'timezone-converter': () => <TimezoneConverterTool />,
+  'iso8601-converter': () => <Iso8601ConverterTool />,
+  'business-day-calculator': () => <BusinessDayCalculatorTool />,
+  'relative-date-calculator': () => <RelativeDateCalculatorTool />,
+  'age-calculator': () => <AgeCalculatorTool />,
+  'env-file-parser': () => <EnvFileParserTool />,
+  'gitignore-generator': () => <GitignoreGeneratorTool />,
+  'conventional-commit-generator': () => <ConventionalCommitTool />,
+  'semver-comparator': () => <SemverComparatorTool />,
+
   // AI tools
   'ai-chat': () => <AITools toolId="ai-chat" />,
   'code-generator': () => <AITools toolId="code-generator" />,
@@ -222,6 +219,8 @@ const TOOL_REGISTRY: Record<string, () => React.ReactElement> = {
   'researcher-agent': () => <ResearcherAgentTool />,
   'workflow-builder': () => <WorkflowBuilderTool />,
 }
+
+const FULL_WIDTH_TOOLS = new Set(['workflow-builder'])
 
 export function ToolPageClient({ toolId }: ToolPageClientProps) {
   const tool = TOOLS.find((t) => t.id === toolId)
@@ -260,5 +259,5 @@ export function ToolPageClient({ toolId }: ToolPageClientProps) {
     )
   }
 
-  return <div className="w-full">{factory()}</div>
+  return <div className={FULL_WIDTH_TOOLS.has(toolId) ? 'w-full' : 'max-w-4xl'}>{factory()}</div>
 }

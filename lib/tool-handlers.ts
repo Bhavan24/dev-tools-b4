@@ -20,6 +20,356 @@ interface ToolHandler {
   handler: (input: any) => Promise<any>
 }
 
+// Phase 3 helper functions
+
+function parseSemver(v: string) {
+  const s = v.trim().replace(/^v/, '')
+  const match = s.match(/^(\d+)\.(\d+)\.(\d+)(?:-([\w.]+))?(?:\+([\w.]+))?$/)
+  if (!match) throw new Error(`Invalid semver: ${v}`)
+  return {
+    major: parseInt(match[1]!),
+    minor: parseInt(match[2]!),
+    patch: parseInt(match[3]!),
+    prerelease: match[4] ?? null,
+    build: match[5] ?? null,
+  }
+}
+
+const GITIGNORE_TEMPLATES: Record<string, string> = {
+  Node: `node_modules/
+dist/
+build/
+.env
+.env.local
+.env.*.local
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.pnpm-store/
+*.tsbuildinfo
+.next/
+.nuxt/
+.cache/
+coverage/
+.nyc_output/`,
+  Python: `__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+htmlcov/
+.coverage
+.coverage.*
+*.cover
+*.py,cover`,
+  Ruby: `*.gem
+*.rbc
+/.config
+/coverage/
+/InstalledFiles
+/pkg/
+/spec/reports/
+/spec/examples.txt
+/test/tmp/
+/test/version_tmp/
+/tmp/
+.bundle/
+.yardoc/
+_yardoc/
+doc/
+/Gemfile.lock
+vendor/bundle
+.ruby-version
+.rbenv-vars
+*.log`,
+  Java: `*.class
+*.log
+*.jar
+*.war
+*.ear
+*.nar
+*.zip
+*.tar.gz
+*.rar
+hs_err_pid*
+.mtj.tmp/
+target/
+.classpath
+.project
+.settings/
+.springBeans
+.sts4-cache
+.gradle/
+build/
+!gradle/wrapper/gradle-wrapper.jar
+!**/src/main/**/build/
+!**/src/test/**/build/`,
+  Go: `*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+go.work
+vendor/
+bin/
+dist/`,
+  Rust: `debug/
+target/
+Cargo.lock
+**/*.rs.bk
+*.pdb`,
+  PHP: `vendor/
+.env
+.phpunit.result.cache
+.phpunit.cache/
+storage/framework/
+storage/logs/
+bootstrap/cache/
+composer.phar
+*.log`,
+  CSharp: `*.suo
+*.user
+*.userosscache
+*.sln.docstates
+*.userprefs
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+[Ww][Ii][Nn]32/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+bld/
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+project.lock.json
+project.fragment.lock.json
+artifacts/
+.vs/
+*.nupkg
+*.snupkg
+*.nuspec
+*.dll
+*.exe
+*.pdb`,
+  Swift: `.DS_Store
+/.build
+/Packages
+/*.xcodeproj
+xcuserdata/
+DerivedData/
+.swiftpm/
+*.resolved`,
+  Kotlin: `*.class
+*.log
+*.jar
+*.war
+.gradle/
+build/
+!gradle/wrapper/gradle-wrapper.jar
+.idea/
+*.iml
+out/
+*.hprof`,
+  macOS: `.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+._*
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk`,
+  Windows: `Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+*.tmp
+*.stackdump
+[Dd]esktop.ini
+$RECYCLE.BIN/
+*.cab
+*.msi
+*.msix
+*.msm
+*.msp
+*.lnk`,
+  Linux: `*~
+.fuse_hidden*
+.directory
+.Trash-*
+.nfs*`,
+  VSCode: `.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+!.vscode/*.code-snippets
+.history/
+*.vsix`,
+  JetBrains: `.idea/
+*.iws
+out/
+.idea_modules/
+atlassian-ide-plugin.xml
+com_crashlytics_export_strings.xml
+crashlytics.properties
+crashlytics-build.properties
+fabric.properties`,
+  Vim: `[._]*.s[a-v][a-z]
+!*.svg
+[._]*.sw[a-p]
+[._]s[a-rt-v][a-z]
+[._]ss[a-gi-z]
+[._]sw[a-p]
+Session.vim
+Sessionx.vim
+.netrwhist
+*~
+tags
+[._]*.un~`,
+  Xcode: `build/
+*.pbxuser
+!default.pbxuser
+*.mode1v3
+!default.mode1v3
+*.mode2v3
+!default.mode2v3
+*.perspectivev3
+!default.perspectivev3
+xcuserdata/
+*.xccheckout
+*.moved-aside
+DerivedData
+*.hmap
+*.ipa
+*.xcuserstate
+.DS_Store`,
+  Django: `*.log
+*.pot
+*.pyc
+__pycache__/
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+media/
+staticfiles/
+.env`,
+  Rails: `.bundle/
+db/*.sqlite3
+db/*.sqlite3-journal
+db/*.sqlite3-shm
+db/*.sqlite3-wal
+log/
+tmp/
+storage/
+.byebug_history
+public/packs
+public/packs-test
+node_modules/
+yarn-error.log
+coverage/
+.env`,
+  Laravel: `vendor/
+node_modules/
+public/hot
+public/storage
+storage/*.key
+.env
+.env.backup
+.phpunit.result.cache
+Homestead.json
+Homestead.yaml
+npm-debug.log
+yarn-error.log
+/.idea
+/.vscode`,
+  NextJS: `.next/
+out/
+build/
+node_modules/
+.env*.local
+.vercel
+*.tsbuildinfo
+next-env.d.ts`,
+  React: `node_modules/
+build/
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*`,
+  Angular: `dist/
+tmp/
+out-tsc/
+bazel-out/
+node_modules/
+npm-debug.log
+yarn-error.log
+testem.log
+.DS_Store
+.angular/cache
+.sass-cache/
+/connect.lock
+/coverage
+/libpeerconnection.log
+/typings`,
+  Vue: `node_modules/
+dist/
+.env.local
+.env.*.local
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.idea
+.DS_Store`,
+}
+
 export const toolHandlers: Record<string, ToolHandler> = {
   'js-minifier': {
     description: 'Minify JavaScript code',
@@ -97,6 +447,27 @@ export const toolHandlers: Record<string, ToolHandler> = {
       try {
         const parsed = JSON.parse(json)
         return JSON.stringify(parsed)
+      } catch (e) {
+        throw new Error('Invalid JSON')
+      }
+    },
+  },
+
+  'json-beautifier': {
+    description: 'Beautify JSON',
+    schema: {
+      type: 'object',
+      properties: {
+        json: { type: 'string', description: 'JSON string to beautify' },
+        indent: { type: 'number', description: 'Indentation spaces (default: 2)', default: 2 },
+      },
+      required: ['json'],
+    },
+    handler: async (input) => {
+      const { json, indent = 2 } = input
+      try {
+        const parsed = JSON.parse(json)
+        return JSON.stringify(parsed, null, indent)
       } catch (e) {
         throw new Error('Invalid JSON')
       }
@@ -246,26 +617,36 @@ export const toolHandlers: Record<string, ToolHandler> = {
     },
   },
 
-  'base64-encoder-decoder': {
-    description: 'Encode text to Base64 or decode Base64 back to plain text',
+  'base64-encoder': {
+    description: 'Encode text to Base64',
     schema: {
       type: 'object',
       properties: {
-        input: { type: 'string', description: 'Text to encode or Base64 string to decode' },
-        action: { type: 'string', enum: ['encode', 'decode'], description: 'Action to perform' },
+        text: { type: 'string', description: 'Text to encode' },
       },
-      required: ['input', 'action'],
+      required: ['text'],
     },
     handler: async (input) => {
-      const { input: value, action } = input
-      if (action === 'encode') {
-        return Buffer.from(value).toString('base64')
-      } else {
-        try {
-          return Buffer.from(value, 'base64').toString('utf-8')
-        } catch (e) {
-          throw new Error('Invalid Base64 string')
-        }
+      const { text } = input
+      return Buffer.from(text).toString('base64')
+    },
+  },
+
+  'base64-decoder': {
+    description: 'Decode Base64 text',
+    schema: {
+      type: 'object',
+      properties: {
+        base64: { type: 'string', description: 'Base64 string to decode' },
+      },
+      required: ['base64'],
+    },
+    handler: async (input) => {
+      const { base64 } = input
+      try {
+        return Buffer.from(base64, 'base64').toString('utf-8')
+      } catch (e) {
+        throw new Error('Invalid Base64 string')
       }
     },
   },
@@ -574,6 +955,21 @@ export const toolHandlers: Record<string, ToolHandler> = {
     },
   },
 
+  'html-beautifier': {
+    description: 'Beautify HTML code',
+    schema: {
+      type: 'object',
+      properties: {
+        html: { type: 'string', description: 'HTML to beautify' },
+      },
+      required: ['html'],
+    },
+    handler: async (input) => {
+      const { html } = input
+      return formatHtml(html, 2)
+    },
+  },
+
   'json-to-java': {
     description: 'Convert JSON to Java POJO',
     schema: {
@@ -698,104 +1094,170 @@ export const toolHandlers: Record<string, ToolHandler> = {
     },
   },
 
-  'ini-converter': {
-    description: 'Convert INI configuration to JSON, XML, or YAML',
+  'ini-to-json': {
+    description: 'Convert INI to JSON',
     schema: {
       type: 'object',
       properties: {
         ini: { type: 'string', description: 'INI content to convert' },
-        format: {
-          type: 'string',
-          enum: ['json', 'xml', 'yaml'],
-          description: 'Output format: json, xml, or yaml',
-        },
       },
-      required: ['ini', 'format'],
+      required: ['ini'],
     },
     handler: async (input) => {
-      const { ini, format } = input
+      const { ini } = input
+      return JSON.stringify(parseIni(ini), null, 2)
+    },
+  },
+
+  'ini-to-xml': {
+    description: 'Convert INI to XML',
+    schema: {
+      type: 'object',
+      properties: {
+        ini: { type: 'string', description: 'INI content to convert' },
+      },
+      required: ['ini'],
+    },
+    handler: async (input) => {
+      const { ini } = input
       const obj = parseIni(ini)
-      if (format === 'json') return JSON.stringify(obj, null, 2)
-      if (format === 'xml') return jsonToXml(obj, 'config')
+      return jsonToXml(obj, 'config')
+    },
+  },
+
+  'ini-to-yaml': {
+    description: 'Convert INI to YAML',
+    schema: {
+      type: 'object',
+      properties: {
+        ini: { type: 'string', description: 'INI content to convert' },
+      },
+      required: ['ini'],
+    },
+    handler: async (input) => {
+      const { ini } = input
+      const obj = parseIni(ini)
       const jsYaml = await import('js-yaml')
       return jsYaml.dump(obj, { lineWidth: -1 })
     },
   },
 
-  'csv-converter': {
-    description: 'Convert CSV data to JSON, XML, YAML, or SQL INSERT statements',
+  'csv-to-json': {
+    description: 'Convert CSV to JSON',
     schema: {
       type: 'object',
       properties: {
         csv: { type: 'string', description: 'CSV content to convert' },
-        format: {
-          type: 'string',
-          enum: ['json', 'xml', 'yaml', 'sql'],
-          description: 'Output format: json, xml, yaml, or sql',
-        },
-        hasHeader: { type: 'boolean', description: 'First row is header (used for json/xml/yaml/sql output)', default: true },
-        tableName: { type: 'string', description: 'Table name for SQL output', default: 'table1' },
+        hasHeader: { type: 'boolean', description: 'First row is header', default: true },
       },
-      required: ['csv', 'format'],
+      required: ['csv'],
     },
     handler: async (input) => {
-      const { csv, format, hasHeader = true, tableName = 'table1' } = input
+      const { csv, hasHeader = true } = input
       const lines = csv.trim().split('\n')
       if (lines.length === 0) throw new Error('Empty CSV')
 
-      if (format === 'json') {
-        const rows = lines.map((line: string) => parseCSVLine(line))
-        const result = hasHeader
-          ? rows.slice(1).map((row: string[]) => {
-              const obj: Record<string, any> = {}
-              rows[0]!.forEach((header: string, i: number) => {
-                obj[header] = row[i]
-              })
-              return obj
+      const rows = lines.map((line: string) => parseCSVLine(line))
+      const result = hasHeader
+        ? rows.slice(1).map((row: string[]) => {
+            const obj: Record<string, any> = {}
+            rows[0]!.forEach((header: string, i: number) => {
+              obj[header] = row[i]
             })
-          : rows
-        return JSON.stringify(result, null, 2)
-      }
-
-      if (format === 'xml') {
-        const headers = parseCSVLine(lines[0]!)
-        let xml = '<?xml version="1.0" encoding="UTF-8"?>\n<rows>\n'
-        for (let i = 1; i < lines.length; i++) {
-          const values = parseCSVLine(lines[i]!)
-          xml += '  <row>\n'
-          headers.forEach((header: string, idx: number) => {
-            xml += `    <${header}>${escapeXml(values[idx] || '')}</${header}>\n`
+            return obj
           })
-          xml += '  </row>\n'
-        }
-        xml += '</rows>'
-        return xml
+        : rows
+
+      return JSON.stringify(result, null, 2)
+    },
+  },
+
+  'csv-to-xml': {
+    description: 'Convert CSV to XML',
+    schema: {
+      type: 'object',
+      properties: {
+        csv: { type: 'string', description: 'CSV content to convert' },
+      },
+      required: ['csv'],
+    },
+    handler: async (input) => {
+      const { csv } = input
+      const lines = csv.trim().split('\n')
+      if (lines.length === 0) throw new Error('Empty CSV')
+
+      const headers = parseCSVLine(lines[0]!)
+      let xml = '<?xml version="1.0" encoding="UTF-8"?>\n<rows>\n'
+
+      for (let i = 1; i < lines.length; i++) {
+        const values = parseCSVLine(lines[i]!)
+        xml += '  <row>\n'
+        headers.forEach((header: string, idx: number) => {
+          xml += `    <${header}>${escapeXml(values[idx] || '')}</${header}>\n`
+        })
+        xml += '  </row>\n'
+      }
+      xml += '</rows>'
+      return xml
+    },
+  },
+
+  'csv-to-yaml': {
+    description: 'Convert CSV to YAML',
+    schema: {
+      type: 'object',
+      properties: {
+        csv: { type: 'string', description: 'CSV content to convert' },
+      },
+      required: ['csv'],
+    },
+    handler: async (input) => {
+      const { csv } = input
+      const lines = csv.trim().split('\n')
+      if (lines.length === 0) throw new Error('Empty CSV')
+
+      const headers = parseCSVLine(lines[0]!)
+      const rows: Record<string, any>[] = []
+
+      for (let i = 1; i < lines.length; i++) {
+        const values = parseCSVLine(lines[i]!)
+        const obj: Record<string, any> = {}
+        headers.forEach((header: string, idx: number) => {
+          obj[header] = values[idx]
+        })
+        rows.push(obj)
       }
 
-      if (format === 'yaml') {
-        const headers = parseCSVLine(lines[0]!)
-        const rows: Record<string, any>[] = []
-        for (let i = 1; i < lines.length; i++) {
-          const values = parseCSVLine(lines[i]!)
-          const obj: Record<string, any> = {}
-          headers.forEach((header: string, idx: number) => {
-            obj[header] = values[idx]
-          })
-          rows.push(obj)
-        }
-        const jsYaml = await import('js-yaml')
-        return jsYaml.dump(rows, { lineWidth: -1 })
-      }
+      const jsYaml = await import('js-yaml')
+      return jsYaml.dump(rows, { lineWidth: -1 })
+    },
+  },
 
-      // sql
+  'csv-to-sql': {
+    description: 'Convert CSV to SQL INSERT',
+    schema: {
+      type: 'object',
+      properties: {
+        csv: { type: 'string', description: 'CSV content to convert' },
+        tableName: { type: 'string', description: 'Table name', default: 'table1' },
+      },
+      required: ['csv'],
+    },
+    handler: async (input) => {
+      const { csv, tableName = 'table1' } = input
+      const lines = csv.trim().split('\n')
+      if (lines.length === 0) throw new Error('Empty CSV')
+
       const headers = parseCSVLine(lines[0])
       let sql = ''
+
       for (let i = 1; i < lines.length; i++) {
         const values = parseCSVLine(lines[i])
         const cols = headers.map((h: string) => h).join(', ')
         const vals = values.map((v: string) => `'${v.replace(/'/g, "''")}'`).join(', ')
         sql += `INSERT INTO ${tableName} (${cols}) VALUES (${vals});\n`
       }
+
       return sql.trim()
     },
   },
@@ -1761,490 +2223,413 @@ export const toolHandlers: Record<string, ToolHandler> = {
     },
   },
 
-  'cron-expression-builder': {
-    description: 'Parse a cron expression and return a human-readable description and the next N run times',
+  // Phase 3 tools
+  'timezone-converter': {
+    description: 'Convert a datetime between any two IANA timezones with DST-awareness',
     schema: {
       type: 'object',
       properties: {
-        expression: { type: 'string', description: 'Cron expression (5 or 6 fields)' },
-        nextCount: { type: 'number', description: 'Number of upcoming run times to return (default: 5)', default: 5 },
+        datetime: { type: 'string', description: 'The datetime to convert (ISO 8601 or any parseable format)' },
+        fromTimezone: { type: 'string', description: 'Source IANA timezone (e.g. America/New_York)' },
+        toTimezone: { type: 'string', description: 'Target IANA timezone (e.g. Europe/London)' },
       },
-      required: ['expression'],
+      required: ['datetime', 'fromTimezone', 'toTimezone'],
     },
     handler: async (input) => {
-      const { expression, nextCount = 5 } = input
-      return parseCronExpression(expression, nextCount)
-    },
-  },
+      const { datetime, fromTimezone, toTimezone } = input
+      const inputDate = new Date(datetime)
+      if (isNaN(inputDate.getTime())) throw new Error('Invalid datetime format')
 
-  'jwt-generator': {
-    description: 'Generate a signed JWT token with a custom payload using HS256 or HS512',
-    schema: {
-      type: 'object',
-      properties: {
-        payload: { type: 'string', description: 'JSON payload object' },
-        secret: { type: 'string', description: 'Signing secret key' },
-        algorithm: { type: 'string', enum: ['HS256', 'HS512'], description: 'Signing algorithm: HS256 or HS512', default: 'HS256' },
-        expiresIn: { type: 'string', description: 'Expiry (e.g. "1h", "7d", "3600"). Leave empty for no expiry.' },
-      },
-      required: ['payload', 'secret'],
-    },
-    handler: async (input) => {
-      const { payload, secret, algorithm = 'HS256', expiresIn } = input
-      let parsed: Record<string, unknown>
       try {
-        parsed = JSON.parse(payload)
+        new Intl.DateTimeFormat('en-US', { timeZone: fromTimezone })
       } catch {
-        throw new Error('Payload must be valid JSON')
+        throw new Error(`Invalid timezone: ${fromTimezone}`)
       }
-      return generateJwt(parsed, secret, algorithm, expiresIn)
+      try {
+        new Intl.DateTimeFormat('en-US', { timeZone: toTimezone })
+      } catch {
+        throw new Error(`Invalid timezone: ${toTimezone}`)
+      }
+
+      const formatOptions: Intl.DateTimeFormatOptions = {
+        year: 'numeric', month: '2-digit', day: '2-digit',
+        hour: '2-digit', minute: '2-digit', second: '2-digit',
+        hour12: false,
+      }
+
+      const outputFormatted = new Intl.DateTimeFormat('en-US', { ...formatOptions, timeZone: toTimezone }).format(inputDate)
+      const inputFormatted = new Intl.DateTimeFormat('en-US', { ...formatOptions, timeZone: fromTimezone }).format(inputDate)
+
+      const offsetFormatter = new Intl.DateTimeFormat('en-US', { timeZone: toTimezone, timeZoneName: 'shortOffset' })
+      const offsetParts = offsetFormatter.formatToParts(inputDate)
+      const utcOffset = offsetParts.find((p) => p.type === 'timeZoneName')?.value ?? ''
+
+      return {
+        input: inputFormatted,
+        inputTimezone: fromTimezone,
+        outputDatetime: outputFormatted,
+        outputTimezone: toTimezone,
+        utcOffset,
+        utcTime: inputDate.toISOString(),
+      }
     },
   },
 
-  'url-builder': {
-    description: 'Build a URL from protocol, host, path, and query parameters',
+  'iso8601-converter': {
+    description: 'Convert between ISO 8601, RFC 2822, and human-readable date/time formats',
     schema: {
       type: 'object',
       properties: {
-        protocol: { type: 'string', description: 'Protocol: http or https', default: 'https' },
-        host: { type: 'string', description: 'Hostname (e.g. example.com)' },
-        port: { type: 'string', description: 'Port number (optional)' },
-        path: { type: 'string', description: 'Path (e.g. /api/users)' },
-        params: {
-          type: 'array',
-          description: 'Query parameters as key-value pairs',
-          items: {
-            type: 'object',
-            properties: {
-              key: { type: 'string' },
-              value: { type: 'string' },
-            },
-          },
-        },
-        hash: { type: 'string', description: 'Fragment / hash (optional)' },
-      },
-      required: ['host'],
-    },
-    handler: async (input) => {
-      const { protocol = 'https', host, port, path = '', params = [], hash = '' } = input
-      const base = `${protocol}://${host}${port ? ':' + port : ''}${path || '/'}`
-      const url = new URL(base)
-      for (const p of params as Array<{ key: string; value: string }>) {
-        if (p.key) url.searchParams.append(p.key, p.value ?? '')
-      }
-      if (hash) url.hash = hash
-      return { url: url.toString() }
-    },
-  },
-
-  'query-string-parser': {
-    description: 'Parse a query string or full URL into a key-value table',
-    schema: {
-      type: 'object',
-      properties: {
-        input: { type: 'string', description: 'Query string (e.g. foo=1&bar=2) or full URL' },
+        input: { type: 'string', description: 'Date/time string in any parseable format' },
+        outputFormat: { type: 'string', enum: ['all', 'iso8601', 'rfc2822', 'human'], description: 'Output format (default: all)' },
       },
       required: ['input'],
     },
     handler: async (input) => {
-      const { input: raw } = input
-      let qs = raw.trim()
-      if (qs.startsWith('http://') || qs.startsWith('https://') || qs.includes('://')) {
-        try {
-          qs = new URL(qs).search.replace(/^\?/, '')
-        } catch {
-          qs = qs.split('?')[1] ?? qs
-        }
-      } else {
-        qs = qs.replace(/^\?/, '')
-      }
-      const params = new URLSearchParams(qs)
-      const result: Record<string, string | string[]> = {}
-      for (const key of new Set(params.keys())) {
-        const vals = params.getAll(key)
-        result[key] = vals.length === 1 ? vals[0]! : vals
-      }
-      return { params: result, count: Object.keys(result).length }
+      const { input: value, outputFormat = 'all' } = input
+      const date = new Date(value)
+      if (isNaN(date.getTime())) throw new Error('Invalid date/time string')
+
+      const iso8601 = date.toISOString()
+      const rfc2822 = date.toUTCString().replace('GMT', '+0000')
+      const human = new Intl.DateTimeFormat('en-US', {
+        weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',
+        hour: '2-digit', minute: '2-digit', second: '2-digit', timeZoneName: 'short',
+      }).format(date)
+      const unix = Math.floor(date.getTime() / 1000)
+
+      if (outputFormat === 'iso8601') return { result: iso8601, iso8601, rfc2822, human, unix }
+      if (outputFormat === 'rfc2822') return { result: rfc2822, iso8601, rfc2822, human, unix }
+      if (outputFormat === 'human') return { result: human, iso8601, rfc2822, human, unix }
+      return { iso8601, rfc2822, human, unix }
     },
   },
 
-  'word-counter': {
-    description: 'Count words, characters, sentences, paragraphs, and estimate reading time',
+  'business-day-calculator': {
+    description: 'Add or subtract N business days from a date, with optional holiday exclusions',
     schema: {
       type: 'object',
       properties: {
-        text: { type: 'string', description: 'Text to analyze' },
+        startDate: { type: 'string', description: 'Start date in YYYY-MM-DD format' },
+        days: { type: 'number', description: 'Number of business days to add (positive) or subtract (negative)' },
+        holidays: { type: 'string', description: 'Optional comma-separated holiday dates in YYYY-MM-DD format to skip' },
       },
-      required: ['text'],
+      required: ['startDate', 'days'],
     },
     handler: async (input) => {
-      const { text } = input
-      const chars = text.length
-      const charsNoSpaces = text.replace(/\s/g, '').length
-      const words = text.trim() === '' ? 0 : text.trim().split(/\s+/).length
-      const sentences = text.trim() === '' ? 0 : (text.match(/[^.!?]+[.!?]+/g) ?? []).length
-      const paragraphs = text.trim() === '' ? 0 : text.split(/\n\s*\n/).filter((p) => p.trim()).length
-      const readingTimeMin = Math.ceil(words / 200)
-      return { words, chars, charsNoSpaces, sentences, paragraphs, readingTimeMin }
-    },
-  },
+      const { startDate, days, holidays = '' } = input
+      const start = new Date(startDate + 'T00:00:00Z')
+      if (isNaN(start.getTime())) throw new Error('Invalid start date. Use YYYY-MM-DD format.')
 
-  'lorem-ipsum-generator': {
-    description: 'Generate lorem ipsum placeholder text',
-    schema: {
-      type: 'object',
-      properties: {
-        type: { type: 'string', enum: ['paragraphs', 'sentences', 'words'], description: 'Unit: paragraphs, sentences, or words' },
-        count: { type: 'number', description: 'Number of units to generate (default: 3)' },
-        style: { type: 'string', enum: ['lorem', 'english'], description: 'Style: classic lorem ipsum or random English words', default: 'lorem' },
-      },
-      required: ['type', 'count'],
-    },
-    handler: async (input) => {
-      const { type, count, style = 'lorem' } = input
-      return { text: generateLoremIpsum(type, count, style) }
-    },
-  },
-
-  'json-schema-validator': {
-    description: 'Validate a JSON document against a JSON Schema',
-    schema: {
-      type: 'object',
-      properties: {
-        json: { type: 'string', description: 'JSON document to validate' },
-        schema: { type: 'string', description: 'JSON Schema to validate against' },
-      },
-      required: ['json', 'schema'],
-    },
-    handler: async (input) => {
-      const { json, schema: schemaStr } = input
-      let doc: unknown
-      let schema: unknown
-      try { doc = JSON.parse(json) } catch { throw new Error('Invalid JSON document') }
-      try { schema = JSON.parse(schemaStr) } catch { throw new Error('Invalid JSON Schema') }
-      const errors = validateJsonSchema(doc, schema as Record<string, unknown>, '')
-      return { valid: errors.length === 0, errors }
-    },
-  },
-
-  'json-schema-generator': {
-    description: 'Infer a JSON Schema (draft-07) from a sample JSON document',
-    schema: {
-      type: 'object',
-      properties: {
-        json: { type: 'string', description: 'Sample JSON document to infer schema from' },
-      },
-      required: ['json'],
-    },
-    handler: async (input) => {
-      const { json } = input
-      let doc: unknown
-      try { doc = JSON.parse(json) } catch { throw new Error('Invalid JSON') }
-      const schema = inferJsonSchema(doc)
-      return JSON.stringify(schema, null, 2)
-    },
-  },
-
-  'color-contrast-checker': {
-    description: 'Check WCAG AA and AAA contrast ratios between two colors',
-    schema: {
-      type: 'object',
-      properties: {
-        foreground: { type: 'string', description: 'Foreground color in HEX, rgb(), or hsl()' },
-        background: { type: 'string', description: 'Background color in HEX, rgb(), or hsl()' },
-      },
-      required: ['foreground', 'background'],
-    },
-    handler: async (input) => {
-      const { foreground, background } = input
-      const fg = parseColorToRgb(foreground)
-      const bg = parseColorToRgb(background)
-      if (!fg) throw new Error(`Cannot parse foreground color: "${foreground}"`)
-      if (!bg) throw new Error(`Cannot parse background color: "${background}"`)
-      const ratio = contrastRatio(fg, bg)
-      return {
-        ratio: parseFloat(ratio.toFixed(2)),
-        ratioDisplay: `${ratio.toFixed(2)}:1`,
-        wcagAA: { normal: ratio >= 4.5, large: ratio >= 3, ui: ratio >= 3 },
-        wcagAAA: { normal: ratio >= 7, large: ratio >= 4.5 },
-        foreground,
-        background,
-      }
-    },
-  },
-
-  'color-palette-generator': {
-    description: 'Generate complementary, analogous, triadic, and tetradic color palettes from a base color',
-    schema: {
-      type: 'object',
-      properties: {
-        color: { type: 'string', description: 'Base color in HEX, rgb(), or hsl()' },
-      },
-      required: ['color'],
-    },
-    handler: async (input) => {
-      const { color } = input
-      const rgb = parseColorToRgb(color)
-      if (!rgb) throw new Error(`Cannot parse color: "${color}"`)
-      const hsl = rgbToHslValues(rgb.r, rgb.g, rgb.b)
-      return generatePalettes(hsl)
-    },
-  },
-
-  'css-gradient-builder': {
-    description: 'Build a CSS linear or radial gradient from color stops',
-    schema: {
-      type: 'object',
-      properties: {
-        type: { type: 'string', enum: ['linear', 'radial'], description: 'Gradient type', default: 'linear' },
-        angle: { type: 'number', description: 'Angle in degrees for linear gradient (default: 90)', default: 90 },
-        stops: {
-          type: 'array',
-          description: 'Color stops as objects with color and position (0-100)',
-          items: {
-            type: 'object',
-            properties: {
-              color: { type: 'string' },
-              position: { type: 'number' },
-            },
-          },
-        },
-      },
-      required: ['stops'],
-    },
-    handler: async (input) => {
-      const { type = 'linear', angle = 90, stops } = input
-      if (!Array.isArray(stops) || stops.length < 2) throw new Error('At least 2 color stops required')
-      const stopStr = (stops as Array<{ color: string; position: number }>)
-        .map((s) => `${s.color} ${s.position}%`)
-        .join(', ')
-      const css =
-        type === 'radial'
-          ? `background: radial-gradient(circle, ${stopStr});`
-          : `background: linear-gradient(${angle}deg, ${stopStr});`
-      return { css, gradient: css.replace('background: ', '').replace(';', '') }
-    },
-  },
-
-  'random-string-generator': {
-    description: 'Generate random strings with configurable length, count, and character set',
-    schema: {
-      type: 'object',
-      properties: {
-        length: { type: 'number', description: 'Length of each string (default: 16)', default: 16 },
-        count: { type: 'number', description: 'Number of strings to generate (default: 1)', default: 1 },
-        charset: {
-          type: 'string',
-          enum: ['alphanumeric', 'alpha', 'numeric', 'hex', 'base58', 'custom'],
-          description: 'Character set to use',
-          default: 'alphanumeric',
-        },
-        custom: { type: 'string', description: 'Custom character set when charset is "custom"' },
-      },
-      required: ['length'],
-    },
-    handler: async (input) => {
-      const { length = 16, count = 1, charset = 'alphanumeric', custom } = input
-      const charsets: Record<string, string> = {
-        alphanumeric: 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789',
-        alpha: 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz',
-        numeric: '0123456789',
-        hex: '0123456789abcdef',
-        base58: '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz',
-        custom: custom || 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789',
-      }
-      const pool = charsets[charset] ?? charsets.alphanumeric
-      const len = Math.max(1, Math.min(length, 1024))
-      const n = Math.max(1, Math.min(count, 100))
-      const strings = Array.from({ length: n }, () =>
-        Array.from({ length: len }, () => pool[Math.floor(Math.random() * pool.length)]).join('')
+      const holidaySet = new Set(
+        holidays.split(',').map((h: string) => h.trim()).filter(Boolean)
       )
-      return { strings, count: strings.length, length: len }
+
+      const direction = days >= 0 ? 1 : -1
+      const target = Math.abs(days)
+      let current = new Date(start)
+      let count = 0
+      let holidaysSkipped = 0
+
+      while (count < target) {
+        current = new Date(current.getTime() + direction * 86400000)
+        const dayOfWeek = current.getUTCDay()
+        const dateStr = current.toISOString().split('T')[0]!
+        if (dayOfWeek === 0 || dayOfWeek === 6) continue
+        if (holidaySet.has(dateStr)) { holidaysSkipped++; continue }
+        count++
+      }
+
+      const totalCalendarDays = Math.round(Math.abs(current.getTime() - start.getTime()) / 86400000)
+
+      return {
+        startDate: start.toISOString().split('T')[0],
+        endDate: current.toISOString().split('T')[0],
+        businessDaysAdded: days,
+        totalCalendarDays,
+        holidaysSkipped,
+      }
     },
   },
 
-  'slug-generator': {
-    description: 'Convert any string to a URL-safe slug',
+  'relative-date-calculator': {
+    description: 'Calculate the difference between two dates or add/subtract days from a date',
     schema: {
       type: 'object',
       properties: {
-        text: { type: 'string', description: 'Input text to slugify' },
-        separator: { type: 'string', enum: ['-', '_', '.'], description: 'Separator character (default: -)', default: '-' },
-        case: { type: 'string', enum: ['lower', 'upper', 'title'], description: 'Case style (default: lower)', default: 'lower' },
+        date1: { type: 'string', description: 'First date in YYYY-MM-DD format or "today"' },
+        date2: { type: 'string', description: 'Second date in YYYY-MM-DD format or "today" (used for diff operation)' },
+        operation: { type: 'string', enum: ['diff', 'add'], description: 'Operation: diff (default) or add' },
+        addDays: { type: 'number', description: 'Number of days to add (required when operation=add, can be negative)' },
       },
-      required: ['text'],
+      required: ['date1'],
     },
     handler: async (input) => {
-      const { text, separator = '-', case: caseStyle = 'lower' } = input
-      let slug = text
-        .normalize('NFD')
-        .replace(/[̀-ͯ]/g, '')
-        .replace(/[^a-zA-Z0-9\s-_]/g, '')
-        .trim()
-        .replace(/[\s-_]+/g, separator)
-      if (caseStyle === 'lower') slug = slug.toLowerCase()
-      else if (caseStyle === 'upper') slug = slug.toUpperCase()
-      else if (caseStyle === 'title')
-        slug = slug.replace(/\w+/g, (w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
-      return { slug }
+      const { date1, date2, operation = 'diff', addDays } = input
+      const today = new Date().toISOString().split('T')[0]!
+      const d1str = date1 === 'today' ? today : date1
+      const d1 = new Date(d1str + 'T00:00:00Z')
+      if (isNaN(d1.getTime())) throw new Error('Invalid date1. Use YYYY-MM-DD.')
+
+      if (operation === 'add') {
+        if (typeof addDays !== 'number') throw new Error('addDays is required for operation=add')
+        const result = new Date(d1.getTime() + addDays * 86400000)
+        return {
+          startDate: d1str,
+          addDays,
+          resultDate: result.toISOString().split('T')[0],
+          resultReadable: new Intl.DateTimeFormat('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }).format(result),
+        }
+      }
+
+      const d2str = date2 === 'today' ? today : (date2 ?? today)
+      const d2 = new Date(d2str + 'T00:00:00Z')
+      if (isNaN(d2.getTime())) throw new Error('Invalid date2. Use YYYY-MM-DD.')
+
+      const diffMs = d2.getTime() - d1.getTime()
+      const diffDays = Math.round(diffMs / 86400000)
+      const weeks = Math.floor(Math.abs(diffDays) / 7)
+      const remainingDays = Math.abs(diffDays) % 7
+      const months = Math.floor(Math.abs(diffDays) / 30.4375)
+      const years = Math.floor(Math.abs(diffDays) / 365.25)
+
+      return {
+        date1: d1str,
+        date2: d2str,
+        days: diffDays,
+        absoluteDays: Math.abs(diffDays),
+        weeks,
+        remainingDaysAfterWeeks: remainingDays,
+        months,
+        years,
+        direction: diffDays > 0 ? 'future' : diffDays < 0 ? 'past' : 'same',
+      }
     },
   },
 
-  'line-utilities': {
-    description: 'Sort, reverse, deduplicate, shuffle, or number lines of text',
+  'age-calculator': {
+    description: 'Calculate exact age in years, months, and days from a birthdate',
     schema: {
       type: 'object',
       properties: {
-        text: { type: 'string', description: 'Multi-line text to process' },
-        action: {
-          type: 'string',
-          enum: ['sort-asc', 'sort-desc', 'reverse', 'deduplicate', 'shuffle', 'number', 'trim', 'remove-empty'],
-          description: 'Operation to perform on lines',
+        birthdate: { type: 'string', description: 'Birthdate in YYYY-MM-DD format' },
+        referenceDate: { type: 'string', description: 'Reference date in YYYY-MM-DD format (default: today)' },
+      },
+      required: ['birthdate'],
+    },
+    handler: async (input) => {
+      const { birthdate, referenceDate } = input
+      const birth = new Date(birthdate + 'T00:00:00Z')
+      if (isNaN(birth.getTime())) throw new Error('Invalid birthdate. Use YYYY-MM-DD.')
+
+      const today = new Date().toISOString().split('T')[0]!
+      const refStr = referenceDate ?? today
+      const ref = new Date(refStr + 'T00:00:00Z')
+      if (isNaN(ref.getTime())) throw new Error('Invalid reference date.')
+      if (birth > ref) throw new Error('Birthdate cannot be in the future relative to reference date.')
+
+      const totalDays = Math.round((ref.getTime() - birth.getTime()) / 86400000)
+
+      let years = ref.getUTCFullYear() - birth.getUTCFullYear()
+      let months = ref.getUTCMonth() - birth.getUTCMonth()
+      let days = ref.getUTCDate() - birth.getUTCDate()
+
+      if (days < 0) {
+        months--
+        const prevMonth = new Date(Date.UTC(ref.getUTCFullYear(), ref.getUTCMonth(), 0))
+        days += prevMonth.getUTCDate()
+      }
+      if (months < 0) { years--; months += 12 }
+
+      let nextBirthdayYear = ref.getUTCFullYear()
+      const birthdayThisYear = new Date(Date.UTC(nextBirthdayYear, birth.getUTCMonth(), birth.getUTCDate()))
+      if (birthdayThisYear <= ref) nextBirthdayYear++
+      const nextBirthday = new Date(Date.UTC(nextBirthdayYear, birth.getUTCMonth(), birth.getUTCDate()))
+      const daysUntilNextBirthday = Math.round((nextBirthday.getTime() - ref.getTime()) / 86400000)
+
+      return {
+        birthdate,
+        referenceDate: refStr,
+        years,
+        months,
+        days,
+        totalDays,
+        nextBirthday: nextBirthday.toISOString().split('T')[0],
+        daysUntilNextBirthday,
+      }
+    },
+  },
+
+  'env-file-parser': {
+    description: 'Parse a .env file into a structured key-value table with issue detection',
+    schema: {
+      type: 'object',
+      properties: {
+        content: { type: 'string', description: 'The full .env file content to parse' },
+      },
+      required: ['content'],
+    },
+    handler: async (input) => {
+      const { content } = input
+      const lines = content.split('\n')
+      const entries: Array<{ key: string; value: string; rawValue: string; lineNumber: number; hasIssue: boolean; issue: string }> = []
+      const seen = new Map<string, number>()
+
+      for (let i = 0; i < lines.length; i++) {
+        const line = lines[i]!.trim()
+        if (!line || line.startsWith('#')) continue
+
+        const eqIdx = line.indexOf('=')
+        if (eqIdx === -1) {
+          entries.push({ key: line, value: '', rawValue: '', lineNumber: i + 1, hasIssue: true, issue: 'Missing = sign' })
+          continue
+        }
+
+        const key = line.slice(0, eqIdx).trim()
+        const rawValue = line.slice(eqIdx + 1)
+        let value = rawValue.trim()
+        let issue = ''
+
+        if ((value.startsWith('"') && value.endsWith('"')) || (value.startsWith("'") && value.endsWith("'"))) {
+          value = value.slice(1, -1)
+        }
+
+        if (!key) { issue = 'Empty key' }
+        else if (!rawValue.trim()) { issue = 'Empty value' }
+        else if (seen.has(key)) { issue = `Duplicate key (first at line ${seen.get(key)})` }
+
+        if (!seen.has(key)) seen.set(key, i + 1)
+
+        entries.push({ key, value, rawValue: rawValue.trim(), lineNumber: i + 1, hasIssue: !!issue, issue })
+      }
+
+      const duplicateKeys = new Set(entries.filter((e) => e.issue.startsWith('Duplicate')).map((e) => e.key))
+      return {
+        entries,
+        stats: {
+          total: entries.length,
+          empty: entries.filter((e) => e.issue === 'Empty value').length,
+          duplicates: duplicateKeys.size,
+          quoted: entries.filter((e) => (e.rawValue.startsWith('"') && e.rawValue.endsWith('"')) || (e.rawValue.startsWith("'") && e.rawValue.endsWith("'"))).length,
         },
-      },
-      required: ['text', 'action'],
-    },
-    handler: async (input) => {
-      const { text, action } = input
-      let lines = text.split('\n')
-      switch (action) {
-        case 'sort-asc':
-          lines = [...lines].sort((a, b) => a.localeCompare(b))
-          break
-        case 'sort-desc':
-          lines = [...lines].sort((a, b) => b.localeCompare(a))
-          break
-        case 'reverse':
-          lines = [...lines].reverse()
-          break
-        case 'deduplicate':
-          lines = [...new Set(lines)]
-          break
-        case 'shuffle':
-          for (let i = lines.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1))
-            ;[lines[i], lines[j]] = [lines[j]!, lines[i]!]
-          }
-          break
-        case 'number':
-          lines = lines.map((l, i) => `${i + 1}. ${l}`)
-          break
-        case 'trim':
-          lines = lines.map((l) => l.trim())
-          break
-        case 'remove-empty':
-          lines = lines.filter((l) => l.trim() !== '')
-          break
-        default:
-          throw new Error(`Unknown action: ${action}`)
-      }
-      return { result: lines.join('\n'), lineCount: lines.length }
-    },
-  },
-
-  'hex-text-converter': {
-    description: 'Encode text to hexadecimal or decode hex to text',
-    schema: {
-      type: 'object',
-      properties: {
-        input: { type: 'string', description: 'Text to encode or hex string to decode' },
-        action: { type: 'string', enum: ['encode', 'decode'], description: 'encode: text→hex, decode: hex→text' },
-        separator: { type: 'string', description: 'Separator between hex bytes for encoding (default: space)', default: ' ' },
-      },
-      required: ['input', 'action'],
-    },
-    handler: async (input) => {
-      const { input: value, action, separator = ' ' } = input
-      if (action === 'encode') {
-        const bytes = new TextEncoder().encode(value)
-        const hex = Array.from(bytes).map((b) => b.toString(16).padStart(2, '0')).join(separator)
-        return { result: hex }
-      } else {
-        const clean = value.replace(/\s+/g, '').replace(/0x/gi, '')
-        if (!/^[0-9a-fA-F]*$/.test(clean) || clean.length % 2 !== 0)
-          throw new Error('Invalid hex string - must be even number of hex digits')
-        const bytes = new Uint8Array(clean.length / 2)
-        for (let i = 0; i < clean.length; i += 2) bytes[i / 2] = parseInt(clean.slice(i, i + 2), 16)
-        return { result: new TextDecoder().decode(bytes) }
       }
     },
   },
 
-  'unicode-escape-converter': {
-    description: 'Convert between literal Unicode characters and escape sequences',
+  'gitignore-generator': {
+    description: 'Generate a .gitignore file from curated templates for popular languages, frameworks, and editors',
     schema: {
       type: 'object',
       properties: {
-        input: { type: 'string', description: 'Text or escape sequences to convert' },
-        action: {
-          type: 'string',
-          enum: ['to-js', 'to-python', 'to-codepoints', 'to-html', 'unescape'],
-          description: 'to-js: text→\\uXXXX, to-python: text→\\UXXXXXXXX, to-codepoints: text→U+XXXX, to-html: text→&#DDDD;, unescape: any escapes→text',
+        templates: { type: 'array', items: { type: 'string' }, description: 'List of template names to include (e.g. ["Node", "Python", "VSCode"])' },
+        customEntries: { type: 'string', description: 'Optional additional .gitignore entries to append' },
+      },
+      required: ['templates'],
+    },
+    handler: async (input) => {
+      const { templates, customEntries = '' } = input
+      const sections: string[] = []
+
+      for (const tplName of templates) {
+        const key = Object.keys(GITIGNORE_TEMPLATES).find(
+          (k) => k.toLowerCase() === tplName.toLowerCase()
+        )
+        if (!key) throw new Error(`Unknown template: ${tplName}. Available: ${Object.keys(GITIGNORE_TEMPLATES).join(', ')}`)
+        sections.push(`# ${key}\n${GITIGNORE_TEMPLATES[key as keyof typeof GITIGNORE_TEMPLATES]}`)
+      }
+
+      if (customEntries.trim()) {
+        sections.push(`# Custom\n${customEntries.trim()}`)
+      }
+
+      const gitignore = sections.join('\n\n')
+      const lineCount = gitignore.split('\n').length
+
+      return {
+        gitignore,
+        templates: templates,
+        lineCount,
+      }
+    },
+  },
+
+  'conventional-commit-generator': {
+    description: 'Generate a properly formatted Conventional Commit message',
+    schema: {
+      type: 'object',
+      properties: {
+        type: { type: 'string', enum: ['feat', 'fix', 'docs', 'style', 'refactor', 'perf', 'test', 'build', 'ci', 'chore', 'revert'], description: 'Commit type' },
+        scope: { type: 'string', description: 'Optional scope (component/module affected)' },
+        description: { type: 'string', description: 'Short description of the change' },
+        body: { type: 'string', description: 'Optional longer description' },
+        breakingChange: { type: 'string', description: 'Optional breaking change description' },
+        issueRefs: { type: 'string', description: 'Optional issue references (e.g. "Closes #123")' },
+      },
+      required: ['type', 'description'],
+    },
+    handler: async (input) => {
+      const { type, scope, description, body, breakingChange, issueRefs } = input
+      if (!description?.trim()) throw new Error('Description is required')
+
+      const scopePart = scope?.trim() ? `(${scope.trim()})` : ''
+      const breakingMark = breakingChange?.trim() ? '!' : ''
+      const subject = `${type}${scopePart}${breakingMark}: ${description.trim()}`
+
+      const parts = [subject]
+      if (body?.trim()) parts.push('', body.trim())
+      if (breakingChange?.trim()) parts.push('', `BREAKING CHANGE: ${breakingChange.trim()}`)
+      if (issueRefs?.trim()) parts.push('', issueRefs.trim())
+
+      return {
+        message: parts.join('\n'),
+        subject,
+        hasBody: !!(body?.trim() || breakingChange?.trim() || issueRefs?.trim()),
+      }
+    },
+  },
+
+  'semver-comparator': {
+    description: 'Compare two semantic version strings and show what changed',
+    schema: {
+      type: 'object',
+      properties: {
+        version1: { type: 'string', description: 'First semantic version (e.g. 1.2.3 or v2.0.0-beta.1)' },
+        version2: { type: 'string', description: 'Second semantic version to compare against' },
+      },
+      required: ['version1', 'version2'],
+    },
+    handler: async (input) => {
+      const { version1, version2 } = input
+      const p1 = parseSemver(version1)
+      const p2 = parseSemver(version2)
+
+      let comparison: 'greater' | 'less' | 'equal' = 'equal'
+      if (p1.major !== p2.major) comparison = p1.major > p2.major ? 'greater' : 'less'
+      else if (p1.minor !== p2.minor) comparison = p1.minor > p2.minor ? 'greater' : 'less'
+      else if (p1.patch !== p2.patch) comparison = p1.patch > p2.patch ? 'greater' : 'less'
+      else if (p1.prerelease !== p2.prerelease) {
+        if (!p1.prerelease && p2.prerelease) comparison = 'greater'
+        else if (p1.prerelease && !p2.prerelease) comparison = 'less'
+        else comparison = (p1.prerelease! < p2.prerelease!) ? 'less' : 'greater'
+      }
+
+      return {
+        version1: version1.trim(),
+        version2: version2.trim(),
+        comparison,
+        winner: comparison === 'equal' ? null : comparison === 'greater' ? version1.trim() : version2.trim(),
+        diff: {
+          major: p1.major - p2.major,
+          minor: p1.minor - p2.minor,
+          patch: p1.patch - p2.patch,
+          prerelease: p1.prerelease !== p2.prerelease ? `${p1.prerelease ?? 'stable'} vs ${p2.prerelease ?? 'stable'}` : null,
         },
-      },
-      required: ['input', 'action'],
-    },
-    handler: async (input) => {
-      const { input: value, action } = input
-      let result: string
-      switch (action) {
-        case 'to-js':
-          result = [...value].map((c) => {
-            const cp = c.codePointAt(0)!
-            return cp > 0xffff
-              ? `\\u{${cp.toString(16).toUpperCase()}}`
-              : cp < 128 ? c : `\\u${cp.toString(16).padStart(4, '0').toUpperCase()}`
-          }).join('')
-          break
-        case 'to-python':
-          result = [...value].map((c) => {
-            const cp = c.codePointAt(0)!
-            return cp < 128 ? c : `\\U${cp.toString(16).padStart(8, '0').toUpperCase()}`
-          }).join('')
-          break
-        case 'to-codepoints':
-          result = [...value].map((c) => `U+${c.codePointAt(0)!.toString(16).padStart(4, '0').toUpperCase()}`).join(' ')
-          break
-        case 'to-html':
-          result = [...value].map((c) => {
-            const cp = c.codePointAt(0)!
-            return cp < 128 ? c : `&#${cp};`
-          }).join('')
-          break
-        case 'unescape':
-          result = value
-            .replace(/\\u\{([0-9a-fA-F]+)\}/g, (_, h) => String.fromCodePoint(parseInt(h, 16)))
-            .replace(/\\u([0-9a-fA-F]{4})/g, (_, h) => String.fromCodePoint(parseInt(h, 16)))
-            .replace(/\\U([0-9a-fA-F]{8})/g, (_, h) => String.fromCodePoint(parseInt(h, 16)))
-            .replace(/&#([0-9]+);/g, (_, n) => String.fromCodePoint(parseInt(n, 10)))
-            .replace(/&#x([0-9a-fA-F]+);/g, (_, h) => String.fromCodePoint(parseInt(h, 16)))
-          break
-        default:
-          throw new Error(`Unknown action: ${action}`)
+        parsed: { v1: p1, v2: p2 },
       }
-      return { result }
-    },
-  },
-
-  rot13: {
-    description: 'Apply ROT13 cipher to text - also reverses a previous ROT13',
-    schema: {
-      type: 'object',
-      properties: {
-        text: { type: 'string', description: 'Text to apply ROT13 to' },
-      },
-      required: ['text'],
-    },
-    handler: async (input) => {
-      const { text } = input
-      const result = text.replace(/[a-zA-Z]/g, (c) => {
-        const base = c <= 'Z' ? 65 : 97
-        return String.fromCharCode(((c.charCodeAt(0) - base + 13) % 26) + base)
-      })
-      return { result }
     },
   },
 }
+
 
 // Helper functions
 function minifyCode(code: string, type: 'js' | 'css'): string {
@@ -2967,7 +3352,6 @@ function convertDelete(sql: string): ReturnType<typeof convertSqlToMongodb> {
   }
 }
 
-
 function parseCsvText(csv: string): string[][] {
   const rows: string[][] = []
   const lines = csv.split(/\r?\n/)
@@ -3006,428 +3390,4 @@ function mergeHeaderRows(headerRows: string[][]): string[] {
     const parts = headerRows.map((r) => (r[i] ?? '').trim()).filter(Boolean)
     return parts.join(' - ')
   })
-}
-
-// ─── Cron helpers ─────────────────────────────────────────────────────────────
-
-function parseCronExpression(expression: string, nextCount: number) {
-  const parts = expression.trim().split(/\s+/)
-  if (parts.length < 5 || parts.length > 6) {
-    throw new Error('Cron expression must have 5 or 6 fields: [second] minute hour day month weekday')
-  }
-  const is6 = parts.length === 6
-  const [secOrMin, minOrHour, hourOrDay, dayOrMonth, monthOrWeekday, weekday] = parts
-  const fields = is6
-    ? { second: secOrMin!, minute: minOrHour!, hour: hourOrDay!, day: hourOrDay!, month: dayOrMonth!, weekday: monthOrWeekday! }
-    : { minute: secOrMin!, hour: minOrHour!, day: hourOrDay!, month: dayOrMonth!, weekday: monthOrWeekday! }
-
-  const normalize = (p: string, is6field: boolean) => ({
-    second: is6field ? parts[0]! : '0',
-    minute: is6field ? parts[1]! : parts[0]!,
-    hour: is6field ? parts[2]! : parts[1]!,
-    day: is6field ? parts[3]! : parts[2]!,
-    month: is6field ? parts[4]! : parts[3]!,
-    weekday: is6field ? parts[5]! : parts[4]!,
-  })
-
-  const f = normalize(expression, is6)
-  const description = describeCron(f)
-  const next = getNextCronRuns(f, nextCount)
-  return { expression, description, nextRuns: next, fields: f }
-}
-
-function describeCron(f: { second: string; minute: string; hour: string; day: string; month: string; weekday: string }) {
-  const parts: string[] = []
-  const descField = (v: string, unit: string) => {
-    if (v === '*') return `every ${unit}`
-    if (v.startsWith('*/')) return `every ${v.slice(2)} ${unit}s`
-    if (v.includes('-')) return `${unit}s ${v}`
-    if (v.includes(',')) return `${unit}s ${v}`
-    return `at ${unit} ${v}`
-  }
-  parts.push(descField(f.minute, 'minute'))
-  if (f.hour !== '*') parts.push(descField(f.hour, 'hour'))
-  if (f.day !== '*') parts.push(`on day-of-month ${f.day}`)
-  if (f.month !== '*') parts.push(`in month ${f.month}`)
-  if (f.weekday !== '*') {
-    const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
-    const d = parseInt(f.weekday)
-    parts.push(`on ${!isNaN(d) && days[d] ? days[d] : f.weekday}`)
-  }
-  return parts.join(', ')
-}
-
-function cronFieldMatches(value: number, field: string, min: number, max: number): boolean {
-  if (field === '*') return true
-  for (const part of field.split(',')) {
-    if (part.startsWith('*/')) {
-      const step = parseInt(part.slice(2))
-      if ((value - min) % step === 0) return true
-    } else if (part.includes('-')) {
-      const [lo, hi] = part.split('-').map(Number)
-      if (value >= lo! && value <= hi!) return true
-    } else if (parseInt(part) === value) {
-      return true
-    }
-  }
-  return false
-}
-
-function getNextCronRuns(f: { second: string; minute: string; hour: string; day: string; month: string; weekday: string }, count: number): string[] {
-  const results: string[] = []
-  const now = new Date()
-  now.setSeconds(now.getSeconds() + 1, 0)
-  let cur = new Date(now)
-  const limit = 10000
-  let iter = 0
-  while (results.length < count && iter < limit) {
-    iter++
-    const min = cur.getMinutes()
-    const hour = cur.getHours()
-    const day = cur.getDate()
-    const month = cur.getMonth() + 1
-    const weekday = cur.getDay()
-    if (
-      cronFieldMatches(min, f.minute, 0, 59) &&
-      cronFieldMatches(hour, f.hour, 0, 23) &&
-      cronFieldMatches(day, f.day, 1, 31) &&
-      cronFieldMatches(month, f.month, 1, 12) &&
-      cronFieldMatches(weekday, f.weekday, 0, 6)
-    ) {
-      results.push(cur.toISOString())
-    }
-    cur = new Date(cur.getTime() + 60000)
-  }
-  return results
-}
-
-// ─── JWT generator ─────────────────────────────────────────────────────────────
-
-async function generateJwt(
-  payload: Record<string, unknown>,
-  secret: string,
-  algorithm: string,
-  expiresIn?: string
-) {
-  const header = { alg: algorithm, typ: 'JWT' }
-  const now = Math.floor(Date.now() / 1000)
-  const claims: Record<string, unknown> = { iat: now, ...payload }
-  if (expiresIn) {
-    const match = expiresIn.match(/^(\d+)([smhd]?)$/)
-    if (match) {
-      const n = parseInt(match[1]!)
-      const unit = match[2] || 's'
-      const mult: Record<string, number> = { s: 1, m: 60, h: 3600, d: 86400 }
-      claims.exp = now + n * (mult[unit] ?? 1)
-    } else {
-      const secs = parseInt(expiresIn)
-      if (!isNaN(secs)) claims.exp = now + secs
-    }
-  }
-  const enc = (obj: unknown) =>
-    Buffer.from(JSON.stringify(obj)).toString('base64url')
-  const headerB64 = enc(header)
-  const payloadB64 = enc(claims)
-  const signingInput = `${headerB64}.${payloadB64}`
-
-  const hashName = algorithm === 'HS512' ? 'SHA-512' : 'SHA-256'
-  const key = await crypto.subtle.importKey(
-    'raw',
-    new TextEncoder().encode(secret),
-    { name: 'HMAC', hash: hashName },
-    false,
-    ['sign']
-  )
-  const sig = await crypto.subtle.sign('HMAC', key, new TextEncoder().encode(signingInput))
-  const sigB64 = Buffer.from(sig).toString('base64url')
-  const token = `${signingInput}.${sigB64}`
-  return { token, header, payload: claims }
-}
-
-// ─── Lorem ipsum ──────────────────────────────────────────────────────────────
-
-const LOREM_WORDS = [
-  'lorem', 'ipsum', 'dolor', 'sit', 'amet', 'consectetur', 'adipiscing', 'elit',
-  'sed', 'do', 'eiusmod', 'tempor', 'incididunt', 'ut', 'labore', 'et', 'dolore',
-  'magna', 'aliqua', 'enim', 'ad', 'minim', 'veniam', 'quis', 'nostrud',
-  'exercitation', 'ullamco', 'laboris', 'nisi', 'aliquip', 'ex', 'ea', 'commodo',
-  'consequat', 'duis', 'aute', 'irure', 'in', 'reprehenderit', 'voluptate',
-  'velit', 'esse', 'cillum', 'eu', 'fugiat', 'nulla', 'pariatur', 'excepteur',
-  'sint', 'occaecat', 'cupidatat', 'non', 'proident', 'sunt', 'culpa', 'qui',
-  'officia', 'deserunt', 'mollit', 'anim', 'id', 'est', 'laborum',
-]
-
-const ENGLISH_WORDS = [
-  'the', 'quick', 'brown', 'fox', 'jumps', 'over', 'lazy', 'dog', 'developer',
-  'builds', 'creates', 'designs', 'tests', 'deploys', 'application', 'system',
-  'function', 'component', 'module', 'service', 'database', 'network', 'cloud',
-  'platform', 'interface', 'library', 'framework', 'software', 'hardware',
-  'performance', 'security', 'scalable', 'reliable', 'efficient', 'robust',
-  'flexible', 'maintainable', 'readable', 'elegant', 'simple', 'complex',
-  'modern', 'legacy', 'innovative', 'standard', 'custom', 'dynamic', 'static',
-]
-
-let _loremSeed = 0
-function seededWord(pool: string[]): string {
-  return pool[_loremSeed++ % pool.length]!
-}
-
-function generateLoremIpsum(type: string, count: number, style: string): string {
-  _loremSeed = 0
-  const pool = style === 'english' ? ENGLISH_WORDS : LOREM_WORDS
-  const n = Math.max(1, Math.min(count, 200))
-
-  const randomWord = () => seededWord(pool)
-  const sentence = (len = 8) => {
-    const words = Array.from({ length: len + Math.floor(_loremSeed % 5) }, randomWord)
-    words[0] = words[0]!.charAt(0).toUpperCase() + words[0]!.slice(1)
-    return words.join(' ') + '.'
-  }
-  const paragraph = () =>
-    Array.from({ length: 4 + (_loremSeed % 3) }, () => sentence(7 + (_loremSeed % 4))).join(' ')
-
-  if (type === 'words') return Array.from({ length: n }, randomWord).join(' ')
-  if (type === 'sentences') return Array.from({ length: n }, () => sentence()).join(' ')
-  return Array.from({ length: n }, paragraph).join('\n\n')
-}
-
-// ─── JSON Schema validator ─────────────────────────────────────────────────────
-
-function validateJsonSchema(
-  doc: unknown,
-  schema: Record<string, unknown>,
-  path: string
-): string[] {
-  const errors: string[] = []
-  const at = path || 'root'
-
-  if (schema.type) {
-    const expected = schema.type as string
-    const actual = Array.isArray(doc) ? 'array' : doc === null ? 'null' : typeof doc
-    if (expected !== actual) {
-      errors.push(`${at}: expected type "${expected}" but got "${actual}"`)
-      return errors
-    }
-  }
-
-  if (schema.enum && Array.isArray(schema.enum)) {
-    if (!schema.enum.includes(doc)) {
-      errors.push(`${at}: value must be one of [${schema.enum.map((v) => JSON.stringify(v)).join(', ')}]`)
-    }
-  }
-
-  if (typeof doc === 'string') {
-    if (typeof schema.minLength === 'number' && doc.length < schema.minLength)
-      errors.push(`${at}: length ${doc.length} is less than minLength ${schema.minLength}`)
-    if (typeof schema.maxLength === 'number' && doc.length > schema.maxLength)
-      errors.push(`${at}: length ${doc.length} exceeds maxLength ${schema.maxLength}`)
-    if (schema.pattern) {
-      try {
-        if (!new RegExp(schema.pattern as string).test(doc))
-          errors.push(`${at}: does not match pattern "${schema.pattern}"`)
-      } catch {}
-    }
-  }
-
-  if (typeof doc === 'number') {
-    if (typeof schema.minimum === 'number' && doc < schema.minimum)
-      errors.push(`${at}: ${doc} is less than minimum ${schema.minimum}`)
-    if (typeof schema.maximum === 'number' && doc > schema.maximum)
-      errors.push(`${at}: ${doc} exceeds maximum ${schema.maximum}`)
-  }
-
-  if (Array.isArray(doc)) {
-    if (typeof schema.minItems === 'number' && doc.length < schema.minItems)
-      errors.push(`${at}: array length ${doc.length} is less than minItems ${schema.minItems}`)
-    if (typeof schema.maxItems === 'number' && doc.length > schema.maxItems)
-      errors.push(`${at}: array length ${doc.length} exceeds maxItems ${schema.maxItems}`)
-    if (schema.items && typeof schema.items === 'object') {
-      doc.forEach((item, i) =>
-        errors.push(...validateJsonSchema(item, schema.items as Record<string, unknown>, `${at}[${i}]`))
-      )
-    }
-  }
-
-  if (doc !== null && typeof doc === 'object' && !Array.isArray(doc)) {
-    const obj = doc as Record<string, unknown>
-    if (Array.isArray(schema.required)) {
-      for (const req of schema.required as string[]) {
-        if (!(req in obj)) errors.push(`${at}: missing required property "${req}"`)
-      }
-    }
-    if (schema.properties && typeof schema.properties === 'object') {
-      for (const [key, propSchema] of Object.entries(schema.properties as Record<string, unknown>)) {
-        if (key in obj) {
-          errors.push(...validateJsonSchema(obj[key], propSchema as Record<string, unknown>, `${at}.${key}`))
-        }
-      }
-    }
-    if (schema.additionalProperties === false && schema.properties) {
-      const allowed = new Set(Object.keys(schema.properties as object))
-      for (const key of Object.keys(obj)) {
-        if (!allowed.has(key)) errors.push(`${at}: additional property "${key}" is not allowed`)
-      }
-    }
-  }
-
-  return errors
-}
-
-// ─── JSON Schema generator ─────────────────────────────────────────────────────
-
-function inferJsonSchema(value: unknown): Record<string, unknown> {
-  if (value === null) return { type: 'null' }
-  if (Array.isArray(value)) {
-    const itemSchemas = value.map(inferJsonSchema)
-    const types = [...new Set(itemSchemas.map((s) => s.type as string))]
-    const items = types.length === 1 && itemSchemas.length > 0 ? itemSchemas[0] : {}
-    return { type: 'array', items }
-  }
-  if (typeof value === 'object') {
-    const obj = value as Record<string, unknown>
-    const properties: Record<string, unknown> = {}
-    for (const [k, v] of Object.entries(obj)) {
-      properties[k] = inferJsonSchema(v)
-    }
-    return {
-      type: 'object',
-      properties,
-      required: Object.keys(obj),
-      additionalProperties: false,
-    }
-  }
-  if (typeof value === 'string') {
-    if (/^\d{4}-\d{2}-\d{2}(T[\d:.Z+-]+)?$/.test(value)) return { type: 'string', format: 'date-time' }
-    if (/^[^@]+@[^@]+\.[^@]+$/.test(value)) return { type: 'string', format: 'email' }
-    if (/^https?:\/\//.test(value)) return { type: 'string', format: 'uri' }
-    return { type: 'string' }
-  }
-  if (typeof value === 'number') return Number.isInteger(value) ? { type: 'integer' } : { type: 'number' }
-  if (typeof value === 'boolean') return { type: 'boolean' }
-  return {}
-}
-
-// ─── Color contrast helpers ────────────────────────────────────────────────────
-
-function parseColorToRgb(color: string): { r: number; g: number; b: number } | null {
-  const s = color.trim()
-  if (s.startsWith('#')) {
-    const hex = s.slice(1)
-    if (hex.length === 3) {
-      const [r, g, b] = hex.split('').map((c) => parseInt(c + c, 16))
-      return { r: r!, g: g!, b: b! }
-    }
-    if (hex.length === 6) {
-      return {
-        r: parseInt(hex.slice(0, 2), 16),
-        g: parseInt(hex.slice(2, 4), 16),
-        b: parseInt(hex.slice(4, 6), 16),
-      }
-    }
-  }
-  const rgb = s.match(/^rgb\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\)$/i)
-  if (rgb) return { r: parseInt(rgb[1]!), g: parseInt(rgb[2]!), b: parseInt(rgb[3]!) }
-  const hsl = s.match(/^hsl\(\s*(\d+)\s*,\s*([\d.]+)%\s*,\s*([\d.]+)%\s*\)$/i)
-  if (hsl) {
-    const h = parseInt(hsl[1]!) / 360
-    const sl = parseFloat(hsl[2]!) / 100
-    const l = parseFloat(hsl[3]!) / 100
-    const q = l < 0.5 ? l * (1 + sl) : l + sl - l * sl
-    const p = 2 * l - q
-    const hue2rgb = (t: number) => {
-      if (t < 0) t += 1
-      if (t > 1) t -= 1
-      if (t < 1 / 6) return p + (q - p) * 6 * t
-      if (t < 1 / 2) return q
-      if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6
-      return p
-    }
-    return {
-      r: Math.round(hue2rgb(h + 1 / 3) * 255),
-      g: Math.round(hue2rgb(h) * 255),
-      b: Math.round(hue2rgb(h - 1 / 3) * 255),
-    }
-  }
-  return null
-}
-
-function relativeLuminance(rgb: { r: number; g: number; b: number }): number {
-  const chan = (c: number) => {
-    const s = c / 255
-    return s <= 0.04045 ? s / 12.92 : Math.pow((s + 0.055) / 1.055, 2.4)
-  }
-  return 0.2126 * chan(rgb.r) + 0.7152 * chan(rgb.g) + 0.0722 * chan(rgb.b)
-}
-
-function contrastRatio(fg: { r: number; g: number; b: number }, bg: { r: number; g: number; b: number }): number {
-  const l1 = relativeLuminance(fg)
-  const l2 = relativeLuminance(bg)
-  const lighter = Math.max(l1, l2)
-  const darker = Math.min(l1, l2)
-  return (lighter + 0.05) / (darker + 0.05)
-}
-
-function rgbToHslValues(r: number, g: number, b: number): { h: number; s: number; l: number } {
-  const rr = r / 255, gg = g / 255, bb = b / 255
-  const max = Math.max(rr, gg, bb), min = Math.min(rr, gg, bb)
-  const l = (max + min) / 2
-  if (max === min) return { h: 0, s: 0, l }
-  const d = max - min
-  const s = l > 0.5 ? d / (2 - max - min) : d / (max + min)
-  let h = 0
-  if (max === rr) h = ((gg - bb) / d + (gg < bb ? 6 : 0)) / 6
-  else if (max === gg) h = ((bb - rr) / d + 2) / 6
-  else h = ((rr - gg) / d + 4) / 6
-  return { h: Math.round(h * 360), s: Math.round(s * 100), l: Math.round(l * 100) }
-}
-
-function hslToHexValue(h: number, s: number, l: number): string {
-  const sl = s / 100, ll = l / 100
-  const q = ll < 0.5 ? ll * (1 + sl) : ll + sl - ll * sl
-  const p = 2 * ll - q
-  const hue2rgb = (t: number) => {
-    if (t < 0) t += 1
-    if (t > 1) t -= 1
-    if (t < 1 / 6) return p + (q - p) * 6 * t
-    if (t < 1 / 2) return q
-    if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6
-    return p
-  }
-  const hh = h / 360
-  const r = Math.round(hue2rgb(hh + 1 / 3) * 255)
-  const g = Math.round(hue2rgb(hh) * 255)
-  const b = Math.round(hue2rgb(hh - 1 / 3) * 255)
-  return `#${[r, g, b].map((v) => v.toString(16).padStart(2, '0')).join('')}`
-}
-
-function colorEntry(h: number, s: number, l: number) {
-  const hex = hslToHexValue(h, s, l)
-  const rgb = parseColorToRgb(hex)!
-  return { hex, rgb: `rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`, hsl: `hsl(${h}, ${s}%, ${l}%)` }
-}
-
-function generatePalettes(base: { h: number; s: number; l: number }) {
-  const { h, s, l } = base
-  const mod = (n: number, m: number) => ((n % m) + m) % m
-  return {
-    base: colorEntry(h, s, l),
-    complementary: [colorEntry(h, s, l), colorEntry(mod(h + 180, 360), s, l)],
-    analogous: [
-      colorEntry(mod(h - 30, 360), s, l),
-      colorEntry(h, s, l),
-      colorEntry(mod(h + 30, 360), s, l),
-    ],
-    triadic: [
-      colorEntry(h, s, l),
-      colorEntry(mod(h + 120, 360), s, l),
-      colorEntry(mod(h + 240, 360), s, l),
-    ],
-    tetradic: [
-      colorEntry(h, s, l),
-      colorEntry(mod(h + 90, 360), s, l),
-      colorEntry(mod(h + 180, 360), s, l),
-      colorEntry(mod(h + 270, 360), s, l),
-    ],
-    shades: Array.from({ length: 5 }, (_, i) => colorEntry(h, s, 20 + i * 15)),
-  }
 }
