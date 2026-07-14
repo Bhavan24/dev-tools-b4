@@ -20,6 +20,356 @@ interface ToolHandler {
   handler: (input: any) => Promise<any>
 }
 
+// Phase 3 helper functions
+
+function parseSemver(v: string) {
+  const s = v.trim().replace(/^v/, '')
+  const match = s.match(/^(\d+)\.(\d+)\.(\d+)(?:-([\w.]+))?(?:\+([\w.]+))?$/)
+  if (!match) throw new Error(`Invalid semver: ${v}`)
+  return {
+    major: parseInt(match[1]!),
+    minor: parseInt(match[2]!),
+    patch: parseInt(match[3]!),
+    prerelease: match[4] ?? null,
+    build: match[5] ?? null,
+  }
+}
+
+const GITIGNORE_TEMPLATES: Record<string, string> = {
+  Node: `node_modules/
+dist/
+build/
+.env
+.env.local
+.env.*.local
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.pnpm-store/
+*.tsbuildinfo
+.next/
+.nuxt/
+.cache/
+coverage/
+.nyc_output/`,
+  Python: `__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+htmlcov/
+.coverage
+.coverage.*
+*.cover
+*.py,cover`,
+  Ruby: `*.gem
+*.rbc
+/.config
+/coverage/
+/InstalledFiles
+/pkg/
+/spec/reports/
+/spec/examples.txt
+/test/tmp/
+/test/version_tmp/
+/tmp/
+.bundle/
+.yardoc/
+_yardoc/
+doc/
+/Gemfile.lock
+vendor/bundle
+.ruby-version
+.rbenv-vars
+*.log`,
+  Java: `*.class
+*.log
+*.jar
+*.war
+*.ear
+*.nar
+*.zip
+*.tar.gz
+*.rar
+hs_err_pid*
+.mtj.tmp/
+target/
+.classpath
+.project
+.settings/
+.springBeans
+.sts4-cache
+.gradle/
+build/
+!gradle/wrapper/gradle-wrapper.jar
+!**/src/main/**/build/
+!**/src/test/**/build/`,
+  Go: `*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+go.work
+vendor/
+bin/
+dist/`,
+  Rust: `debug/
+target/
+Cargo.lock
+**/*.rs.bk
+*.pdb`,
+  PHP: `vendor/
+.env
+.phpunit.result.cache
+.phpunit.cache/
+storage/framework/
+storage/logs/
+bootstrap/cache/
+composer.phar
+*.log`,
+  CSharp: `*.suo
+*.user
+*.userosscache
+*.sln.docstates
+*.userprefs
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+[Ww][Ii][Nn]32/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+bld/
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+project.lock.json
+project.fragment.lock.json
+artifacts/
+.vs/
+*.nupkg
+*.snupkg
+*.nuspec
+*.dll
+*.exe
+*.pdb`,
+  Swift: `.DS_Store
+/.build
+/Packages
+/*.xcodeproj
+xcuserdata/
+DerivedData/
+.swiftpm/
+*.resolved`,
+  Kotlin: `*.class
+*.log
+*.jar
+*.war
+.gradle/
+build/
+!gradle/wrapper/gradle-wrapper.jar
+.idea/
+*.iml
+out/
+*.hprof`,
+  macOS: `.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+._*
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk`,
+  Windows: `Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+*.tmp
+*.stackdump
+[Dd]esktop.ini
+$RECYCLE.BIN/
+*.cab
+*.msi
+*.msix
+*.msm
+*.msp
+*.lnk`,
+  Linux: `*~
+.fuse_hidden*
+.directory
+.Trash-*
+.nfs*`,
+  VSCode: `.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+!.vscode/*.code-snippets
+.history/
+*.vsix`,
+  JetBrains: `.idea/
+*.iws
+out/
+.idea_modules/
+atlassian-ide-plugin.xml
+com_crashlytics_export_strings.xml
+crashlytics.properties
+crashlytics-build.properties
+fabric.properties`,
+  Vim: `[._]*.s[a-v][a-z]
+!*.svg
+[._]*.sw[a-p]
+[._]s[a-rt-v][a-z]
+[._]ss[a-gi-z]
+[._]sw[a-p]
+Session.vim
+Sessionx.vim
+.netrwhist
+*~
+tags
+[._]*.un~`,
+  Xcode: `build/
+*.pbxuser
+!default.pbxuser
+*.mode1v3
+!default.mode1v3
+*.mode2v3
+!default.mode2v3
+*.perspectivev3
+!default.perspectivev3
+xcuserdata/
+*.xccheckout
+*.moved-aside
+DerivedData
+*.hmap
+*.ipa
+*.xcuserstate
+.DS_Store`,
+  Django: `*.log
+*.pot
+*.pyc
+__pycache__/
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+media/
+staticfiles/
+.env`,
+  Rails: `.bundle/
+db/*.sqlite3
+db/*.sqlite3-journal
+db/*.sqlite3-shm
+db/*.sqlite3-wal
+log/
+tmp/
+storage/
+.byebug_history
+public/packs
+public/packs-test
+node_modules/
+yarn-error.log
+coverage/
+.env`,
+  Laravel: `vendor/
+node_modules/
+public/hot
+public/storage
+storage/*.key
+.env
+.env.backup
+.phpunit.result.cache
+Homestead.json
+Homestead.yaml
+npm-debug.log
+yarn-error.log
+/.idea
+/.vscode`,
+  NextJS: `.next/
+out/
+build/
+node_modules/
+.env*.local
+.vercel
+*.tsbuildinfo
+next-env.d.ts`,
+  React: `node_modules/
+build/
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*`,
+  Angular: `dist/
+tmp/
+out-tsc/
+bazel-out/
+node_modules/
+npm-debug.log
+yarn-error.log
+testem.log
+.DS_Store
+.angular/cache
+.sass-cache/
+/connect.lock
+/coverage
+/libpeerconnection.log
+/typings`,
+  Vue: `node_modules/
+dist/
+.env.local
+.env.*.local
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.idea
+.DS_Store`,
+}
+
 export const toolHandlers: Record<string, ToolHandler> = {
   'js-minifier': {
     description: 'Minify JavaScript code',
@@ -1872,7 +2222,414 @@ export const toolHandlers: Record<string, ToolHandler> = {
       return { markdown, rowCount: dataRows.length, columnCount: colCount }
     },
   },
+
+  // Phase 3 tools
+  'timezone-converter': {
+    description: 'Convert a datetime between any two IANA timezones with DST-awareness',
+    schema: {
+      type: 'object',
+      properties: {
+        datetime: { type: 'string', description: 'The datetime to convert (ISO 8601 or any parseable format)' },
+        fromTimezone: { type: 'string', description: 'Source IANA timezone (e.g. America/New_York)' },
+        toTimezone: { type: 'string', description: 'Target IANA timezone (e.g. Europe/London)' },
+      },
+      required: ['datetime', 'fromTimezone', 'toTimezone'],
+    },
+    handler: async (input) => {
+      const { datetime, fromTimezone, toTimezone } = input
+      const inputDate = new Date(datetime)
+      if (isNaN(inputDate.getTime())) throw new Error('Invalid datetime format')
+
+      try {
+        new Intl.DateTimeFormat('en-US', { timeZone: fromTimezone })
+      } catch {
+        throw new Error(`Invalid timezone: ${fromTimezone}`)
+      }
+      try {
+        new Intl.DateTimeFormat('en-US', { timeZone: toTimezone })
+      } catch {
+        throw new Error(`Invalid timezone: ${toTimezone}`)
+      }
+
+      const formatOptions: Intl.DateTimeFormatOptions = {
+        year: 'numeric', month: '2-digit', day: '2-digit',
+        hour: '2-digit', minute: '2-digit', second: '2-digit',
+        hour12: false,
+      }
+
+      const outputFormatted = new Intl.DateTimeFormat('en-US', { ...formatOptions, timeZone: toTimezone }).format(inputDate)
+      const inputFormatted = new Intl.DateTimeFormat('en-US', { ...formatOptions, timeZone: fromTimezone }).format(inputDate)
+
+      const offsetFormatter = new Intl.DateTimeFormat('en-US', { timeZone: toTimezone, timeZoneName: 'shortOffset' })
+      const offsetParts = offsetFormatter.formatToParts(inputDate)
+      const utcOffset = offsetParts.find((p) => p.type === 'timeZoneName')?.value ?? ''
+
+      return {
+        input: inputFormatted,
+        inputTimezone: fromTimezone,
+        outputDatetime: outputFormatted,
+        outputTimezone: toTimezone,
+        utcOffset,
+        utcTime: inputDate.toISOString(),
+      }
+    },
+  },
+
+  'iso8601-converter': {
+    description: 'Convert between ISO 8601, RFC 2822, and human-readable date/time formats',
+    schema: {
+      type: 'object',
+      properties: {
+        input: { type: 'string', description: 'Date/time string in any parseable format' },
+        outputFormat: { type: 'string', enum: ['all', 'iso8601', 'rfc2822', 'human'], description: 'Output format (default: all)' },
+      },
+      required: ['input'],
+    },
+    handler: async (input) => {
+      const { input: value, outputFormat = 'all' } = input
+      const date = new Date(value)
+      if (isNaN(date.getTime())) throw new Error('Invalid date/time string')
+
+      const iso8601 = date.toISOString()
+      const rfc2822 = date.toUTCString().replace('GMT', '+0000')
+      const human = new Intl.DateTimeFormat('en-US', {
+        weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',
+        hour: '2-digit', minute: '2-digit', second: '2-digit', timeZoneName: 'short',
+      }).format(date)
+      const unix = Math.floor(date.getTime() / 1000)
+
+      if (outputFormat === 'iso8601') return { result: iso8601, iso8601, rfc2822, human, unix }
+      if (outputFormat === 'rfc2822') return { result: rfc2822, iso8601, rfc2822, human, unix }
+      if (outputFormat === 'human') return { result: human, iso8601, rfc2822, human, unix }
+      return { iso8601, rfc2822, human, unix }
+    },
+  },
+
+  'business-day-calculator': {
+    description: 'Add or subtract N business days from a date, with optional holiday exclusions',
+    schema: {
+      type: 'object',
+      properties: {
+        startDate: { type: 'string', description: 'Start date in YYYY-MM-DD format' },
+        days: { type: 'number', description: 'Number of business days to add (positive) or subtract (negative)' },
+        holidays: { type: 'string', description: 'Optional comma-separated holiday dates in YYYY-MM-DD format to skip' },
+      },
+      required: ['startDate', 'days'],
+    },
+    handler: async (input) => {
+      const { startDate, days, holidays = '' } = input
+      const start = new Date(startDate + 'T00:00:00Z')
+      if (isNaN(start.getTime())) throw new Error('Invalid start date. Use YYYY-MM-DD format.')
+
+      const holidaySet = new Set(
+        holidays.split(',').map((h: string) => h.trim()).filter(Boolean)
+      )
+
+      const direction = days >= 0 ? 1 : -1
+      const target = Math.abs(days)
+      let current = new Date(start)
+      let count = 0
+      let holidaysSkipped = 0
+
+      while (count < target) {
+        current = new Date(current.getTime() + direction * 86400000)
+        const dayOfWeek = current.getUTCDay()
+        const dateStr = current.toISOString().split('T')[0]!
+        if (dayOfWeek === 0 || dayOfWeek === 6) continue
+        if (holidaySet.has(dateStr)) { holidaysSkipped++; continue }
+        count++
+      }
+
+      const totalCalendarDays = Math.round(Math.abs(current.getTime() - start.getTime()) / 86400000)
+
+      return {
+        startDate: start.toISOString().split('T')[0],
+        endDate: current.toISOString().split('T')[0],
+        businessDaysAdded: days,
+        totalCalendarDays,
+        holidaysSkipped,
+      }
+    },
+  },
+
+  'relative-date-calculator': {
+    description: 'Calculate the difference between two dates or add/subtract days from a date',
+    schema: {
+      type: 'object',
+      properties: {
+        date1: { type: 'string', description: 'First date in YYYY-MM-DD format or "today"' },
+        date2: { type: 'string', description: 'Second date in YYYY-MM-DD format or "today" (used for diff operation)' },
+        operation: { type: 'string', enum: ['diff', 'add'], description: 'Operation: diff (default) or add' },
+        addDays: { type: 'number', description: 'Number of days to add (required when operation=add, can be negative)' },
+      },
+      required: ['date1'],
+    },
+    handler: async (input) => {
+      const { date1, date2, operation = 'diff', addDays } = input
+      const today = new Date().toISOString().split('T')[0]!
+      const d1str = date1 === 'today' ? today : date1
+      const d1 = new Date(d1str + 'T00:00:00Z')
+      if (isNaN(d1.getTime())) throw new Error('Invalid date1. Use YYYY-MM-DD.')
+
+      if (operation === 'add') {
+        if (typeof addDays !== 'number') throw new Error('addDays is required for operation=add')
+        const result = new Date(d1.getTime() + addDays * 86400000)
+        return {
+          startDate: d1str,
+          addDays,
+          resultDate: result.toISOString().split('T')[0],
+          resultReadable: new Intl.DateTimeFormat('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }).format(result),
+        }
+      }
+
+      const d2str = date2 === 'today' ? today : (date2 ?? today)
+      const d2 = new Date(d2str + 'T00:00:00Z')
+      if (isNaN(d2.getTime())) throw new Error('Invalid date2. Use YYYY-MM-DD.')
+
+      const diffMs = d2.getTime() - d1.getTime()
+      const diffDays = Math.round(diffMs / 86400000)
+      const weeks = Math.floor(Math.abs(diffDays) / 7)
+      const remainingDays = Math.abs(diffDays) % 7
+      const months = Math.floor(Math.abs(diffDays) / 30.4375)
+      const years = Math.floor(Math.abs(diffDays) / 365.25)
+
+      return {
+        date1: d1str,
+        date2: d2str,
+        days: diffDays,
+        absoluteDays: Math.abs(diffDays),
+        weeks,
+        remainingDaysAfterWeeks: remainingDays,
+        months,
+        years,
+        direction: diffDays > 0 ? 'future' : diffDays < 0 ? 'past' : 'same',
+      }
+    },
+  },
+
+  'age-calculator': {
+    description: 'Calculate exact age in years, months, and days from a birthdate',
+    schema: {
+      type: 'object',
+      properties: {
+        birthdate: { type: 'string', description: 'Birthdate in YYYY-MM-DD format' },
+        referenceDate: { type: 'string', description: 'Reference date in YYYY-MM-DD format (default: today)' },
+      },
+      required: ['birthdate'],
+    },
+    handler: async (input) => {
+      const { birthdate, referenceDate } = input
+      const birth = new Date(birthdate + 'T00:00:00Z')
+      if (isNaN(birth.getTime())) throw new Error('Invalid birthdate. Use YYYY-MM-DD.')
+
+      const today = new Date().toISOString().split('T')[0]!
+      const refStr = referenceDate ?? today
+      const ref = new Date(refStr + 'T00:00:00Z')
+      if (isNaN(ref.getTime())) throw new Error('Invalid reference date.')
+      if (birth > ref) throw new Error('Birthdate cannot be in the future relative to reference date.')
+
+      const totalDays = Math.round((ref.getTime() - birth.getTime()) / 86400000)
+
+      let years = ref.getUTCFullYear() - birth.getUTCFullYear()
+      let months = ref.getUTCMonth() - birth.getUTCMonth()
+      let days = ref.getUTCDate() - birth.getUTCDate()
+
+      if (days < 0) {
+        months--
+        const prevMonth = new Date(Date.UTC(ref.getUTCFullYear(), ref.getUTCMonth(), 0))
+        days += prevMonth.getUTCDate()
+      }
+      if (months < 0) { years--; months += 12 }
+
+      let nextBirthdayYear = ref.getUTCFullYear()
+      const birthdayThisYear = new Date(Date.UTC(nextBirthdayYear, birth.getUTCMonth(), birth.getUTCDate()))
+      if (birthdayThisYear <= ref) nextBirthdayYear++
+      const nextBirthday = new Date(Date.UTC(nextBirthdayYear, birth.getUTCMonth(), birth.getUTCDate()))
+      const daysUntilNextBirthday = Math.round((nextBirthday.getTime() - ref.getTime()) / 86400000)
+
+      return {
+        birthdate,
+        referenceDate: refStr,
+        years,
+        months,
+        days,
+        totalDays,
+        nextBirthday: nextBirthday.toISOString().split('T')[0],
+        daysUntilNextBirthday,
+      }
+    },
+  },
+
+  'env-file-parser': {
+    description: 'Parse a .env file into a structured key-value table with issue detection',
+    schema: {
+      type: 'object',
+      properties: {
+        content: { type: 'string', description: 'The full .env file content to parse' },
+      },
+      required: ['content'],
+    },
+    handler: async (input) => {
+      const { content } = input
+      const lines = content.split('\n')
+      const entries: Array<{ key: string; value: string; rawValue: string; lineNumber: number; hasIssue: boolean; issue: string }> = []
+      const seen = new Map<string, number>()
+
+      for (let i = 0; i < lines.length; i++) {
+        const line = lines[i]!.trim()
+        if (!line || line.startsWith('#')) continue
+
+        const eqIdx = line.indexOf('=')
+        if (eqIdx === -1) {
+          entries.push({ key: line, value: '', rawValue: '', lineNumber: i + 1, hasIssue: true, issue: 'Missing = sign' })
+          continue
+        }
+
+        const key = line.slice(0, eqIdx).trim()
+        const rawValue = line.slice(eqIdx + 1)
+        let value = rawValue.trim()
+        let issue = ''
+
+        if ((value.startsWith('"') && value.endsWith('"')) || (value.startsWith("'") && value.endsWith("'"))) {
+          value = value.slice(1, -1)
+        }
+
+        if (!key) { issue = 'Empty key' }
+        else if (!rawValue.trim()) { issue = 'Empty value' }
+        else if (seen.has(key)) { issue = `Duplicate key (first at line ${seen.get(key)})` }
+
+        if (!seen.has(key)) seen.set(key, i + 1)
+
+        entries.push({ key, value, rawValue: rawValue.trim(), lineNumber: i + 1, hasIssue: !!issue, issue })
+      }
+
+      const duplicateKeys = new Set(entries.filter((e) => e.issue.startsWith('Duplicate')).map((e) => e.key))
+      return {
+        entries,
+        stats: {
+          total: entries.length,
+          empty: entries.filter((e) => e.issue === 'Empty value').length,
+          duplicates: duplicateKeys.size,
+          quoted: entries.filter((e) => (e.rawValue.startsWith('"') && e.rawValue.endsWith('"')) || (e.rawValue.startsWith("'") && e.rawValue.endsWith("'"))).length,
+        },
+      }
+    },
+  },
+
+  'gitignore-generator': {
+    description: 'Generate a .gitignore file from curated templates for popular languages, frameworks, and editors',
+    schema: {
+      type: 'object',
+      properties: {
+        templates: { type: 'array', items: { type: 'string' }, description: 'List of template names to include (e.g. ["Node", "Python", "VSCode"])' },
+        customEntries: { type: 'string', description: 'Optional additional .gitignore entries to append' },
+      },
+      required: ['templates'],
+    },
+    handler: async (input) => {
+      const { templates, customEntries = '' } = input
+      const sections: string[] = []
+
+      for (const tplName of templates) {
+        const key = Object.keys(GITIGNORE_TEMPLATES).find(
+          (k) => k.toLowerCase() === tplName.toLowerCase()
+        )
+        if (!key) throw new Error(`Unknown template: ${tplName}. Available: ${Object.keys(GITIGNORE_TEMPLATES).join(', ')}`)
+        sections.push(`# ${key}\n${GITIGNORE_TEMPLATES[key as keyof typeof GITIGNORE_TEMPLATES]}`)
+      }
+
+      if (customEntries.trim()) {
+        sections.push(`# Custom\n${customEntries.trim()}`)
+      }
+
+      const gitignore = sections.join('\n\n')
+      const lineCount = gitignore.split('\n').length
+
+      return {
+        gitignore,
+        templates: templates,
+        lineCount,
+      }
+    },
+  },
+
+  'conventional-commit-generator': {
+    description: 'Generate a properly formatted Conventional Commit message',
+    schema: {
+      type: 'object',
+      properties: {
+        type: { type: 'string', enum: ['feat', 'fix', 'docs', 'style', 'refactor', 'perf', 'test', 'build', 'ci', 'chore', 'revert'], description: 'Commit type' },
+        scope: { type: 'string', description: 'Optional scope (component/module affected)' },
+        description: { type: 'string', description: 'Short description of the change' },
+        body: { type: 'string', description: 'Optional longer description' },
+        breakingChange: { type: 'string', description: 'Optional breaking change description' },
+        issueRefs: { type: 'string', description: 'Optional issue references (e.g. "Closes #123")' },
+      },
+      required: ['type', 'description'],
+    },
+    handler: async (input) => {
+      const { type, scope, description, body, breakingChange, issueRefs } = input
+      if (!description?.trim()) throw new Error('Description is required')
+
+      const scopePart = scope?.trim() ? `(${scope.trim()})` : ''
+      const breakingMark = breakingChange?.trim() ? '!' : ''
+      const subject = `${type}${scopePart}${breakingMark}: ${description.trim()}`
+
+      const parts = [subject]
+      if (body?.trim()) parts.push('', body.trim())
+      if (breakingChange?.trim()) parts.push('', `BREAKING CHANGE: ${breakingChange.trim()}`)
+      if (issueRefs?.trim()) parts.push('', issueRefs.trim())
+
+      return {
+        message: parts.join('\n'),
+        subject,
+        hasBody: !!(body?.trim() || breakingChange?.trim() || issueRefs?.trim()),
+      }
+    },
+  },
+
+  'semver-comparator': {
+    description: 'Compare two semantic version strings and show what changed',
+    schema: {
+      type: 'object',
+      properties: {
+        version1: { type: 'string', description: 'First semantic version (e.g. 1.2.3 or v2.0.0-beta.1)' },
+        version2: { type: 'string', description: 'Second semantic version to compare against' },
+      },
+      required: ['version1', 'version2'],
+    },
+    handler: async (input) => {
+      const { version1, version2 } = input
+      const p1 = parseSemver(version1)
+      const p2 = parseSemver(version2)
+
+      let comparison: 'greater' | 'less' | 'equal' = 'equal'
+      if (p1.major !== p2.major) comparison = p1.major > p2.major ? 'greater' : 'less'
+      else if (p1.minor !== p2.minor) comparison = p1.minor > p2.minor ? 'greater' : 'less'
+      else if (p1.patch !== p2.patch) comparison = p1.patch > p2.patch ? 'greater' : 'less'
+      else if (p1.prerelease !== p2.prerelease) {
+        if (!p1.prerelease && p2.prerelease) comparison = 'greater'
+        else if (p1.prerelease && !p2.prerelease) comparison = 'less'
+        else comparison = (p1.prerelease! < p2.prerelease!) ? 'less' : 'greater'
+      }
+
+      return {
+        version1: version1.trim(),
+        version2: version2.trim(),
+        comparison,
+        winner: comparison === 'equal' ? null : comparison === 'greater' ? version1.trim() : version2.trim(),
+        diff: {
+          major: p1.major - p2.major,
+          minor: p1.minor - p2.minor,
+          patch: p1.patch - p2.patch,
+          prerelease: p1.prerelease !== p2.prerelease ? `${p1.prerelease ?? 'stable'} vs ${p2.prerelease ?? 'stable'}` : null,
+        },
+        parsed: { v1: p1, v2: p2 },
+      }
+    },
+  },
 }
+
 
 // Helper functions
 function minifyCode(code: string, type: 'js' | 'css'): string {

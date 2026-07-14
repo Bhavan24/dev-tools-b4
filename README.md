@@ -1,6 +1,6 @@
 # AI Developer Tools
 
-A comprehensive collection of **80+ free developer and AI-powered tools** for developers and creators. All tools are instant, require no signup, and work completely in your browser.
+A comprehensive collection of **105 free developer and AI-powered tools** for developers and creators. All tools are instant, require no signup, and work completely in your browser.
 
 [Visit Live](ai-developer-tools.vercel.app/)
 
@@ -42,8 +42,8 @@ curl -X POST https://ai-developer-tools.vercel.app/api/mcp \
 
 ## 🚀 Features
 
-- **83 Tools** across multiple categories
-- **77 MCP-Enabled Tools** callable by Claude AI via `/api/mcp`
+- **105 Tools** across multiple categories
+- **96 MCP-Enabled Tools** callable by Claude AI via `/api/mcp`
 - **Pinnable Tools** - Pin your frequently used tools for quick access
 - **Search & Filter** - Find tools by name, description, or category
 - **9 AI Tools** - Bring your own API key; supports OpenAI, Anthropic, Google, Groq, Mistral, Azure, Bedrock, and Ollama
@@ -57,7 +57,7 @@ curl -X POST https://ai-developer-tools.vercel.app/api/mcp \
 
 > **MCP column key:** `✅` = callable via `/api/mcp` · `—` = browser-only or coming soon
 
-### Developer Tools (15 tools)
+### Developer Tools (34 tools)
 
 | Tool | Status | MCP | Description |
 |------|--------|-----|-------------|
@@ -76,8 +76,14 @@ curl -X POST https://ai-developer-tools.vercel.app/api/mcp \
 | **REST API Tester** | ✅ Built | ✅ | Test REST APIs with custom headers, authentication, and request body |
 | **Favicon Generator** | ✅ Built | — | Upload an image and generate favicons in all standard sizes + .ico + ZIP (browser-only) |
 | **SVG Viewer** | ✅ Built | — | Paste or upload SVG code and see a live rendered preview with source editing |
+| **Business Day Calculator** | ✅ Built | ✅ | Add or subtract N business days from a date, with optional holiday exclusions |
+| **Relative Date Calculator** | ✅ Built | ✅ | Calculate difference between two dates, or add/subtract days from a date |
+| **Age Calculator** | ✅ Built | ✅ | Calculate exact age in years, months, and days from a birthdate |
+| **Env File Parser** | ✅ Built | ✅ | Parse .env files into a key-value table; detects duplicates, empty values, and quoted strings |
+| **Gitignore Generator** | ✅ Built | ✅ | Generate .gitignore from curated templates for languages, frameworks, and editors |
+| **Conventional Commit Generator** | ✅ Built | ✅ | Fill in type/scope/description/body/breaking-change; outputs a formatted Conventional Commit message |
 
-### Validation Tools (9 tools)
+### Validation Tools (12 tools)
 
 | Tool | Status | MCP | Description |
 |------|--------|-----|-------------|
@@ -90,6 +96,7 @@ curl -X POST https://ai-developer-tools.vercel.app/api/mcp \
 | **XPath Evaluator** | ✅ Built | ✅ | Query XML documents using XPath expressions |
 | **Link Checker** | ✅ Built | ✅ | Check if URLs are reachable, see HTTP status and response time |
 | **JSONPath Finder** | ✅ Built | ✅ | Find all matches and paths in JSON using JSONPath expressions |
+| **Semver Comparator** | ✅ Built | ✅ | Compare two semantic version strings; shows which is higher and what changed (major/minor/patch/pre-release) |
 
 ### Formatter Tools (11 tools)
 
@@ -107,11 +114,13 @@ curl -X POST https://ai-developer-tools.vercel.app/api/mcp \
 | **HTML Formatter** | ✅ Built | ✅ | Format and beautify HTML markup |
 | **HTML Beautifier** | ✅ Built | ✅ | Alias to HTML Formatter with preset options |
 
-### Converter Tools (42 tools)
+### Converter Tools (33 tools)
 
 | Tool | Status | MCP | Description |
 |------|--------|-----|-------------|
 | **Timestamp Converter** | ✅ Built | ✅ | Convert between Unix timestamps and readable dates |
+| **Timezone Converter** | ✅ Built | ✅ | Convert a datetime between any two IANA timezones with DST-awareness |
+| **ISO 8601 Converter** | ✅ Built | ✅ | Convert date/time strings between ISO 8601, RFC 2822, human-readable, and Unix timestamp formats |
 | **Color Code Picker** | ✅ Built | ✅ | Convert between HEX, RGB, and HSL color formats |
 | **URL Encoder/Decoder** | ✅ Built | ✅ | Encode and decode URLs and special characters |
 | **HTML Encoder/Decoder** | ✅ Built | ✅ | Encode and decode HTML entities |
@@ -184,10 +193,10 @@ Supported providers: OpenAI, Anthropic, Google Gemini, Groq, Mistral, Azure Open
 
 ## 📊 Stats
 
-- **Total Tools**: 85
-- **Built & Ready**: 85 ✅
+- **Total Tools**: 105
+- **Built & Ready**: 105 ✅
 - **Coming Soon**: 0 🏗️
-- **MCP Enabled**: 79 ✅ (callable via `/api/mcp`)
+- **MCP Enabled**: 96 ✅ (callable via `/api/mcp`)
 - **Categories**: 6 (Developer, Validation, Formatter, Converter, AI Tools, Utilities)
 
 ---

@@ -10,7 +10,6 @@ interface IndentFormatterToolProps {
 const CONFIG: Record<string, { inputKey: string; inputLabel: string }> = {
   'js-beautifier': { inputKey: 'code', inputLabel: 'JavaScript Code' },
   'css-beautifier': { inputKey: 'code', inputLabel: 'CSS Code' },
-  'json-beautifier': { inputKey: 'json', inputLabel: 'JSON' },
   'json-formatter': { inputKey: 'json', inputLabel: 'JSON' },
   'xml-formatter': { inputKey: 'xml', inputLabel: 'XML' },
   'html-formatter': { inputKey: 'html', inputLabel: 'HTML' },

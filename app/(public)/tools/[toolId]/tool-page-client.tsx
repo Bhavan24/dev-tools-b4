@@ -47,13 +47,22 @@ import { JsonToYamlTool } from '@/components/tools/json-to-yaml-tool'
 import { JsonToPhpTool } from '@/components/tools/json-to-php-tool'
 import { HtmlBeautifierTool } from '@/components/tools/html-beautifier-tool'
 import { SqlFormatterTool } from '@/components/tools/sql-formatter-tool'
-import { IniToJsonTool, IniToXmlTool, IniToYamlTool } from '@/components/tools/ini-converter-tool'
+import { IniConverterTool } from '@/components/tools/ini-converter-tool'
 import { CsvToXmlTool, CsvToYamlTool } from '@/components/tools/csv-extra-converter-tool'
 import { UnitConverterTool } from '@/components/tools/unit-converter-tool'
 import { TimestampConverterTool } from '@/components/tools/timestamp-converter-tool'
 import { UrlSplitterTool } from '@/components/tools/url-splitter-tool'
 import { MimeTypeCheckerTool } from '@/components/tools/mime-type-checker-tool'
 import { PublicIpLookupTool } from '@/components/tools/public-ip-lookup-tool'
+import { TimezoneConverterTool } from '@/components/tools/timezone-converter-tool'
+import { Iso8601ConverterTool } from '@/components/tools/iso8601-converter-tool'
+import { BusinessDayCalculatorTool } from '@/components/tools/business-day-calculator-tool'
+import { RelativeDateCalculatorTool } from '@/components/tools/relative-date-calculator-tool'
+import { AgeCalculatorTool } from '@/components/tools/age-calculator-tool'
+import { EnvFileParserTool } from '@/components/tools/env-file-parser-tool'
+import { GitignoreGeneratorTool } from '@/components/tools/gitignore-generator-tool'
+import { ConventionalCommitTool } from '@/components/tools/conventional-commit-tool'
+import { SemverComparatorTool } from '@/components/tools/semver-comparator-tool'
 import dynamic from 'next/dynamic'
 
 const WorkflowBuilderTool = dynamic(
@@ -109,9 +118,9 @@ const TOOL_REGISTRY: Record<string, () => React.ReactElement> = {
   'xml-to-json': () => <XmlToJsonTool />,
   'xml-to-yaml': () => <XmlToYamlTool />,
   'yaml-to-json': () => <YamlToJsonTool />,
-  'ini-to-json': () => <IniToJsonTool />,
-  'ini-to-xml': () => <IniToXmlTool />,
-  'ini-to-yaml': () => <IniToYamlTool />,
+  'ini-to-json': () => <IniConverterTool />,
+  'ini-to-xml': () => <IniConverterTool />,
+  'ini-to-yaml': () => <IniConverterTool />,
 
   // Colors
   'color-code-picker': () => <ColorTools toolId="color-code-picker" />,
@@ -185,6 +194,17 @@ const TOOL_REGISTRY: Record<string, () => React.ReactElement> = {
   notes: () => <NotesTool toolId="notes" />,
   stopwatch: () => <TimerTool />,
   counter: () => <CounterTool />,
+
+  // Phase 3 tools
+  'timezone-converter': () => <TimezoneConverterTool />,
+  'iso8601-converter': () => <Iso8601ConverterTool />,
+  'business-day-calculator': () => <BusinessDayCalculatorTool />,
+  'relative-date-calculator': () => <RelativeDateCalculatorTool />,
+  'age-calculator': () => <AgeCalculatorTool />,
+  'env-file-parser': () => <EnvFileParserTool />,
+  'gitignore-generator': () => <GitignoreGeneratorTool />,
+  'conventional-commit-generator': () => <ConventionalCommitTool />,
+  'semver-comparator': () => <SemverComparatorTool />,
 
   // AI tools
   'ai-chat': () => <AITools toolId="ai-chat" />,

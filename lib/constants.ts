@@ -267,6 +267,54 @@ export const TOOLS = [
     description: 'Get your public IP address instantly with geolocation details',
     shortDescription: 'Find your public IP',
   },
+  {
+    id: 'business-day-calculator',
+    name: 'Business Day Calculator',
+    category: TOOLS_CATEGORIES.DEVELOPER,
+    description:
+      'Add or subtract N business days from a start date, with optional holiday list to skip. Returns the result date and calendar day count.',
+    shortDescription: 'Add/subtract business days',
+  },
+  {
+    id: 'relative-date-calculator',
+    name: 'Relative Date Calculator',
+    category: TOOLS_CATEGORIES.DEVELOPER,
+    description:
+      'Calculate the difference between two dates, or find what date is N days from a given date. Outputs days, weeks, months, and years.',
+    shortDescription: 'Calculate date differences',
+  },
+  {
+    id: 'age-calculator',
+    name: 'Age Calculator',
+    category: TOOLS_CATEGORIES.DEVELOPER,
+    description:
+      'Input a birthdate and get exact age in years, months, and days, plus total days lived and days until the next birthday.',
+    shortDescription: 'Calculate exact age',
+  },
+  {
+    id: 'env-file-parser',
+    name: 'Env File Parser',
+    category: TOOLS_CATEGORIES.DEVELOPER,
+    description:
+      'Parse a .env file into a key-value table. Detects duplicates, empty values, missing equals signs, and quoted strings.',
+    shortDescription: 'Parse .env files',
+  },
+  {
+    id: 'gitignore-generator',
+    name: 'Gitignore Generator',
+    category: TOOLS_CATEGORIES.DEVELOPER,
+    description:
+      'Select languages, frameworks, and editors to generate a .gitignore file from curated templates. Supports Node, Python, Go, Rust, VSCode, JetBrains, and more.',
+    shortDescription: 'Generate .gitignore from templates',
+  },
+  {
+    id: 'conventional-commit-generator',
+    name: 'Conventional Commit Generator',
+    category: TOOLS_CATEGORIES.DEVELOPER,
+    description:
+      'Fill in type, scope, description, body, breaking change, and issue references; outputs a properly formatted Conventional Commit message.',
+    shortDescription: 'Generate conventional commit messages',
+  },
 
   // Formatter Tools
   {
@@ -564,6 +612,22 @@ export const TOOLS = [
     shortDescription: 'Convert units',
   },
   {
+    id: 'timezone-converter',
+    name: 'Timezone Converter',
+    category: TOOLS_CATEGORIES.CONVERTER,
+    description:
+      'Convert a datetime between any two IANA timezones with full DST-awareness. Outputs the converted time, UTC offset, and ISO 8601 UTC time.',
+    shortDescription: 'Convert between timezones',
+  },
+  {
+    id: 'iso8601-converter',
+    name: 'ISO 8601 Converter',
+    category: TOOLS_CATEGORIES.CONVERTER,
+    description:
+      'Convert any date/time string between ISO 8601, RFC 2822, human-readable, and Unix timestamp formats.',
+    shortDescription: 'Convert date/time formats',
+  },
+  {
     id: 'currency-converter',
     name: 'Currency Converter',
     category: TOOLS_CATEGORIES.CONVERTER,
@@ -679,6 +743,14 @@ export const TOOLS = [
     description:
       'Check if a list of URLs are reachable and see their HTTP status codes and response times',
     shortDescription: 'Check links',
+  },
+  {
+    id: 'semver-comparator',
+    name: 'Semver Comparator',
+    category: TOOLS_CATEGORIES.VALIDATION,
+    description:
+      'Compare two semantic version strings and see which is higher and what changed (major, minor, patch, pre-release).',
+    shortDescription: 'Compare semver versions',
   },
 
   // Utilities
