@@ -63,7 +63,37 @@ import { EnvFileParserTool } from '@/components/tools/env-file-parser-tool'
 import { GitignoreGeneratorTool } from '@/components/tools/gitignore-generator-tool'
 import { ConventionalCommitTool } from '@/components/tools/conventional-commit-tool'
 import { SemverComparatorTool } from '@/components/tools/semver-comparator-tool'
+import { HmacGeneratorTool } from '@/components/tools/hmac-generator-tool'
+import { BcryptTool } from '@/components/tools/bcrypt-tool'
+import { FileHashCheckerTool } from '@/components/tools/file-hash-checker-tool'
+import { RsaAesTool } from '@/components/tools/rsa-aes-tool'
+import { DnsLookupTool } from '@/components/tools/dns-lookup-tool'
+import { WhoisLookupTool } from '@/components/tools/whois-lookup-tool'
+import { SslCheckerTool } from '@/components/tools/ssl-checker-tool'
+import { CidrCalculatorTool } from '@/components/tools/cidr-calculator-tool'
+import { IpRangeCalculatorTool } from '@/components/tools/ip-range-calculator-tool'
+import { MarkdownTableGeneratorTool } from '@/components/tools/markdown-table-generator-tool'
+import { MarkdownFormatterTool } from '@/components/tools/markdown-formatter-tool'
+import { MarkdownLinterTool } from '@/components/tools/markdown-linter-tool'
+import { OpenApiValidatorTool } from '@/components/tools/openapi-validator-tool'
+import { OpenApiViewerTool } from '@/components/tools/openapi-viewer-tool'
+import { GraphqlFormatterTool } from '@/components/tools/graphql-formatter-tool'
+import { GraphqlExplorerTool } from '@/components/tools/graphql-explorer-tool'
+import { WebSocketTesterTool } from '@/components/tools/websocket-tester-tool'
+import { SseTesterTool } from '@/components/tools/sse-tester-tool'
+import { SqlValidatorTool } from '@/components/tools/sql-validator-tool'
+import { SqlMinifierTool } from '@/components/tools/sql-minifier-tool'
+import { ImageCompressorTool } from '@/components/tools/image-compressor-tool'
+import { ImageResizerTool } from '@/components/tools/image-resizer-tool'
+import { SvgOptimizerTool } from '@/components/tools/svg-optimizer-tool'
+import { SvgToPngTool } from '@/components/tools/svg-to-png-tool'
+import { ExifViewerTool } from '@/components/tools/exif-viewer-tool'
 import dynamic from 'next/dynamic'
+
+const MermaidPreviewTool = dynamic(
+  () => import('@/components/tools/mermaid-preview-tool').then((m) => m.MermaidPreviewTool),
+  { ssr: false }
+)
 
 const WorkflowBuilderTool = dynamic(
   () =>
@@ -195,6 +225,42 @@ const TOOL_REGISTRY: Record<string, () => React.ReactElement> = {
   stopwatch: () => <TimerTool />,
   counter: () => <CounterTool />,
 
+  // Phase 4 tools
+  'hmac-generator': () => <HmacGeneratorTool />,
+  'bcrypt-tool': () => <BcryptTool />,
+  'file-hash-checker': () => <FileHashCheckerTool />,
+  'rsa-aes-tool': () => <RsaAesTool />,
+
+  // Phase 5 tools
+  'dns-lookup': () => <DnsLookupTool />,
+  'whois-lookup': () => <WhoisLookupTool />,
+  'ssl-checker': () => <SslCheckerTool />,
+  'cidr-calculator': () => <CidrCalculatorTool />,
+  'ip-range-calculator': () => <IpRangeCalculatorTool />,
+
+  // Phase 6 tools
+  'markdown-table-generator': () => <MarkdownTableGeneratorTool />,
+  'mermaid-preview': () => <MermaidPreviewTool />,
+  'markdown-formatter': () => <MarkdownFormatterTool />,
+  'markdown-linter': () => <MarkdownLinterTool />,
+
+  // Phase 8 tools
+  'image-compressor': () => <ImageCompressorTool />,
+  'image-resizer': () => <ImageResizerTool />,
+  'svg-optimizer': () => <SvgOptimizerTool />,
+  'svg-to-png': () => <SvgToPngTool />,
+  'exif-viewer': () => <ExifViewerTool />,
+
+  // Phase 7 tools
+  'openapi-validator': () => <OpenApiValidatorTool />,
+  'openapi-viewer': () => <OpenApiViewerTool />,
+  'graphql-formatter': () => <GraphqlFormatterTool />,
+  'graphql-explorer': () => <GraphqlExplorerTool />,
+  'websocket-tester': () => <WebSocketTesterTool />,
+  'sse-tester': () => <SseTesterTool />,
+  'sql-validator': () => <SqlValidatorTool />,
+  'sql-minifier': () => <SqlMinifierTool />,
+
   // Phase 3 tools
   'timezone-converter': () => <TimezoneConverterTool />,
   'iso8601-converter': () => <Iso8601ConverterTool />,
@@ -216,11 +282,17 @@ const TOOL_REGISTRY: Record<string, () => React.ReactElement> = {
   'ai-test-generator': () => <AITools toolId="ai-test-generator" />,
   'ai-sql-builder': () => <AITools toolId="ai-sql-builder" />,
   'ai-schema-generator': () => <AITools toolId="ai-schema-generator" />,
+  'ai-commit-generator': () => <AITools toolId="ai-commit-generator" />,
+  'ai-regex-generator': () => <AITools toolId="ai-regex-generator" />,
+  'ai-error-explainer': () => <AITools toolId="ai-error-explainer" />,
+  'ai-log-analyzer': () => <AITools toolId="ai-log-analyzer" />,
+  'ai-dockerfile-generator': () => <AITools toolId="ai-dockerfile-generator" />,
+  'ai-architecture-diagram': () => <AITools toolId="ai-architecture-diagram" />,
+  'ai-prompt-optimizer': () => <AITools toolId="ai-prompt-optimizer" />,
+  'ai-release-notes': () => <AITools toolId="ai-release-notes" />,
   'researcher-agent': () => <ResearcherAgentTool />,
   'workflow-builder': () => <WorkflowBuilderTool />,
 }
-
-const FULL_WIDTH_TOOLS = new Set(['workflow-builder'])
 
 export function ToolPageClient({ toolId }: ToolPageClientProps) {
   const tool = TOOLS.find((t) => t.id === toolId)
@@ -259,5 +331,5 @@ export function ToolPageClient({ toolId }: ToolPageClientProps) {
     )
   }
 
-  return <div className={FULL_WIDTH_TOOLS.has(toolId) ? 'w-full' : 'max-w-4xl'}>{factory()}</div>
+  return <div className="w-full">{factory()}</div>
 }

@@ -2628,6 +2628,1026 @@ export const toolHandlers: Record<string, ToolHandler> = {
       }
     },
   },
+
+  // ─── Phase 4 – Security & Cryptography ───────────────────────────────────────
+
+  'hmac-generator': {
+    description: 'Generate an HMAC signature using a secret key and a chosen hash algorithm',
+    schema: {
+      type: 'object',
+      properties: {
+        message: { type: 'string', description: 'The message to sign' },
+        key: { type: 'string', description: 'The secret key' },
+        algorithm: {
+          type: 'string',
+          enum: ['sha256', 'sha512', 'sha1', 'md5'],
+          description: 'HMAC algorithm: sha256 (default), sha512, sha1, md5',
+        },
+        encoding: {
+          type: 'string',
+          enum: ['hex', 'base64'],
+          description: 'Output encoding: hex (default) or base64',
+        },
+      },
+      required: ['message', 'key'],
+    },
+    handler: async (input) => {
+      const { message, key, algorithm = 'sha256', encoding = 'hex' } = input
+      const crypto = require('crypto')
+      const validAlgorithms = ['sha256', 'sha512', 'sha1', 'md5']
+      const validEncodings = ['hex', 'base64']
+      if (!validAlgorithms.includes(algorithm))
+        throw new Error(`Invalid algorithm. Use: ${validAlgorithms.join(', ')}`)
+      if (!validEncodings.includes(encoding))
+        throw new Error(`Invalid encoding. Use: ${validEncodings.join(', ')}`)
+      const hmac = crypto.createHmac(algorithm, key).update(message).digest(encoding)
+      return { message, algorithm, encoding, hmac }
+    },
+  },
+
+  'bcrypt-tool': {
+    description: 'Hash a password with bcrypt or verify a plain-text password against a bcrypt hash',
+    schema: {
+      type: 'object',
+      properties: {
+        action: {
+          type: 'string',
+          enum: ['hash', 'verify'],
+          description: 'hash - generate a bcrypt hash; verify - compare a password to a hash',
+        },
+        password: { type: 'string', description: 'Plain-text password' },
+        hash: {
+          type: 'string',
+          description: 'Existing bcrypt hash (required when action is verify)',
+        },
+        rounds: {
+          type: 'number',
+          description: 'Cost factor / salt rounds for hashing (4-14, default: 10)',
+        },
+      },
+      required: ['action', 'password'],
+    },
+    handler: async (input) => {
+      const { action, password, hash, rounds = 10 } = input
+      const bcrypt = require('bcryptjs')
+      if (action === 'hash') {
+        if (rounds < 4 || rounds > 14)
+          throw new Error('Rounds must be between 4 and 14')
+        const generated = await bcrypt.hash(password, rounds)
+        return { action, rounds, hash: generated }
+      }
+      if (action === 'verify') {
+        if (!hash) throw new Error('hash is required for verify action')
+        const match = await bcrypt.compare(password, hash)
+        return { action, match }
+      }
+      throw new Error('action must be hash or verify')
+    },
+  },
+
+  'file-hash-checker': {
+    description: 'Compute MD5, SHA-1, SHA-256, and SHA-512 hashes from base64-encoded file content',
+    schema: {
+      type: 'object',
+      properties: {
+        fileBase64: {
+          type: 'string',
+          description: 'Base64-encoded file content to hash',
+        },
+        filename: {
+          type: 'string',
+          description: 'Original file name (used for display only)',
+        },
+      },
+      required: ['fileBase64'],
+    },
+    handler: async (input) => {
+      const { fileBase64, filename = 'file' } = input
+      const crypto = require('crypto')
+      const buf = Buffer.from(fileBase64, 'base64')
+      const algorithms = ['md5', 'sha1', 'sha256', 'sha512'] as const
+      const hashes: Record<string, string> = {}
+      for (const algo of algorithms) {
+        hashes[algo] = crypto.createHash(algo).update(buf).digest('hex')
+      }
+      return { filename, sizeBytes: buf.length, hashes }
+    },
+  },
+
+  // ─── Phase 5 – Networking & Infrastructure ───────────────────────────────────
+
+  'dns-lookup': {
+    description: 'Query DNS records (A, AAAA, MX, TXT, CNAME, NS, SOA) for a domain using Cloudflare DNS-over-HTTPS',
+    schema: {
+      type: 'object',
+      properties: {
+        domain: { type: 'string', description: 'Domain name to query (e.g. example.com)' },
+        type: {
+          type: 'string',
+          enum: ['A', 'AAAA', 'MX', 'TXT', 'CNAME', 'NS', 'SOA', 'ALL'],
+          description: 'DNS record type to query, or ALL to fetch all common types',
+        },
+      },
+      required: ['domain'],
+    },
+    handler: async (input) => {
+      const { domain, type = 'ALL' } = input
+      const cleaned = domain.trim().toLowerCase().replace(/^https?:\/\//, '').split('/')[0]!
+      if (!cleaned) throw new Error('Invalid domain')
+
+      const TYPES = type === 'ALL' ? ['A', 'AAAA', 'MX', 'TXT', 'CNAME', 'NS'] : [type]
+      const results: Record<string, any[]> = {}
+
+      await Promise.all(
+        TYPES.map(async (t) => {
+          try {
+            const res = await fetch(
+              `https://cloudflare-dns.com/dns-query?name=${encodeURIComponent(cleaned)}&type=${t}`,
+              { headers: { Accept: 'application/dns-json' } }
+            )
+            if (!res.ok) { results[t] = []; return }
+            const data = await res.json()
+            results[t] = (data.Answer ?? []).map((r: any) => ({
+              name: r.name,
+              ttl: r.TTL,
+              data: r.data,
+            }))
+          } catch {
+            results[t] = []
+          }
+        })
+      )
+
+      const flat = Object.entries(results).flatMap(([recordType, records]) =>
+        records.map((r) => ({ type: recordType, ...r }))
+      )
+
+      return {
+        domain: cleaned,
+        queried: TYPES,
+        totalRecords: flat.length,
+        records: type === 'ALL' ? flat : (results[type] ?? []),
+        byType: type === 'ALL' ? results : undefined,
+      }
+    },
+  },
+
+  'whois-lookup': {
+    description: 'Look up domain registration information (registrar, dates, nameservers, status) via RDAP',
+    schema: {
+      type: 'object',
+      properties: {
+        domain: { type: 'string', description: 'Domain name to query (e.g. example.com)' },
+      },
+      required: ['domain'],
+    },
+    handler: async (input) => {
+      const { domain } = input
+      const cleaned = domain.trim().toLowerCase().replace(/^https?:\/\//, '').split('/')[0]!
+      if (!cleaned) throw new Error('Invalid domain')
+
+      const res = await fetch(`https://rdap.iana.org/domain/${encodeURIComponent(cleaned)}`, {
+        headers: { Accept: 'application/rdap+json' },
+        redirect: 'follow',
+      })
+      if (!res.ok) {
+        if (res.status === 404) throw new Error(`Domain "${cleaned}" not found in RDAP registry`)
+        throw new Error(`RDAP query failed with status ${res.status}`)
+      }
+      const data = await res.json()
+
+      const getEntity = (role: string) =>
+        (data.entities ?? []).find((e: any) => (e.roles ?? []).includes(role))
+      const registrar = getEntity('registrar')
+      const registrant = getEntity('registrant')
+
+      const registrarName =
+        registrar?.vcardArray?.[1]?.find((v: any) => v[0] === 'fn')?.[3] ??
+        registrar?.publicIds?.[0]?.identifier ??
+        null
+
+      const getDate = (type: string) =>
+        (data.events ?? []).find((e: any) => e.eventAction === type)?.eventDate ?? null
+
+      return {
+        domain: cleaned,
+        status: (data.status ?? []).join(', ') || 'unknown',
+        registrar: registrarName,
+        registrantOrg:
+          registrant?.vcardArray?.[1]?.find((v: any) => v[0] === 'org')?.[3] ?? null,
+        created: getDate('registration'),
+        updated: getDate('last changed'),
+        expires: getDate('expiration'),
+        nameservers: (data.nameservers ?? []).map((ns: any) => ns.ldhName ?? ns.unicodeName),
+        handle: data.handle ?? null,
+        ldhName: data.ldhName ?? cleaned,
+      }
+    },
+  },
+
+  'ssl-checker': {
+    description: 'Inspect the TLS/SSL certificate for any domain: issuer, expiry, SANs, and validity',
+    schema: {
+      type: 'object',
+      properties: {
+        domain: { type: 'string', description: 'Domain to check (e.g. example.com)' },
+        port: {
+          type: 'number',
+          description: 'HTTPS port to connect on (default: 443)',
+        },
+      },
+      required: ['domain'],
+    },
+    handler: async (input) => {
+      const { domain, port = 443 } = input
+      const cleaned = domain.trim().toLowerCase().replace(/^https?:\/\//, '').split('/')[0]!
+      if (!cleaned) throw new Error('Invalid domain')
+
+      // tls.connect is the right API for cert inspection: we open a raw TLS
+      // socket solely to read the peer certificate, no HTTP data flows over it.
+      // rejectUnauthorized:false is intentional here - the tool's job is to
+      // *show* whatever cert the server presents (including expired/self-signed
+      // ones), not to trust the connection for data exchange.
+      const cert: any = await new Promise((resolve, reject) => {
+        const tls = require('tls')
+        const socket = tls.connect(
+          { host: cleaned, port, servername: cleaned, rejectUnauthorized: false, timeout: 8000 },
+          () => {
+            const c = socket.getPeerCertificate(false)
+            socket.destroy()
+            if (!c || !c.subject) reject(new Error('No certificate returned'))
+            else resolve(c)
+          }
+        )
+        socket.on('error', (err: Error) => {
+          socket.destroy()
+          reject(new Error(`Connection failed: ${err.message}`))
+        })
+        socket.on('timeout', () => {
+          socket.destroy()
+          reject(new Error('Connection timed out'))
+        })
+      })
+
+      const sans = (cert.subjectaltname ?? '')
+        .split(', ')
+        .filter(Boolean)
+        .map((s: string) => s.replace(/^DNS:/, ''))
+        .filter((s: string) => !s.startsWith('IP:'))
+
+      const validFrom = new Date(cert.valid_from)
+      const validTo = new Date(cert.valid_to)
+      const now = new Date()
+      const daysRemaining = Math.ceil((validTo.getTime() - now.getTime()) / 86_400_000)
+
+      return {
+        domain: cleaned,
+        valid: daysRemaining > 0,
+        daysRemaining,
+        subject: {
+          cn: cert.subject?.CN ?? null,
+          o: cert.subject?.O ?? null,
+          c: cert.subject?.C ?? null,
+        },
+        issuer: {
+          cn: cert.issuer?.CN ?? null,
+          o: cert.issuer?.O ?? null,
+          c: cert.issuer?.C ?? null,
+        },
+        validFrom: validFrom.toISOString(),
+        validTo: validTo.toISOString(),
+        serialNumber: cert.serialNumber ?? null,
+        fingerprint256: cert.fingerprint256 ?? null,
+        sans,
+        sanCount: sans.length,
+      }
+    },
+  },
+
+  'cidr-calculator': {
+    description: 'Calculate network details from a CIDR block: network address, broadcast, host range, subnet mask, and usable host count',
+    schema: {
+      type: 'object',
+      properties: {
+        cidr: {
+          type: 'string',
+          description: 'CIDR notation, e.g. 192.168.1.0/24 or 10.0.0.0/8',
+        },
+      },
+      required: ['cidr'],
+    },
+    handler: async (input) => {
+      const { cidr } = input
+      const match = cidr.trim().match(/^(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\/(\d{1,2})$/)
+      if (!match) throw new Error('Invalid CIDR notation. Expected format: x.x.x.x/prefix (e.g. 192.168.1.0/24)')
+
+      const ipStr = match[1]!
+      const prefix = parseInt(match[2]!, 10)
+      if (prefix < 0 || prefix > 32) throw new Error('Prefix must be between 0 and 32')
+
+      const ipToInt = (ip: string) => {
+        const parts = ip.split('.').map(Number)
+        if (parts.some((p) => p < 0 || p > 255)) throw new Error(`Invalid IP address: ${ip}`)
+        return ((parts[0]! << 24) | (parts[1]! << 16) | (parts[2]! << 8) | parts[3]!) >>> 0
+      }
+      const intToIp = (n: number) =>
+        `${(n >>> 24) & 0xff}.${(n >>> 16) & 0xff}.${(n >>> 8) & 0xff}.${n & 0xff}`
+
+      const ipInt = ipToInt(ipStr)
+      const mask = prefix === 0 ? 0 : (~0 << (32 - prefix)) >>> 0
+      const network = (ipInt & mask) >>> 0
+      const broadcast = (network | (~mask >>> 0)) >>> 0
+      const totalHosts = Math.pow(2, 32 - prefix)
+      const usableHosts = prefix >= 31 ? totalHosts : Math.max(0, totalHosts - 2)
+      const firstHost = prefix >= 31 ? network : network + 1
+      const lastHost = prefix >= 31 ? broadcast : broadcast - 1
+
+      const maskInt = mask
+      const wildcardInt = (~mask) >>> 0
+
+      return {
+        cidr: `${intToIp(network)}/${prefix}`,
+        inputIp: ipStr,
+        networkAddress: intToIp(network),
+        broadcastAddress: intToIp(broadcast),
+        subnetMask: intToIp(maskInt),
+        wildcardMask: intToIp(wildcardInt),
+        firstHost: intToIp(firstHost),
+        lastHost: intToIp(lastHost),
+        totalHosts,
+        usableHosts,
+        prefixLength: prefix,
+        ipClass:
+          network < 0x80000000 ? 'A' :
+          network < 0xc0000000 ? 'B' :
+          network < 0xe0000000 ? 'C' : 'D/E',
+        isPrivate:
+          (network >>> 24) === 10 ||
+          ((network >>> 16) & 0xfff0) === 0xac10 ||
+          ((network >>> 16) === 0xc0a8),
+      }
+    },
+  },
+
+  'ip-range-calculator': {
+    description: 'Compute the minimal set of CIDR blocks that exactly covers a given start-to-end IP range',
+    schema: {
+      type: 'object',
+      properties: {
+        startIp: { type: 'string', description: 'First IP in the range (e.g. 192.168.1.0)' },
+        endIp: { type: 'string', description: 'Last IP in the range (e.g. 192.168.1.255)' },
+      },
+      required: ['startIp', 'endIp'],
+    },
+    handler: async (input) => {
+      const { startIp, endIp } = input
+
+      const ipToInt = (ip: string) => {
+        const parts = ip.trim().split('.').map(Number)
+        if (parts.length !== 4 || parts.some((p) => isNaN(p) || p < 0 || p > 255))
+          throw new Error(`Invalid IP address: ${ip}`)
+        return ((parts[0]! << 24) | (parts[1]! << 16) | (parts[2]! << 8) | parts[3]!) >>> 0
+      }
+      const intToIp = (n: number) =>
+        `${(n >>> 24) & 0xff}.${(n >>> 16) & 0xff}.${(n >>> 8) & 0xff}.${n & 0xff}`
+
+      let start = ipToInt(startIp)
+      const end = ipToInt(endIp)
+      if (start > end) throw new Error('Start IP must be less than or equal to end IP')
+
+      const totalIps = end - start + 1
+      const cidrs: string[] = []
+
+      while (start <= end) {
+        let prefix = 32
+        while (prefix > 0) {
+          const mask = (~0 << (32 - (prefix - 1))) >>> 0
+          const blockStart = (start & mask) >>> 0
+          if (blockStart !== start) break
+          const blockEnd = (blockStart | (~mask >>> 0)) >>> 0
+          if (blockEnd > end) break
+          prefix--
+        }
+        const blockEnd = (start | (~((~0 << (32 - prefix)) >>> 0) >>> 0)) >>> 0
+        cidrs.push(`${intToIp(start)}/${prefix}`)
+        start = blockEnd + 1
+        if (start > 0xffffffff) break
+      }
+
+      return {
+        startIp: intToIp(ipToInt(startIp)),
+        endIp: intToIp(ipToInt(endIp)),
+        totalIps,
+        cidrCount: cidrs.length,
+        cidrs,
+      }
+    },
+  },
+
+  // ─── Phase 6 – Markdown & Diagram Tools ──────────────────────────────────────
+
+  'markdown-table-generator': {
+    description: 'Generate a GitHub-Flavored Markdown table from a JSON array of objects or a 2D array of rows',
+    schema: {
+      type: 'object',
+      properties: {
+        headers: {
+          type: 'array',
+          items: { type: 'string' },
+          description: 'Column header names',
+        },
+        rows: {
+          type: 'array',
+          items: { type: 'array', items: { type: 'string' } },
+          description: '2D array of cell values (each inner array is one row)',
+        },
+        alignment: {
+          type: 'string',
+          enum: ['left', 'center', 'right', 'none'],
+          description: 'Column alignment applied to all columns (default: none)',
+        },
+      },
+      required: ['headers', 'rows'],
+    },
+    handler: async (input) => {
+      const { headers, rows, alignment = 'none' } = input
+      if (!headers.length) throw new Error('headers must not be empty')
+
+      const sep = { left: ':---', center: ':---:', right: '---:', none: '---' }[alignment] ?? '---'
+      const escape = (s: string) => String(s ?? '').replace(/\|/g, '\\|')
+
+      const colWidths = headers.map((h: string, i: number) => {
+        const maxRow = rows.reduce((m: number, r: string[]) => Math.max(m, (r[i] ?? '').length), 0)
+        return Math.max(h.length, sep.length, maxRow)
+      })
+
+      const pad = (s: string, w: number) => escape(s).padEnd(w)
+
+      const headerLine = '| ' + headers.map((h: string, i: number) => pad(h, colWidths[i]!)).join(' | ') + ' |'
+      const sepLine = '| ' + colWidths.map((w: number) => sep.padEnd(w, sep.endsWith(':') ? '-' : '-').slice(0, w).padEnd(w, '-')).join(' | ') + ' |'
+      const dataLines = rows.map((row: string[]) =>
+        '| ' + headers.map((_: string, i: number) => pad(row[i] ?? '', colWidths[i]!)).join(' | ') + ' |'
+      )
+
+      const table = [headerLine, sepLine, ...dataLines].join('\n')
+      return { table, columns: headers.length, rows: rows.length }
+    },
+  },
+
+  'markdown-formatter': {
+    description: 'Format and normalize a Markdown document: consistent heading spacing, list indentation, blank lines, and trailing whitespace',
+    schema: {
+      type: 'object',
+      properties: {
+        markdown: { type: 'string', description: 'Markdown source to format' },
+        headingStyle: {
+          type: 'string',
+          enum: ['atx', 'preserve'],
+          description: 'atx = normalize all headings to # style; preserve = keep as-is (default: atx)',
+        },
+      },
+      required: ['markdown'],
+    },
+    handler: async (input) => {
+      const { markdown, headingStyle = 'atx' } = input
+      const lines = markdown.split('\n')
+      const out: string[] = []
+      let prevWasBlank = false
+      let prevWasHeading = false
+      let prevWasList = false
+      let inFence = false
+
+      for (let i = 0; i < lines.length; i++) {
+        const raw = lines[i]!
+        const trimmed = raw.trimEnd()
+
+        // Track fenced code blocks - don't touch their contents
+        if (/^```|^~~~/.test(trimmed)) {
+          inFence = !inFence
+          out.push(trimmed)
+          prevWasBlank = false
+          prevWasHeading = false
+          prevWasList = false
+          continue
+        }
+        if (inFence) {
+          out.push(raw.trimEnd())
+          continue
+        }
+
+        const isBlank = trimmed === ''
+        const isHeading = /^#{1,6}\s/.test(trimmed)
+        const isList = /^(\s*[-*+]|\s*\d+\.)\s/.test(trimmed)
+        const isHr = /^[-*_]{3,}\s*$/.test(trimmed)
+        const isBlockquote = /^>/.test(trimmed)
+
+        // Normalize ATX headings spacing
+        let line = trimmed
+        if (headingStyle === 'atx' && isHeading) {
+          line = line.replace(/^(#{1,6})\s+/, '$1 ')
+        }
+
+        // Ensure blank line before heading (not at doc start)
+        if (isHeading && out.length > 0 && !prevWasBlank) {
+          out.push('')
+        }
+
+        // Ensure blank line after heading
+        if (prevWasHeading && !isBlank) {
+          if (out[out.length - 1] !== '') out.push('')
+        }
+
+        // Collapse multiple blank lines into one
+        if (isBlank) {
+          if (!prevWasBlank && out.length > 0) out.push('')
+          prevWasBlank = true
+          prevWasHeading = false
+          prevWasList = false
+          continue
+        }
+
+        out.push(line)
+        prevWasBlank = false
+        prevWasHeading = isHeading
+        prevWasList = isList
+      }
+
+      // Strip leading/trailing blank lines from output
+      while (out.length && out[0] === '') out.shift()
+      while (out.length && out[out.length - 1] === '') out.pop()
+
+      const result = out.join('\n')
+      const linesBefore = lines.length
+      const linesAfter = result.split('\n').length
+
+      return {
+        formatted: result,
+        linesBefore,
+        linesAfter,
+        changed: result !== markdown.split('\n').map((l) => l.trimEnd()).join('\n'),
+      }
+    },
+  },
+
+  // ─── Phase 7 – API Protocol Tools ───────────────────────────────────────────
+
+  'openapi-validator': {
+    description: 'Validate an OpenAPI 3.x specification (YAML or JSON) against the schema and surface errors with line numbers',
+    schema: {
+      type: 'object',
+      properties: {
+        spec: {
+          type: 'string',
+          description: 'OpenAPI 3.x specification as a YAML or JSON string',
+        },
+      },
+      required: ['spec'],
+    },
+    handler: async (input) => {
+      const { spec } = input
+      const yaml = await import('js-yaml')
+
+      let parsed: any
+      let format: 'yaml' | 'json' = 'json'
+      try {
+        parsed = JSON.parse(spec)
+      } catch {
+        try {
+          parsed = yaml.load(spec)
+          format = 'yaml'
+        } catch (e: any) {
+          throw new Error(`Could not parse spec as JSON or YAML: ${e.message}`)
+        }
+      }
+
+      if (typeof parsed !== 'object' || parsed === null) {
+        throw new Error('Spec must be a JSON object or YAML mapping')
+      }
+
+      const errors: Array<{ path: string; message: string }> = []
+
+      // Check required top-level fields
+      if (!parsed.openapi) {
+        errors.push({ path: 'openapi', message: 'Missing required field "openapi"' })
+      } else if (typeof parsed.openapi !== 'string' || !parsed.openapi.startsWith('3.')) {
+        errors.push({ path: 'openapi', message: `"openapi" must be a 3.x version string, got: ${parsed.openapi}` })
+      }
+
+      if (!parsed.info) {
+        errors.push({ path: 'info', message: 'Missing required field "info"' })
+      } else {
+        if (!parsed.info.title) errors.push({ path: 'info.title', message: 'Missing required field "info.title"' })
+        if (!parsed.info.version) errors.push({ path: 'info.version', message: 'Missing required field "info.version"' })
+      }
+
+      if (!parsed.paths && !parsed.components) {
+        errors.push({ path: 'paths', message: 'Spec must contain at least "paths" or "components"' })
+      }
+
+      // Validate paths structure
+      if (parsed.paths && typeof parsed.paths === 'object') {
+        const HTTP_METHODS = ['get', 'post', 'put', 'patch', 'delete', 'head', 'options', 'trace']
+        for (const [pathKey, pathItem] of Object.entries(parsed.paths as Record<string, any>)) {
+          if (!pathKey.startsWith('/')) {
+            errors.push({ path: `paths.${pathKey}`, message: `Path must start with "/": ${pathKey}` })
+          }
+          if (typeof pathItem !== 'object' || pathItem === null) continue
+          for (const method of HTTP_METHODS) {
+            const op = pathItem[method]
+            if (!op) continue
+            if (typeof op !== 'object') {
+              errors.push({ path: `paths.${pathKey}.${method}`, message: 'Operation must be an object' })
+              continue
+            }
+            if (!op.responses) {
+              errors.push({ path: `paths.${pathKey}.${method}.responses`, message: 'Operation is missing required field "responses"' })
+            }
+          }
+        }
+      }
+
+      // Check $ref targets exist
+      const allRefs: string[] = []
+      function collectRefs(obj: any, path: string) {
+        if (typeof obj !== 'object' || obj === null) return
+        if (Array.isArray(obj)) { obj.forEach((v, i) => collectRefs(v, `${path}[${i}]`)); return }
+        for (const [k, v] of Object.entries(obj)) {
+          if (k === '$ref' && typeof v === 'string' && v.startsWith('#/')) {
+            allRefs.push(v)
+          }
+          collectRefs(v, `${path}.${k}`)
+        }
+      }
+      collectRefs(parsed, '$')
+
+      for (const ref of allRefs) {
+        const parts = ref.replace('#/', '').split('/')
+        let cur = parsed
+        let valid = true
+        for (const p of parts) {
+          if (typeof cur !== 'object' || cur === null || !(p in cur)) { valid = false; break }
+          cur = cur[p]
+        }
+        if (!valid) {
+          errors.push({ path: ref, message: `Unresolvable $ref: ${ref}` })
+        }
+      }
+
+      const pathCount = parsed.paths ? Object.keys(parsed.paths).length : 0
+      const operationCount = parsed.paths
+        ? Object.values(parsed.paths as Record<string, any>).reduce((n: number, pi: any) => {
+            const HTTP_METHODS = ['get', 'post', 'put', 'patch', 'delete', 'head', 'options', 'trace']
+            return n + HTTP_METHODS.filter((m) => pi && typeof pi[m] === 'object').length
+          }, 0)
+        : 0
+
+      return {
+        valid: errors.length === 0,
+        errorCount: errors.length,
+        errors,
+        format,
+        info: parsed.info ? { title: parsed.info.title, version: parsed.info.version } : null,
+        openapi: parsed.openapi ?? null,
+        pathCount,
+        operationCount,
+      }
+    },
+  },
+
+  'graphql-formatter': {
+    description: 'Format and pretty-print a GraphQL query, mutation, subscription, or schema document',
+    schema: {
+      type: 'object',
+      properties: {
+        query: {
+          type: 'string',
+          description: 'GraphQL document string to format',
+        },
+        indentWidth: {
+          type: 'number',
+          description: 'Number of spaces per indent level (default: 2)',
+        },
+      },
+      required: ['query'],
+    },
+    handler: async (input) => {
+      const { query, indentWidth = 2 } = input
+      const { parse, print } = await import('graphql')
+      let doc: any
+      try {
+        doc = parse(query)
+      } catch (e: any) {
+        throw new Error(`GraphQL parse error: ${e.message}`)
+      }
+      let formatted = print(doc)
+      // graphql-js print() always uses 2-space indent; re-indent if different width requested
+      if (indentWidth !== 2) {
+        const target = ' '.repeat(indentWidth)
+        formatted = formatted
+          .split('\n')
+          .map((line) => {
+            const match = line.match(/^( *)/)
+            const spaces = match ? match[1]! : ''
+            const level = Math.floor(spaces.length / 2)
+            return target.repeat(level) + line.trimStart()
+          })
+          .join('\n')
+      }
+      return { formatted, originalLength: query.length, formattedLength: formatted.length }
+    },
+  },
+
+  'sql-validator': {
+    description: 'Validate SQL syntax for Postgres, MySQL, and SQLite dialects and report errors',
+    schema: {
+      type: 'object',
+      properties: {
+        sql: {
+          type: 'string',
+          description: 'SQL statement or script to validate',
+        },
+        dialect: {
+          type: 'string',
+          enum: ['generic', 'postgresql', 'mysql', 'sqlite'],
+          description: 'SQL dialect for dialect-specific keyword checking (default: generic)',
+        },
+      },
+      required: ['sql'],
+    },
+    handler: async (input) => {
+      const { sql, dialect = 'generic' } = input
+      const errors: Array<{ line: number; column: number; message: string }> = []
+
+      // Tokenise and do structural validation
+      const lines = sql.split('\n')
+
+      // Remove comments for analysis
+      const stripped = sql
+        .replace(/--[^\n]*/g, ' ')
+        .replace(/\/\*[\s\S]*?\*\//g, ' ')
+        .trim()
+
+      if (!stripped) {
+        errors.push({ line: 1, column: 1, message: 'Empty SQL statement' })
+        return { valid: false, errorCount: 1, errors, dialect }
+      }
+
+      // Check balanced parentheses
+      let depth = 0
+      let inString = false
+      let stringChar = ''
+      for (let i = 0; i < stripped.length; i++) {
+        const ch = stripped[i]!
+        if (inString) {
+          if (ch === stringChar && stripped[i - 1] !== '\\') inString = false
+          continue
+        }
+        if (ch === "'" || ch === '"' || ch === '`') { inString = true; stringChar = ch; continue }
+        if (ch === '(') depth++
+        else if (ch === ')') {
+          depth--
+          if (depth < 0) {
+            const linesUpTo = stripped.slice(0, i).split('\n')
+            errors.push({ line: linesUpTo.length, column: linesUpTo[linesUpTo.length - 1]!.length + 1, message: 'Unexpected closing parenthesis ")"' })
+            depth = 0
+          }
+        }
+      }
+      if (depth > 0) {
+        errors.push({ line: lines.length, column: 1, message: `${depth} unclosed parenthesis${depth > 1 ? 'es' : ''}` })
+      }
+
+      // Check that statement starts with a known keyword
+      const firstToken = stripped.match(/^(\w+)/)?.[1]?.toUpperCase() ?? ''
+      const TOP_LEVEL = ['SELECT', 'INSERT', 'UPDATE', 'DELETE', 'CREATE', 'ALTER', 'DROP', 'TRUNCATE', 'MERGE', 'WITH', 'EXPLAIN', 'SHOW', 'DESCRIBE', 'SET', 'BEGIN', 'COMMIT', 'ROLLBACK', 'GRANT', 'REVOKE', 'CALL', 'PRAGMA', 'VACUUM', 'ANALYZE', 'COPY', 'DO']
+      if (firstToken && !TOP_LEVEL.includes(firstToken)) {
+        errors.push({ line: 1, column: 1, message: `Unexpected token "${firstToken}" - expected a SQL keyword like SELECT, INSERT, UPDATE, etc.` })
+      }
+
+      // Dialect-specific checks
+      if (dialect === 'postgresql') {
+        // PostgreSQL doesn't support backtick identifiers
+        if (/`/.test(stripped)) {
+          const idx = stripped.indexOf('`')
+          const linesUpTo = stripped.slice(0, idx).split('\n')
+          errors.push({ line: linesUpTo.length, column: linesUpTo[linesUpTo.length - 1]!.length + 1, message: 'Backtick identifiers are not valid in PostgreSQL; use double quotes instead' })
+        }
+      } else if (dialect === 'mysql') {
+        // MySQL doesn't use $1 style params
+        if (/\$\d+/.test(stripped)) {
+          errors.push({ line: 1, column: 1, message: 'Positional parameters ($1, $2, ...) are a PostgreSQL feature; MySQL uses "?" placeholders' })
+        }
+      } else if (dialect === 'sqlite') {
+        const unsupported = ['FULL OUTER JOIN', 'RIGHT JOIN', 'STORED GENERATED', 'TABLESPACE']
+        for (const kw of unsupported) {
+          if (stripped.toUpperCase().includes(kw)) {
+            errors.push({ line: 1, column: 1, message: `"${kw}" is not supported in SQLite` })
+          }
+        }
+      }
+
+      // Detect common mistakes
+      const upper = stripped.toUpperCase()
+      if (/SELECT\s+\*\s+FROM\s+\w+\s+WHERE\s*$/.test(upper)) {
+        errors.push({ line: lines.length, column: 1, message: 'WHERE clause appears to be incomplete' })
+      }
+      if (/(?:^|\s)FROM\s*(?:WHERE|GROUP|ORDER|HAVING|LIMIT|$)/i.test(stripped)) {
+        errors.push({ line: 1, column: 1, message: 'FROM clause is missing a table name' })
+      }
+
+      return {
+        valid: errors.length === 0,
+        errorCount: errors.length,
+        errors,
+        dialect,
+        statementCount: stripped.split(/;(?!\s*$)/).filter((s) => s.trim()).length,
+      }
+    },
+  },
+
+  'sql-minifier': {
+    description: 'Strip comments and unnecessary whitespace from SQL to produce compact output',
+    schema: {
+      type: 'object',
+      properties: {
+        sql: {
+          type: 'string',
+          description: 'SQL statement or script to minify',
+        },
+        preserveNewlines: {
+          type: 'boolean',
+          description: 'If true, keep statement-separating newlines before semicolons (default: false)',
+        },
+      },
+      required: ['sql'],
+    },
+    handler: async (input) => {
+      const { sql, preserveNewlines = false } = input
+      if (!sql.trim()) throw new Error('Input SQL is empty')
+
+      // Remove single-line comments
+      let result = sql.replace(/--[^\n]*/g, '')
+      // Remove block comments
+      result = result.replace(/\/\*[\s\S]*?\*\//g, ' ')
+      // Collapse whitespace (but preserve string literals)
+      const parts: string[] = []
+      let i = 0
+      let inString = false
+      let stringChar = ''
+      let buf = ''
+
+      while (i < result.length) {
+        const ch = result[i]!
+        if (inString) {
+          buf += ch
+          if (ch === stringChar && result[i - 1] !== '\\') inString = false
+          i++
+          continue
+        }
+        if (ch === "'" || ch === '"' || ch === '`') {
+          // flush non-string buf
+          parts.push(buf.replace(/\s+/g, ' ').trim())
+          buf = ''
+          inString = true
+          stringChar = ch
+          buf += ch
+          i++
+          continue
+        }
+        buf += ch
+        i++
+      }
+      parts.push(buf.replace(/\s+/g, ' ').trim())
+      result = parts.join('').trim()
+
+      // Clean up spaces around punctuation
+      result = result
+        .replace(/\s*,\s*/g, ', ')
+        .replace(/\s*\(\s*/g, '(')
+        .replace(/\s*\)\s*/g, ')')
+        .replace(/\s*;\s*/g, preserveNewlines ? ';\n' : '; ')
+        .replace(/\s+/g, ' ')
+        .trim()
+
+      return {
+        minified: result,
+        originalLength: sql.length,
+        minifiedLength: result.length,
+        savedBytes: sql.length - result.length,
+        savedPercent: Math.round(((sql.length - result.length) / sql.length) * 100),
+      }
+    },
+  },
+
+  'markdown-linter': {
+    description: 'Lint a Markdown document and report common issues: inconsistent headings, missing blank lines, long lines, bare URLs, and more',
+    schema: {
+      type: 'object',
+      properties: {
+        markdown: { type: 'string', description: 'Markdown source to lint' },
+        maxLineLength: {
+          type: 'number',
+          description: 'Maximum line length before a warning is raised (default: 120, 0 to disable)',
+        },
+      },
+      required: ['markdown'],
+    },
+    handler: async (input) => {
+      const { markdown, maxLineLength = 120 } = input
+      const lines = markdown.split('\n')
+
+      interface Issue {
+        line: number
+        rule: string
+        message: string
+        severity: 'error' | 'warning'
+      }
+      const issues: Issue[] = []
+      const warn = (line: number, rule: string, message: string, severity: 'error' | 'warning' = 'warning') =>
+        issues.push({ line, rule, message, severity })
+
+      let inFence = false
+      let prevHeadingLevel = 0
+      let prevLineBlank = true
+      let prevLineWasHeading = false
+
+      for (let i = 0; i < lines.length; i++) {
+        const line = lines[i]!
+        const lineNum = i + 1
+        const trimmed = line.trimEnd()
+
+        if (/^```|^~~~/.test(trimmed)) { inFence = !inFence }
+        if (inFence) { prevLineBlank = false; continue }
+
+        const isBlank = trimmed === ''
+        const headingMatch = trimmed.match(/^(#{1,6})\s/)
+        const isHeading = !!headingMatch
+        const headingLevel = headingMatch ? headingMatch[1]!.length : 0
+        const isList = /^(\s*[-*+]|\s*\d+\.)\s/.test(trimmed)
+
+        // MD001: Heading levels should only increment by one
+        if (isHeading && prevHeadingLevel > 0 && headingLevel > prevHeadingLevel + 1) {
+          warn(lineNum, 'MD001', `Heading level skipped: h${prevHeadingLevel} → h${headingLevel}`, 'error')
+        }
+
+        // MD018: No space after # in ATX heading
+        if (/^#{1,6}[^ #\n]/.test(trimmed)) {
+          warn(lineNum, 'MD018', 'No space after # in ATX heading', 'error')
+        }
+
+        // MD022: Headings should be surrounded by blank lines
+        if (isHeading && !prevLineBlank && i > 0) {
+          warn(lineNum, 'MD022', 'Heading not preceded by a blank line', 'warning')
+        }
+        if (prevLineWasHeading && !isBlank) {
+          warn(lineNum, 'MD022', 'Heading not followed by a blank line', 'warning')
+        }
+
+        // MD009: Trailing spaces (more than 2 - 2 is intentional line break)
+        const trailingSpaces = line.length - line.trimEnd().length
+        if (trailingSpaces > 2) {
+          warn(lineNum, 'MD009', `Trailing whitespace (${trailingSpaces} spaces)`, 'warning')
+        }
+
+        // MD010: Hard tabs
+        if (line.includes('\t')) {
+          warn(lineNum, 'MD010', 'Hard tab character found', 'warning')
+        }
+
+        // MD013: Line too long
+        if (maxLineLength > 0 && !isHeading && trimmed.length > maxLineLength) {
+          warn(lineNum, 'MD013', `Line length ${trimmed.length} exceeds ${maxLineLength}`, 'warning')
+        }
+
+        // MD034: Bare URL
+        if (/(?<![(\[`])(https?:\/\/[^\s)>\]]+)/.test(trimmed) && !/^\[.*\]:/.test(trimmed)) {
+          warn(lineNum, 'MD034', 'Bare URL found - consider wrapping in angle brackets or a link', 'warning')
+        }
+
+        // MD047: File should end with a newline (checked after loop)
+
+        prevLineBlank = isBlank
+        prevLineWasHeading = isHeading
+        if (isHeading) prevHeadingLevel = headingLevel
+      }
+
+      // MD047: File should end with a single newline
+      if (markdown.length > 0 && !markdown.endsWith('\n')) {
+        warn(lines.length, 'MD047', 'File should end with a newline', 'warning')
+      }
+
+      const errors = issues.filter((i) => i.severity === 'error').length
+      const warnings = issues.filter((i) => i.severity === 'warning').length
+
+      return {
+        valid: errors === 0,
+        issueCount: issues.length,
+        errors,
+        warnings,
+        issues,
+      }
+    },
+  },
 }
 
 

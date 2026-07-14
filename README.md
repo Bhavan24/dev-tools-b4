@@ -1,6 +1,6 @@
 # AI Developer Tools
 
-A comprehensive collection of **105 free developer and AI-powered tools** for developers and creators. All tools are instant, require no signup, and work completely in your browser.
+A comprehensive collection of **131 free developer and AI-powered tools** for developers and creators. All tools are instant, require no signup, and work completely in your browser.
 
 [Visit Live](ai-developer-tools.vercel.app/)
 
@@ -42,11 +42,11 @@ curl -X POST https://ai-developer-tools.vercel.app/api/mcp \
 
 ## 🚀 Features
 
-- **105 Tools** across multiple categories
-- **96 MCP-Enabled Tools** callable by Claude AI via `/api/mcp`
+- **131 Tools** across multiple categories
+- **111 MCP-Enabled Tools** callable by Claude AI via `/api/mcp`
 - **Pinnable Tools** - Pin your frequently used tools for quick access
 - **Search & Filter** - Find tools by name, description, or category
-- **9 AI Tools** - Bring your own API key; supports OpenAI, Anthropic, Google, Groq, Mistral, Azure, Bedrock, and Ollama
+- **19 AI Tools** - Bring your own API key; supports OpenAI, Anthropic, Google, Groq, Mistral, Azure, Bedrock, and Ollama
 - **Dark Mode** - Full light/dark theme support
 - **No Signup Required** - Works instantly in your browser
 - **Fully Responsive** - Works perfectly on mobile, tablet, and desktop
@@ -57,7 +57,7 @@ curl -X POST https://ai-developer-tools.vercel.app/api/mcp \
 
 > **MCP column key:** `✅` = callable via `/api/mcp` · `—` = browser-only or coming soon
 
-### Developer Tools (34 tools)
+### Developer Tools (50 tools)
 
 | Tool | Status | MCP | Description |
 |------|--------|-----|-------------|
@@ -82,8 +82,25 @@ curl -X POST https://ai-developer-tools.vercel.app/api/mcp \
 | **Env File Parser** | ✅ Built | ✅ | Parse .env files into a key-value table; detects duplicates, empty values, and quoted strings |
 | **Gitignore Generator** | ✅ Built | ✅ | Generate .gitignore from curated templates for languages, frameworks, and editors |
 | **Conventional Commit Generator** | ✅ Built | ✅ | Fill in type/scope/description/body/breaking-change; outputs a formatted Conventional Commit message |
+| **HMAC Generator** | ✅ Built | ✅ | Generate HMAC signatures (SHA-256/512/1, MD5); hex or base64 output; useful for AWS, Stripe, and webhook signing |
+| **BCrypt Generator/Verifier** | ✅ Built | ✅ | Hash a password with bcrypt at a configurable cost factor, or verify a password against an existing hash |
+| **File Hash Checker** | ✅ Built | ✅ | Drop any file to compute MD5, SHA-1, SHA-256, and SHA-512 hashes; no file is uploaded to the server |
+| **RSA / AES Encrypt & Decrypt** | ✅ Built | — | Generate RSA-2048 key pairs, encrypt/decrypt with RSA-OAEP, or encrypt/decrypt with AES-256-GCM; browser-only via Web Crypto API |
+| **DNS Lookup** | ✅ Built | ✅ | Query A, AAAA, MX, TXT, CNAME, NS records for any domain via Cloudflare DNS-over-HTTPS |
+| **WHOIS Lookup** | ✅ Built | ✅ | Domain registration info (registrar, dates, nameservers, status) via RDAP |
+| **SSL Certificate Checker** | ✅ Built | ✅ | Inspect TLS cert for any domain: subject, issuer, expiry, SANs, SHA-256 fingerprint |
+| **CIDR Calculator** | ✅ Built | ✅ | Input a CIDR block; get network/broadcast addresses, subnet mask, host range, and usable count |
+| **IP Range Calculator** | ✅ Built | ✅ | Input start/end IPs; compute the minimal covering set of CIDR blocks |
+| **Markdown Table Generator** | ✅ Built | ✅ | Visual row/column editor that outputs a GFM Markdown table; supports column reordering and alignment |
+| **Mermaid Preview** | ✅ Built | — | Paste Mermaid source and see a live rendered diagram (flowchart, sequence, class, Gantt, gitGraph, etc.); browser-only |
+| **OpenAPI Viewer** | ✅ Built | — | Paste or upload an OpenAPI 3.x spec; browse all endpoints, parameters, and response schemas in an interactive panel; browser-only |
+| **GraphQL Explorer** | ✅ Built | — | Connect to any GraphQL endpoint, browse the schema by introspection, and run queries or mutations interactively; browser-only |
+| **WebSocket Tester** | ✅ Built | — | Connect to any WebSocket URL, send messages, and view incoming frames with timestamps in real time; browser-only |
+| **SSE Tester** | ✅ Built | — | Connect to a Server-Sent Events endpoint and display each streamed event with its data, type, and timestamp; browser-only |
+| **SVG Optimizer** | ✅ Built | — | Remove comments, metadata, editor attributes, and whitespace from SVG source to reduce file size; browser-only |
+| **EXIF Viewer** | ✅ Built | — | Display all EXIF metadata in a JPEG or TIFF file: camera model, exposure, GPS coordinates, timestamps; browser-only |
 
-### Validation Tools (12 tools)
+### Validation Tools (16 tools)
 
 | Tool | Status | MCP | Description |
 |------|--------|-----|-------------|
@@ -97,11 +114,15 @@ curl -X POST https://ai-developer-tools.vercel.app/api/mcp \
 | **Link Checker** | ✅ Built | ✅ | Check if URLs are reachable, see HTTP status and response time |
 | **JSONPath Finder** | ✅ Built | ✅ | Find all matches and paths in JSON using JSONPath expressions |
 | **Semver Comparator** | ✅ Built | ✅ | Compare two semantic version strings; shows which is higher and what changed (major/minor/patch/pre-release) |
+| **Markdown Linter** | ✅ Built | ✅ | Surface common Markdown issues: skipped heading levels, missing blank lines, trailing whitespace, hard tabs, long lines, bare URLs |
+| **OpenAPI Validator** | ✅ Built | ✅ | Validate an OpenAPI 3.x spec (YAML or JSON) against the schema; surface errors with paths |
+| **SQL Validator** | ✅ Built | ✅ | Validate SQL syntax for Postgres, MySQL, and SQLite; reports errors with line and column numbers |
 
-### Formatter Tools (11 tools)
+### Formatter Tools (14 tools)
 
 | Tool | Status | MCP | Description |
 |------|--------|-----|-------------|
+| **Markdown Formatter** | ✅ Built | ✅ | Normalize Markdown: consistent heading spacing, collapsed blank lines, removed trailing whitespace, clean ATX headings |
 | **JavaScript Minifier** | ✅ Built | ✅ | Minify JavaScript code to reduce file size |
 | **JavaScript Beautifier** | ✅ Built | ✅ | Format and beautify JavaScript code |
 | **CSS Minifier** | ✅ Built | ✅ | Minify CSS code to reduce file size |
@@ -113,6 +134,8 @@ curl -X POST https://ai-developer-tools.vercel.app/api/mcp \
 | **SQL Formatter** | ✅ Built | ✅ | Format SQL queries with proper indentation |
 | **HTML Formatter** | ✅ Built | ✅ | Format and beautify HTML markup |
 | **HTML Beautifier** | ✅ Built | ✅ | Alias to HTML Formatter with preset options |
+| **GraphQL Formatter** | ✅ Built | ✅ | Format and pretty-print GraphQL queries, mutations, subscriptions, and schema documents |
+| **SQL Minifier** | ✅ Built | ✅ | Strip comments and unnecessary whitespace from SQL to produce compact output |
 
 ### Converter Tools (33 tools)
 
@@ -160,8 +183,9 @@ curl -X POST https://ai-developer-tools.vercel.app/api/mcp \
 | **Excel / CSV to JSON** | ✅ Built | ✅ | Convert Excel (.xlsx, .xls) or CSV files to JSON; multi-sheet with per-sheet header row config |
 | **Excel / CSV to Markdown** | ✅ Built | ✅ | Convert Excel (.xlsx, .xls) or CSV files to Markdown tables; multi-sheet with per-sheet header row config |
 | **PDF Editor** | ✅ Built | — | Edit PDF files: add annotations, rotate or delete pages, merge or split PDFs (browser-only) |
+| **SVG to PNG** | ✅ Built | — | Render an SVG at any scale (1×, 2×, 3×, 4×) and download as PNG with optional transparent background; browser-only |
 
-### AI Tools (11 tools)
+### AI Tools (19 tools)
 
 All AI tools require you to supply your own API credentials.
 Credentials are passed in each request body and never stored server-side.
@@ -180,23 +204,33 @@ Supported providers: OpenAI, Anthropic, Google Gemini, Groq, Mistral, Azure Open
 | **AI Schema Generator** | ✅ Built | ✅ | Generate JSON Schema, OpenAPI specs, SQL CREATE TABLE, or Prisma schemas from sample data or descriptions. |
 | **Workflow Builder** | ✅ Built | ✅ | ReactFlow-based visual workflow builder. Drag-and-drop LLM, conditional, loop, transform, and tool-call nodes. Export/import workflows as JSON. MCP-callable for server-side execution. |
 | **Researcher Agent** | ✅ Built | ✅ | Multi-step AI research with optional Tavily web search (BYOK). Streams search progress, collects sources with citations, and synthesizes a Markdown report. Supports quick/standard/deep depth modes. |
+| **AI Commit Message Generator** | ✅ Built | ✅ | Paste a git diff or list of changed files to get a Conventional Commits-formatted commit message. |
+| **AI Regex Generator** | ✅ Built | ✅ | Describe what to match in plain English; get a regex with flags, explanation, and match/non-match examples. Pairs with Regex Parser. |
+| **AI Error Explainer** | ✅ Built | ✅ | Paste a stack trace or error message; get a plain-language explanation, root cause analysis, and fix suggestions. |
+| **AI Log Analyzer** | ✅ Built | ✅ | Paste server or application logs; get a structured summary of errors, anomalies, patterns, and recommended next steps. |
+| **AI Dockerfile Generator** | ✅ Built | ✅ | Describe your app stack; get a production-ready Dockerfile with multi-stage build, non-root user, and optimized layer caching. |
+| **AI Architecture Diagram Generator** | ✅ Built | ✅ | Describe your system; get Mermaid diagram source code. Pairs with the Mermaid Preview tool for instant visualization. |
+| **AI Prompt Optimizer** | ✅ Built | ✅ | Paste a prompt; get an analysis of issues and an optimized version with clearer instructions and better framing. |
+| **AI Release Notes Generator** | ✅ Built | ✅ | Paste commit log or PR titles; get polished release notes grouped by features, fixes, and breaking changes. |
 
-### Utilities (3 tools)
+### Utilities (5 tools)
 
 | Tool | Status | MCP | Description |
 |------|--------|-----|-------------|
 | **Notes** | ✅ Built | — | Simple text notes with local storage persistence (browser-only) |
 | **Stopwatch** | ✅ Built | — | Stopwatch with lap tracking, fastest/slowest highlights, local storage (browser-only) |
 | **Counter** | ✅ Built | — | Multiple counters with custom names, step size, increment/decrement/reset, local storage (browser-only) |
+| **Image Compressor** | ✅ Built | — | Compress JPEG, PNG, or WebP images with an adjustable quality slider; shows before/after sizes and side-by-side preview; browser-only |
+| **Image Resizer** | ✅ Built | — | Resize images to exact pixel dimensions or a percentage scale; optional aspect ratio lock; browser-only |
 
 ---
 
 ## 📊 Stats
 
-- **Total Tools**: 105
-- **Built & Ready**: 105 ✅
+- **Total Tools**: 139
+- **Built & Ready**: 139 ✅
 - **Coming Soon**: 0 🏗️
-- **MCP Enabled**: 96 ✅ (callable via `/api/mcp`)
+- **MCP Enabled**: 119 ✅ (callable via `/api/mcp`)
 - **Categories**: 6 (Developer, Validation, Formatter, Converter, AI Tools, Utilities)
 
 ---
