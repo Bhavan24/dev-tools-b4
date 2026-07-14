@@ -308,6 +308,54 @@ export const TOOLS = [
       'Generate lorem ipsum placeholder text by paragraph, sentence, or word count. Choose classic latin or random English words.',
     shortDescription: 'Generate placeholder text',
   },
+  {
+    id: 'color-contrast-checker',
+    name: 'Color Contrast Checker',
+    category: TOOLS_CATEGORIES.DEVELOPER,
+    description:
+      'Check WCAG AA and AAA contrast ratios between a foreground and background color. Supports HEX, RGB, and HSL input.',
+    shortDescription: 'Check WCAG color contrast',
+  },
+  {
+    id: 'color-palette-generator',
+    name: 'Color Palette Generator',
+    category: TOOLS_CATEGORIES.DEVELOPER,
+    description:
+      'Generate complementary, analogous, triadic, and tetradic color palettes from a base color. Outputs HEX, RGB, and HSL values.',
+    shortDescription: 'Generate color palettes',
+  },
+  {
+    id: 'css-gradient-builder',
+    name: 'CSS Gradient Builder',
+    category: TOOLS_CATEGORIES.DEVELOPER,
+    description:
+      'Build linear and radial CSS gradients visually. Add color stops, set angle/direction, and copy the ready-to-use CSS string.',
+    shortDescription: 'Build CSS gradients visually',
+  },
+  {
+    id: 'random-string-generator',
+    name: 'Random String Generator',
+    category: TOOLS_CATEGORIES.DEVELOPER,
+    description:
+      'Generate random strings with configurable length, count, and character set (alphanumeric, hex, base58, or fully custom).',
+    shortDescription: 'Generate random strings',
+  },
+  {
+    id: 'slug-generator',
+    name: 'Slug Generator',
+    category: TOOLS_CATEGORIES.DEVELOPER,
+    description:
+      'Convert any string to a URL-safe slug with configurable separator (hyphen, underscore, dot) and case (lower, upper, title).',
+    shortDescription: 'Convert text to URL slug',
+  },
+  {
+    id: 'line-utilities',
+    name: 'Line Utilities',
+    category: TOOLS_CATEGORIES.DEVELOPER,
+    description:
+      'Sort, reverse, deduplicate, shuffle, or number lines of text. One tool with action tabs for common line-by-line operations.',
+    shortDescription: 'Sort, dedup, and transform lines',
+  },
 
   // Formatter Tools
   {
@@ -516,6 +564,28 @@ export const TOOLS = [
     description:
       'Convert SQL SELECT, INSERT, UPDATE, and DELETE queries to equivalent MongoDB operations',
     shortDescription: 'SQL to MongoDB query',
+  },
+  {
+    id: 'hex-text-converter',
+    name: 'Hex / Text Converter',
+    category: TOOLS_CATEGORIES.CONVERTER,
+    description: 'Encode any string to its hexadecimal byte representation and decode hex back to plain text.',
+    shortDescription: 'Encode/decode hex and text',
+  },
+  {
+    id: 'unicode-escape-converter',
+    name: 'Unicode Escape Converter',
+    category: TOOLS_CATEGORIES.CONVERTER,
+    description:
+      'Convert between literal Unicode characters and escape sequences. Supports \\uXXXX (JS/Java), \\UXXXXXXXX (Python), U+XXXX (display), and HTML entities.',
+    shortDescription: 'Convert Unicode to/from escapes',
+  },
+  {
+    id: 'rot13',
+    name: 'ROT13',
+    category: TOOLS_CATEGORIES.CONVERTER,
+    description: 'Apply ROT13 substitution cipher to text. Letters are shifted 13 positions; numbers and symbols are preserved.',
+    shortDescription: 'ROT13 encode/decode',
   },
 
   {

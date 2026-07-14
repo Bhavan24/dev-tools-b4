@@ -1944,6 +1944,306 @@ export const toolHandlers: Record<string, ToolHandler> = {
       return JSON.stringify(schema, null, 2)
     },
   },
+
+  'color-contrast-checker': {
+    description: 'Check WCAG AA and AAA contrast ratios between two colors',
+    schema: {
+      type: 'object',
+      properties: {
+        foreground: { type: 'string', description: 'Foreground color in HEX, rgb(), or hsl()' },
+        background: { type: 'string', description: 'Background color in HEX, rgb(), or hsl()' },
+      },
+      required: ['foreground', 'background'],
+    },
+    handler: async (input) => {
+      const { foreground, background } = input
+      const fg = parseColorToRgb(foreground)
+      const bg = parseColorToRgb(background)
+      if (!fg) throw new Error(`Cannot parse foreground color: "${foreground}"`)
+      if (!bg) throw new Error(`Cannot parse background color: "${background}"`)
+      const ratio = contrastRatio(fg, bg)
+      return {
+        ratio: parseFloat(ratio.toFixed(2)),
+        ratioDisplay: `${ratio.toFixed(2)}:1`,
+        wcagAA: { normal: ratio >= 4.5, large: ratio >= 3, ui: ratio >= 3 },
+        wcagAAA: { normal: ratio >= 7, large: ratio >= 4.5 },
+        foreground,
+        background,
+      }
+    },
+  },
+
+  'color-palette-generator': {
+    description: 'Generate complementary, analogous, triadic, and tetradic color palettes from a base color',
+    schema: {
+      type: 'object',
+      properties: {
+        color: { type: 'string', description: 'Base color in HEX, rgb(), or hsl()' },
+      },
+      required: ['color'],
+    },
+    handler: async (input) => {
+      const { color } = input
+      const rgb = parseColorToRgb(color)
+      if (!rgb) throw new Error(`Cannot parse color: "${color}"`)
+      const hsl = rgbToHslValues(rgb.r, rgb.g, rgb.b)
+      return generatePalettes(hsl)
+    },
+  },
+
+  'css-gradient-builder': {
+    description: 'Build a CSS linear or radial gradient from color stops',
+    schema: {
+      type: 'object',
+      properties: {
+        type: { type: 'string', enum: ['linear', 'radial'], description: 'Gradient type', default: 'linear' },
+        angle: { type: 'number', description: 'Angle in degrees for linear gradient (default: 90)', default: 90 },
+        stops: {
+          type: 'array',
+          description: 'Color stops as objects with color and position (0-100)',
+          items: {
+            type: 'object',
+            properties: {
+              color: { type: 'string' },
+              position: { type: 'number' },
+            },
+          },
+        },
+      },
+      required: ['stops'],
+    },
+    handler: async (input) => {
+      const { type = 'linear', angle = 90, stops } = input
+      if (!Array.isArray(stops) || stops.length < 2) throw new Error('At least 2 color stops required')
+      const stopStr = (stops as Array<{ color: string; position: number }>)
+        .map((s) => `${s.color} ${s.position}%`)
+        .join(', ')
+      const css =
+        type === 'radial'
+          ? `background: radial-gradient(circle, ${stopStr});`
+          : `background: linear-gradient(${angle}deg, ${stopStr});`
+      return { css, gradient: css.replace('background: ', '').replace(';', '') }
+    },
+  },
+
+  'random-string-generator': {
+    description: 'Generate random strings with configurable length, count, and character set',
+    schema: {
+      type: 'object',
+      properties: {
+        length: { type: 'number', description: 'Length of each string (default: 16)', default: 16 },
+        count: { type: 'number', description: 'Number of strings to generate (default: 1)', default: 1 },
+        charset: {
+          type: 'string',
+          enum: ['alphanumeric', 'alpha', 'numeric', 'hex', 'base58', 'custom'],
+          description: 'Character set to use',
+          default: 'alphanumeric',
+        },
+        custom: { type: 'string', description: 'Custom character set when charset is "custom"' },
+      },
+      required: ['length'],
+    },
+    handler: async (input) => {
+      const { length = 16, count = 1, charset = 'alphanumeric', custom } = input
+      const charsets: Record<string, string> = {
+        alphanumeric: 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789',
+        alpha: 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz',
+        numeric: '0123456789',
+        hex: '0123456789abcdef',
+        base58: '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz',
+        custom: custom || 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789',
+      }
+      const pool = charsets[charset] ?? charsets.alphanumeric
+      const len = Math.max(1, Math.min(length, 1024))
+      const n = Math.max(1, Math.min(count, 100))
+      const strings = Array.from({ length: n }, () =>
+        Array.from({ length: len }, () => pool[Math.floor(Math.random() * pool.length)]).join('')
+      )
+      return { strings, count: strings.length, length: len }
+    },
+  },
+
+  'slug-generator': {
+    description: 'Convert any string to a URL-safe slug',
+    schema: {
+      type: 'object',
+      properties: {
+        text: { type: 'string', description: 'Input text to slugify' },
+        separator: { type: 'string', enum: ['-', '_', '.'], description: 'Separator character (default: -)', default: '-' },
+        case: { type: 'string', enum: ['lower', 'upper', 'title'], description: 'Case style (default: lower)', default: 'lower' },
+      },
+      required: ['text'],
+    },
+    handler: async (input) => {
+      const { text, separator = '-', case: caseStyle = 'lower' } = input
+      let slug = text
+        .normalize('NFD')
+        .replace(/[̀-ͯ]/g, '')
+        .replace(/[^a-zA-Z0-9\s-_]/g, '')
+        .trim()
+        .replace(/[\s-_]+/g, separator)
+      if (caseStyle === 'lower') slug = slug.toLowerCase()
+      else if (caseStyle === 'upper') slug = slug.toUpperCase()
+      else if (caseStyle === 'title')
+        slug = slug.replace(/\w+/g, (w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
+      return { slug }
+    },
+  },
+
+  'line-utilities': {
+    description: 'Sort, reverse, deduplicate, shuffle, or number lines of text',
+    schema: {
+      type: 'object',
+      properties: {
+        text: { type: 'string', description: 'Multi-line text to process' },
+        action: {
+          type: 'string',
+          enum: ['sort-asc', 'sort-desc', 'reverse', 'deduplicate', 'shuffle', 'number', 'trim', 'remove-empty'],
+          description: 'Operation to perform on lines',
+        },
+      },
+      required: ['text', 'action'],
+    },
+    handler: async (input) => {
+      const { text, action } = input
+      let lines = text.split('\n')
+      switch (action) {
+        case 'sort-asc':
+          lines = [...lines].sort((a, b) => a.localeCompare(b))
+          break
+        case 'sort-desc':
+          lines = [...lines].sort((a, b) => b.localeCompare(a))
+          break
+        case 'reverse':
+          lines = [...lines].reverse()
+          break
+        case 'deduplicate':
+          lines = [...new Set(lines)]
+          break
+        case 'shuffle':
+          for (let i = lines.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1))
+            ;[lines[i], lines[j]] = [lines[j]!, lines[i]!]
+          }
+          break
+        case 'number':
+          lines = lines.map((l, i) => `${i + 1}. ${l}`)
+          break
+        case 'trim':
+          lines = lines.map((l) => l.trim())
+          break
+        case 'remove-empty':
+          lines = lines.filter((l) => l.trim() !== '')
+          break
+        default:
+          throw new Error(`Unknown action: ${action}`)
+      }
+      return { result: lines.join('\n'), lineCount: lines.length }
+    },
+  },
+
+  'hex-text-converter': {
+    description: 'Encode text to hexadecimal or decode hex to text',
+    schema: {
+      type: 'object',
+      properties: {
+        input: { type: 'string', description: 'Text to encode or hex string to decode' },
+        action: { type: 'string', enum: ['encode', 'decode'], description: 'encode: text→hex, decode: hex→text' },
+        separator: { type: 'string', description: 'Separator between hex bytes for encoding (default: space)', default: ' ' },
+      },
+      required: ['input', 'action'],
+    },
+    handler: async (input) => {
+      const { input: value, action, separator = ' ' } = input
+      if (action === 'encode') {
+        const bytes = new TextEncoder().encode(value)
+        const hex = Array.from(bytes).map((b) => b.toString(16).padStart(2, '0')).join(separator)
+        return { result: hex }
+      } else {
+        const clean = value.replace(/\s+/g, '').replace(/0x/gi, '')
+        if (!/^[0-9a-fA-F]*$/.test(clean) || clean.length % 2 !== 0)
+          throw new Error('Invalid hex string - must be even number of hex digits')
+        const bytes = new Uint8Array(clean.length / 2)
+        for (let i = 0; i < clean.length; i += 2) bytes[i / 2] = parseInt(clean.slice(i, i + 2), 16)
+        return { result: new TextDecoder().decode(bytes) }
+      }
+    },
+  },
+
+  'unicode-escape-converter': {
+    description: 'Convert between literal Unicode characters and escape sequences',
+    schema: {
+      type: 'object',
+      properties: {
+        input: { type: 'string', description: 'Text or escape sequences to convert' },
+        action: {
+          type: 'string',
+          enum: ['to-js', 'to-python', 'to-codepoints', 'to-html', 'unescape'],
+          description: 'to-js: text→\\uXXXX, to-python: text→\\UXXXXXXXX, to-codepoints: text→U+XXXX, to-html: text→&#DDDD;, unescape: any escapes→text',
+        },
+      },
+      required: ['input', 'action'],
+    },
+    handler: async (input) => {
+      const { input: value, action } = input
+      let result: string
+      switch (action) {
+        case 'to-js':
+          result = [...value].map((c) => {
+            const cp = c.codePointAt(0)!
+            return cp > 0xffff
+              ? `\\u{${cp.toString(16).toUpperCase()}}`
+              : cp < 128 ? c : `\\u${cp.toString(16).padStart(4, '0').toUpperCase()}`
+          }).join('')
+          break
+        case 'to-python':
+          result = [...value].map((c) => {
+            const cp = c.codePointAt(0)!
+            return cp < 128 ? c : `\\U${cp.toString(16).padStart(8, '0').toUpperCase()}`
+          }).join('')
+          break
+        case 'to-codepoints':
+          result = [...value].map((c) => `U+${c.codePointAt(0)!.toString(16).padStart(4, '0').toUpperCase()}`).join(' ')
+          break
+        case 'to-html':
+          result = [...value].map((c) => {
+            const cp = c.codePointAt(0)!
+            return cp < 128 ? c : `&#${cp};`
+          }).join('')
+          break
+        case 'unescape':
+          result = value
+            .replace(/\\u\{([0-9a-fA-F]+)\}/g, (_, h) => String.fromCodePoint(parseInt(h, 16)))
+            .replace(/\\u([0-9a-fA-F]{4})/g, (_, h) => String.fromCodePoint(parseInt(h, 16)))
+            .replace(/\\U([0-9a-fA-F]{8})/g, (_, h) => String.fromCodePoint(parseInt(h, 16)))
+            .replace(/&#([0-9]+);/g, (_, n) => String.fromCodePoint(parseInt(n, 10)))
+            .replace(/&#x([0-9a-fA-F]+);/g, (_, h) => String.fromCodePoint(parseInt(h, 16)))
+          break
+        default:
+          throw new Error(`Unknown action: ${action}`)
+      }
+      return { result }
+    },
+  },
+
+  rot13: {
+    description: 'Apply ROT13 cipher to text - also reverses a previous ROT13',
+    schema: {
+      type: 'object',
+      properties: {
+        text: { type: 'string', description: 'Text to apply ROT13 to' },
+      },
+      required: ['text'],
+    },
+    handler: async (input) => {
+      const { text } = input
+      const result = text.replace(/[a-zA-Z]/g, (c) => {
+        const base = c <= 'Z' ? 65 : 97
+        return String.fromCharCode(((c.charCodeAt(0) - base + 13) % 26) + base)
+      })
+      return { result }
+    },
+  },
 }
 
 // Helper functions
@@ -3005,4 +3305,129 @@ function inferJsonSchema(value: unknown): Record<string, unknown> {
   if (typeof value === 'number') return Number.isInteger(value) ? { type: 'integer' } : { type: 'number' }
   if (typeof value === 'boolean') return { type: 'boolean' }
   return {}
+}
+
+// ─── Color contrast helpers ────────────────────────────────────────────────────
+
+function parseColorToRgb(color: string): { r: number; g: number; b: number } | null {
+  const s = color.trim()
+  if (s.startsWith('#')) {
+    const hex = s.slice(1)
+    if (hex.length === 3) {
+      const [r, g, b] = hex.split('').map((c) => parseInt(c + c, 16))
+      return { r: r!, g: g!, b: b! }
+    }
+    if (hex.length === 6) {
+      return {
+        r: parseInt(hex.slice(0, 2), 16),
+        g: parseInt(hex.slice(2, 4), 16),
+        b: parseInt(hex.slice(4, 6), 16),
+      }
+    }
+  }
+  const rgb = s.match(/^rgb\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\)$/i)
+  if (rgb) return { r: parseInt(rgb[1]!), g: parseInt(rgb[2]!), b: parseInt(rgb[3]!) }
+  const hsl = s.match(/^hsl\(\s*(\d+)\s*,\s*([\d.]+)%\s*,\s*([\d.]+)%\s*\)$/i)
+  if (hsl) {
+    const h = parseInt(hsl[1]!) / 360
+    const sl = parseFloat(hsl[2]!) / 100
+    const l = parseFloat(hsl[3]!) / 100
+    const q = l < 0.5 ? l * (1 + sl) : l + sl - l * sl
+    const p = 2 * l - q
+    const hue2rgb = (t: number) => {
+      if (t < 0) t += 1
+      if (t > 1) t -= 1
+      if (t < 1 / 6) return p + (q - p) * 6 * t
+      if (t < 1 / 2) return q
+      if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6
+      return p
+    }
+    return {
+      r: Math.round(hue2rgb(h + 1 / 3) * 255),
+      g: Math.round(hue2rgb(h) * 255),
+      b: Math.round(hue2rgb(h - 1 / 3) * 255),
+    }
+  }
+  return null
+}
+
+function relativeLuminance(rgb: { r: number; g: number; b: number }): number {
+  const chan = (c: number) => {
+    const s = c / 255
+    return s <= 0.04045 ? s / 12.92 : Math.pow((s + 0.055) / 1.055, 2.4)
+  }
+  return 0.2126 * chan(rgb.r) + 0.7152 * chan(rgb.g) + 0.0722 * chan(rgb.b)
+}
+
+function contrastRatio(fg: { r: number; g: number; b: number }, bg: { r: number; g: number; b: number }): number {
+  const l1 = relativeLuminance(fg)
+  const l2 = relativeLuminance(bg)
+  const lighter = Math.max(l1, l2)
+  const darker = Math.min(l1, l2)
+  return (lighter + 0.05) / (darker + 0.05)
+}
+
+function rgbToHslValues(r: number, g: number, b: number): { h: number; s: number; l: number } {
+  const rr = r / 255, gg = g / 255, bb = b / 255
+  const max = Math.max(rr, gg, bb), min = Math.min(rr, gg, bb)
+  const l = (max + min) / 2
+  if (max === min) return { h: 0, s: 0, l }
+  const d = max - min
+  const s = l > 0.5 ? d / (2 - max - min) : d / (max + min)
+  let h = 0
+  if (max === rr) h = ((gg - bb) / d + (gg < bb ? 6 : 0)) / 6
+  else if (max === gg) h = ((bb - rr) / d + 2) / 6
+  else h = ((rr - gg) / d + 4) / 6
+  return { h: Math.round(h * 360), s: Math.round(s * 100), l: Math.round(l * 100) }
+}
+
+function hslToHexValue(h: number, s: number, l: number): string {
+  const sl = s / 100, ll = l / 100
+  const q = ll < 0.5 ? ll * (1 + sl) : ll + sl - ll * sl
+  const p = 2 * ll - q
+  const hue2rgb = (t: number) => {
+    if (t < 0) t += 1
+    if (t > 1) t -= 1
+    if (t < 1 / 6) return p + (q - p) * 6 * t
+    if (t < 1 / 2) return q
+    if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6
+    return p
+  }
+  const hh = h / 360
+  const r = Math.round(hue2rgb(hh + 1 / 3) * 255)
+  const g = Math.round(hue2rgb(hh) * 255)
+  const b = Math.round(hue2rgb(hh - 1 / 3) * 255)
+  return `#${[r, g, b].map((v) => v.toString(16).padStart(2, '0')).join('')}`
+}
+
+function colorEntry(h: number, s: number, l: number) {
+  const hex = hslToHexValue(h, s, l)
+  const rgb = parseColorToRgb(hex)!
+  return { hex, rgb: `rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`, hsl: `hsl(${h}, ${s}%, ${l}%)` }
+}
+
+function generatePalettes(base: { h: number; s: number; l: number }) {
+  const { h, s, l } = base
+  const mod = (n: number, m: number) => ((n % m) + m) % m
+  return {
+    base: colorEntry(h, s, l),
+    complementary: [colorEntry(h, s, l), colorEntry(mod(h + 180, 360), s, l)],
+    analogous: [
+      colorEntry(mod(h - 30, 360), s, l),
+      colorEntry(h, s, l),
+      colorEntry(mod(h + 30, 360), s, l),
+    ],
+    triadic: [
+      colorEntry(h, s, l),
+      colorEntry(mod(h + 120, 360), s, l),
+      colorEntry(mod(h + 240, 360), s, l),
+    ],
+    tetradic: [
+      colorEntry(h, s, l),
+      colorEntry(mod(h + 90, 360), s, l),
+      colorEntry(mod(h + 180, 360), s, l),
+      colorEntry(mod(h + 270, 360), s, l),
+    ],
+    shades: Array.from({ length: 5 }, (_, i) => colorEntry(h, s, 20 + i * 15)),
+  }
 }

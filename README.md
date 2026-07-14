@@ -1,6 +1,6 @@
 # AI Developer Tools
 
-A comprehensive collection of **87 free developer and AI-powered tools** for developers and creators. All tools are instant, require no signup, and work completely in your browser.
+A comprehensive collection of **96 free developer and AI-powered tools** for developers and creators. All tools are instant, require no signup, and work completely in your browser.
 
 [Visit Live](ai-developer-tools.vercel.app/)
 
@@ -42,8 +42,8 @@ curl -X POST https://ai-developer-tools.vercel.app/api/mcp \
 
 ## 🚀 Features
 
-- **87 Tools** across multiple categories
-- **78 MCP-Enabled Tools** callable by Claude AI via `/api/mcp`
+- **96 Tools** across multiple categories
+- **87 MCP-Enabled Tools** callable by Claude AI via `/api/mcp`
 - **Pinnable Tools** - Pin your frequently used tools for quick access
 - **Search & Filter** - Find tools by name, description, or category
 - **9 AI Tools** - Bring your own API key; supports OpenAI, Anthropic, Google, Groq, Mistral, Azure, Bedrock, and Ollama
@@ -57,7 +57,7 @@ curl -X POST https://ai-developer-tools.vercel.app/api/mcp \
 
 > **MCP column key:** `✅` = callable via `/api/mcp` · `—` = browser-only or coming soon
 
-### Developer Tools (22 tools)
+### Developer Tools (28 tools)
 
 | Tool | Status | MCP | Description |
 |------|--------|-----|-------------|
@@ -84,6 +84,12 @@ curl -X POST https://ai-developer-tools.vercel.app/api/mcp \
 | **Query String Parser** | ✅ Built | ✅ | Parse query strings or full URLs into a key-value table; handles arrays and encoded values |
 | **Word & Character Counter** | ✅ Built | ✅ | Live text stats: words, characters, sentences, paragraphs, and reading time |
 | **Lorem Ipsum Generator** | ✅ Built | ✅ | Generate placeholder text by paragraph, sentence, or word count |
+| **Color Contrast Checker** | ✅ Built | ✅ | Check WCAG AA/AAA contrast ratios between foreground and background colors |
+| **Color Palette Generator** | ✅ Built | ✅ | Generate complementary, analogous, triadic, and tetradic palettes from a base color |
+| **CSS Gradient Builder** | ✅ Built | ✅ | Build linear/radial CSS gradients visually with color stops; outputs ready-to-use CSS |
+| **Random String Generator** | ✅ Built | ✅ | Generate random strings with configurable length, count, and charset |
+| **Slug Generator** | ✅ Built | ✅ | Convert any string to a URL-safe slug with configurable separator and case |
+| **Line Utilities** | ✅ Built | ✅ | Sort, reverse, deduplicate, shuffle, number, trim, or remove empty lines |
 
 ### Validation Tools (11 tools)
 
@@ -115,7 +121,7 @@ curl -X POST https://ai-developer-tools.vercel.app/api/mcp \
 | **SQL Formatter** | ✅ Built | ✅ | Format SQL queries with proper indentation |
 | **HTML Formatter** | ✅ Built | ✅ | Format and beautify HTML markup with custom indentation |
 
-### Converter Tools (28 tools)
+### Converter Tools (31 tools)
 
 | Tool | Status | MCP | Description |
 |------|--------|-----|-------------|
@@ -148,6 +154,9 @@ curl -X POST https://ai-developer-tools.vercel.app/api/mcp \
 | **HTML / Markdown Converter** | ✅ Built | ✅ | Convert HTML to clean Markdown, or render Markdown to styled HTML |
 | **Excel / CSV to JSON** | ✅ Built | ✅ | Convert Excel (.xlsx, .xls) or CSV files to JSON; multi-sheet with per-sheet header row config |
 | **Excel / CSV to Markdown** | ✅ Built | ✅ | Convert Excel (.xlsx, .xls) or CSV files to Markdown tables; multi-sheet with per-sheet header row config |
+| **Hex / Text Converter** | ✅ Built | ✅ | Encode any string to its hexadecimal byte representation and decode hex back to text |
+| **Unicode Escape Converter** | ✅ Built | ✅ | Convert between literal characters and \\uXXXX, \\UXXXXXXXX, U+XXXX, or HTML entity escapes |
+| **ROT13** | ✅ Built | ✅ | Apply ROT13 substitution cipher - also reverses a previous ROT13 |
 
 ### AI Tools (11 tools)
 
@@ -182,10 +191,10 @@ Supported providers: OpenAI, Anthropic, Google Gemini, Groq, Mistral, Azure Open
 
 ## 📊 Stats
 
-- **Total Tools**: 87
-- **Built & Ready**: 87 ✅
+- **Total Tools**: 96
+- **Built & Ready**: 96 ✅
 - **Coming Soon**: 0 🏗️
-- **MCP Enabled**: 78 ✅ (callable via `/api/mcp`)
+- **MCP Enabled**: 87 ✅ (callable via `/api/mcp`)
 - **Categories**: 6 (Developer, Validation, Formatter, Converter, AI Tools, Utilities)
 
 ---

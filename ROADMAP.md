@@ -272,22 +272,24 @@ After Phase 1 the catalog grew from 79 to 87 entries and added 8 new MCP-callabl
 
 ---
 
-### Phase 2 - Encoding, Text & Color
+### Phase 2 - Encoding, Text & Color ✅ COMPLETED (2026-07-14)
 
 **Goal:** Round out the encoding and text manipulation utilities, and expand color tooling.
 All are deterministic and client-side; most are MCP-callable.
 
-| Tool | Category | Notes |
-|---|---|---|
-| **Color Contrast Checker** | Developer | Foreground + background input; WCAG AA/AAA pass/fail ratios |
-| **Color Palette Generator** | Developer | Base color input; complementary/analogous/triadic palettes with hex/rgb/hsl output |
-| **CSS Gradient Builder** | Developer | Visual gradient editor; outputs `linear-gradient(...)` CSS string |
-| **Random String Generator** | Developer | Length, charset (alphanumeric, hex, base58, custom), count |
-| **Slug Generator** | Developer | Convert any string to a URL-safe slug; separator and case options |
-| **Line Utilities** | Developer | Sort, deduplicate, reverse, pick random line - single tool with action tabs |
-| **Hex <-> Text Converter** | Converter | Encode any string to hex bytes and decode back |
-| **Unicode Escape Converter** | Converter | Literal characters <-> `\uXXXX` / `U+XXXX` forms |
-| **ROT13** | Converter | Simple Caesar cipher, MCP-callable |
+| Tool | Category | Status | Notes |
+|---|---|---|---|
+| **Color Contrast Checker** | Developer | ✅ Done | Foreground + background input; WCAG AA/AAA pass/fail ratios at `/tools/color-contrast-checker` |
+| **Color Palette Generator** | Developer | ✅ Done | Base color input; complementary/analogous/triadic/tetradic palettes + shades at `/tools/color-palette-generator` |
+| **CSS Gradient Builder** | Developer | ✅ Done | Visual stop editor; linear/radial; outputs ready CSS string at `/tools/css-gradient-builder` |
+| **Random String Generator** | Developer | ✅ Done | Length, charset (alphanumeric, hex, base58, custom), count at `/tools/random-string-generator` |
+| **Slug Generator** | Developer | ✅ Done | Separator and case options; live preview at `/tools/slug-generator` |
+| **Line Utilities** | Developer | ✅ Done | Sort, deduplicate, reverse, shuffle, number, trim, remove-empty at `/tools/line-utilities` |
+| **Hex / Text Converter** | Converter | ✅ Done | Encode any string to hex bytes and decode back at `/tools/hex-text-converter` |
+| **Unicode Escape Converter** | Converter | ✅ Done | Text ↔ \\uXXXX / \\UXXXXXXXX / U+XXXX / HTML entities at `/tools/unicode-escape-converter` |
+| **ROT13** | Converter | ✅ Done | ROT13 cipher with swap button at `/tools/rot13` |
+
+After Phase 2 the catalog grew from 87 to 96 entries and added 9 new MCP-callable tools.
 
 ---
 

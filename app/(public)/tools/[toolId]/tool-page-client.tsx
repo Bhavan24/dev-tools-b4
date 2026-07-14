@@ -42,6 +42,15 @@ import { QueryStringParserTool } from '@/components/tools/query-string-parser-to
 import { WordCounterTool } from '@/components/tools/word-counter-tool'
 import { LoremIpsumTool } from '@/components/tools/lorem-ipsum-tool'
 import { JsonSchemaValidatorTool, JsonSchemaGeneratorTool } from '@/components/tools/json-schema-tools'
+import { ColorContrastTool } from '@/components/tools/color-contrast-tool'
+import { ColorPaletteTool } from '@/components/tools/color-palette-tool'
+import { CssGradientTool } from '@/components/tools/css-gradient-tool'
+import { RandomStringGeneratorTool } from '@/components/tools/random-string-generator-tool'
+import { SlugGeneratorTool } from '@/components/tools/slug-generator-tool'
+import { LineUtilitiesTool } from '@/components/tools/line-utilities-tool'
+import { HexTextConverterTool } from '@/components/tools/hex-text-converter-tool'
+import { UnicodeEscapeTool } from '@/components/tools/unicode-escape-tool'
+import { Rot13Tool } from '@/components/tools/rot13-tool'
 import { JsValidatorTool } from '@/components/tools/js-validator-tool'
 import { JsonMinifierTool } from '@/components/tools/json-minifier-tool'
 import { JsMinifierTool } from '@/components/tools/js-minifier-tool'
@@ -151,6 +160,17 @@ const TOOL_REGISTRY: Record<string, () => React.ReactElement> = {
   'json-path-evaluator': () => <PathEvaluatorTool toolId="json-path-evaluator" />,
   'xpath-evaluator': () => <PathEvaluatorTool toolId="xpath-evaluator" />,
   'jsonpath-finder': () => <JsonpathFinderTool toolId="jsonpath-finder" />,
+
+  // Phase 2 tools
+  'color-contrast-checker': () => <ColorContrastTool />,
+  'color-palette-generator': () => <ColorPaletteTool />,
+  'css-gradient-builder': () => <CssGradientTool />,
+  'random-string-generator': () => <RandomStringGeneratorTool />,
+  'slug-generator': () => <SlugGeneratorTool />,
+  'line-utilities': () => <LineUtilitiesTool />,
+  'hex-text-converter': () => <HexTextConverterTool />,
+  'unicode-escape-converter': () => <UnicodeEscapeTool />,
+  rot13: () => <Rot13Tool />,
 
   // Phase 1 tools
   'cron-expression-builder': () => <CronExpressionTool />,
