@@ -17,6 +17,14 @@ export function AITools({ toolId }: AIToolsProps) {
   if (toolId === 'ai-test-generator') return <AITestGeneratorTool />
   if (toolId === 'ai-sql-builder') return <AISqlBuilderTool />
   if (toolId === 'ai-schema-generator') return <AISchemaGeneratorTool />
+  if (toolId === 'ai-commit-generator') return <AICommitGeneratorTool />
+  if (toolId === 'ai-regex-generator') return <AIRegexGeneratorTool />
+  if (toolId === 'ai-error-explainer') return <AIErrorExplainerTool />
+  if (toolId === 'ai-log-analyzer') return <AILogAnalyzerTool />
+  if (toolId === 'ai-dockerfile-generator') return <AIDockerfileGeneratorTool />
+  if (toolId === 'ai-architecture-diagram') return <AIArchitectureDiagramTool />
+  if (toolId === 'ai-prompt-optimizer') return <AIPromptOptimizerTool />
+  if (toolId === 'ai-release-notes') return <AIReleaseNotesTool />
   return null
 }
 
@@ -295,6 +303,251 @@ function AISchemaGeneratorTool() {
             <option value="sql">SQL CREATE TABLE</option>
             <option value="prisma">Prisma schema</option>
           </select>
+        </div>
+      }
+    />
+  )
+}
+
+function AICommitGeneratorTool() {
+  const [scope, setScope] = useState('')
+
+  return (
+    <AIToolShell
+      toolId="ai-commit-generator"
+      systemPromptKey="ai-commit-generator"
+      inputLabel="Git diff or changed files"
+      inputPlaceholder={`Paste your git diff output, or describe the changes:\n\n- Added user authentication with JWT\n- Fixed login form validation\n- Updated README with setup instructions`}
+      inputType="code"
+      submitLabel="Generate Commit Message"
+      buildToolFields={(input) => ({ diff: input, scope })}
+      extraFields={
+        <div>
+          <label className="block font-medium text-foreground mb-2">
+            Scope <span className="text-muted-foreground text-xs font-normal">(optional)</span>
+          </label>
+          <input
+            type="text"
+            value={scope}
+            onChange={(e) => setScope(e.target.value)}
+            placeholder="e.g. auth, api, ui, db..."
+            className="input-base"
+          />
+        </div>
+      }
+    />
+  )
+}
+
+function AIRegexGeneratorTool() {
+  const [language, setLanguage] = useState('JavaScript')
+
+  return (
+    <AIToolShell
+      toolId="ai-regex-generator"
+      systemPromptKey="ai-regex-generator"
+      inputLabel="Describe what to match"
+      inputPlaceholder="e.g. A valid email address that allows plus signs in the local part but rejects consecutive dots..."
+      submitLabel="Generate Regex"
+      buildToolFields={(input) => ({ description: input, language })}
+      extraFields={
+        <div>
+          <label className="block font-medium text-foreground mb-2">Target language / engine</label>
+          <select
+            value={language}
+            onChange={(e) => setLanguage(e.target.value)}
+            className="input-base"
+          >
+            {['JavaScript', 'Python', 'PCRE', 'Java', 'Go', 'Ruby', 'Rust', '.NET'].map((l) => (
+              <option key={l} value={l}>
+                {l}
+              </option>
+            ))}
+          </select>
+        </div>
+      }
+    />
+  )
+}
+
+function AIErrorExplainerTool() {
+  const [context, setContext] = useState('')
+
+  return (
+    <AIToolShell
+      toolId="ai-error-explainer"
+      systemPromptKey="ai-error-explainer"
+      inputLabel="Stack trace or error message"
+      inputPlaceholder={`Paste your error or stack trace here:\n\nTypeError: Cannot read properties of undefined (reading 'map')\n    at UserList (/app/components/UserList.tsx:12:20)\n    ...`}
+      inputType="code"
+      submitLabel="Explain Error"
+      buildToolFields={(input) => ({ error: input, context })}
+      extraFields={
+        <div>
+          <label className="block font-medium text-foreground mb-2">
+            Context <span className="text-muted-foreground text-xs font-normal">(optional)</span>
+          </label>
+          <input
+            type="text"
+            value={context}
+            onChange={(e) => setContext(e.target.value)}
+            placeholder="e.g. React 18 app, Node.js server, calling an API endpoint..."
+            className="input-base"
+          />
+        </div>
+      }
+    />
+  )
+}
+
+function AILogAnalyzerTool() {
+  const [focus, setFocus] = useState('')
+
+  return (
+    <AIToolShell
+      toolId="ai-log-analyzer"
+      systemPromptKey="ai-log-analyzer"
+      inputLabel="Log content"
+      inputPlaceholder={`Paste your server or application logs here:\n\n2024-01-15 10:23:45 INFO  Server started on port 3000\n2024-01-15 10:24:12 ERROR Database connection failed: ETIMEDOUT\n...`}
+      inputType="code"
+      submitLabel="Analyze Logs"
+      buildToolFields={(input) => ({ logs: input, focus })}
+      extraFields={
+        <div>
+          <label className="block font-medium text-foreground mb-2">
+            Focus area <span className="text-muted-foreground text-xs font-normal">(optional)</span>
+          </label>
+          <input
+            type="text"
+            value={focus}
+            onChange={(e) => setFocus(e.target.value)}
+            placeholder="e.g. errors only, slow queries, authentication failures..."
+            className="input-base"
+          />
+        </div>
+      }
+    />
+  )
+}
+
+function AIDockerfileGeneratorTool() {
+  const [baseImage, setBaseImage] = useState('')
+
+  return (
+    <AIToolShell
+      toolId="ai-dockerfile-generator"
+      systemPromptKey="ai-dockerfile-generator"
+      inputLabel="Describe your application stack"
+      inputPlaceholder="e.g. A Node.js 20 Express API with TypeScript, pnpm, and a build step that outputs to dist/. Listens on port 3000. Needs a non-root user."
+      submitLabel="Generate Dockerfile"
+      buildToolFields={(input) => ({ description: input, baseImage })}
+      extraFields={
+        <div>
+          <label className="block font-medium text-foreground mb-2">
+            Preferred base image{' '}
+            <span className="text-muted-foreground text-xs font-normal">(optional)</span>
+          </label>
+          <input
+            type="text"
+            value={baseImage}
+            onChange={(e) => setBaseImage(e.target.value)}
+            placeholder="e.g. node:20-alpine, python:3.12-slim, ubuntu:24.04..."
+            className="input-base"
+          />
+        </div>
+      }
+    />
+  )
+}
+
+function AIArchitectureDiagramTool() {
+  const [diagramType, setDiagramType] = useState('')
+
+  return (
+    <AIToolShell
+      toolId="ai-architecture-diagram"
+      systemPromptKey="ai-architecture-diagram"
+      inputLabel="Describe your system"
+      inputPlaceholder="e.g. A web app with a React frontend, Node.js API, PostgreSQL database, Redis cache, and an S3 bucket for file storage. Users authenticate via OAuth. The API calls a third-party payment service."
+      submitLabel="Generate Diagram"
+      buildToolFields={(input) => ({ description: input, diagramType })}
+      extraFields={
+        <div>
+          <label className="block font-medium text-foreground mb-2">
+            Diagram type{' '}
+            <span className="text-muted-foreground text-xs font-normal">(optional - auto if blank)</span>
+          </label>
+          <select
+            value={diagramType}
+            onChange={(e) => setDiagramType(e.target.value)}
+            className="input-base"
+          >
+            <option value="">Auto-select</option>
+            <option value="flowchart">Flowchart (components & data flow)</option>
+            <option value="sequence">Sequence (request/response flow)</option>
+            <option value="class">Class diagram</option>
+            <option value="C4">C4 Context diagram</option>
+            <option value="ER">Entity Relationship</option>
+          </select>
+        </div>
+      }
+    />
+  )
+}
+
+function AIPromptOptimizerTool() {
+  const [targetModel, setTargetModel] = useState('')
+
+  return (
+    <AIToolShell
+      toolId="ai-prompt-optimizer"
+      systemPromptKey="ai-prompt-optimizer"
+      inputLabel="Prompt to optimize"
+      inputPlaceholder="Paste the prompt you want to improve here..."
+      submitLabel="Optimize Prompt"
+      buildToolFields={(input) => ({ prompt: input, targetModel })}
+      extraFields={
+        <div>
+          <label className="block font-medium text-foreground mb-2">
+            Target model{' '}
+            <span className="text-muted-foreground text-xs font-normal">(optional)</span>
+          </label>
+          <input
+            type="text"
+            value={targetModel}
+            onChange={(e) => setTargetModel(e.target.value)}
+            placeholder="e.g. Claude, GPT-4o, Gemini 1.5 Pro..."
+            className="input-base"
+          />
+        </div>
+      }
+    />
+  )
+}
+
+function AIReleaseNotesTool() {
+  const [version, setVersion] = useState('')
+
+  return (
+    <AIToolShell
+      toolId="ai-release-notes"
+      systemPromptKey="ai-release-notes"
+      inputLabel="Commit log or PR titles"
+      inputPlaceholder={`Paste one commit message or PR title per line:\n\nfeat(auth): add OAuth2 login with Google\nfix(api): resolve rate limit race condition\nchore(deps): upgrade React to 19.1\ndocs: update API reference for v2 endpoints`}
+      submitLabel="Generate Release Notes"
+      buildToolFields={(input) => ({ commits: input, version })}
+      extraFields={
+        <div>
+          <label className="block font-medium text-foreground mb-2">
+            Version <span className="text-muted-foreground text-xs font-normal">(optional)</span>
+          </label>
+          <input
+            type="text"
+            value={version}
+            onChange={(e) => setVersion(e.target.value)}
+            placeholder="e.g. v2.1.0, 1.5.3..."
+            className="input-base"
+          />
         </div>
       }
     />

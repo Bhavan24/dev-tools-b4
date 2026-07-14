@@ -398,18 +398,20 @@ After Phase 8 the catalog grew from 126 to 131 entries. All 5 tools are browser-
 
 ---
 
-### Phase 9 - AI Suite Extensions
+### Phase 9 - AI Suite Extensions ✅ COMPLETED (2026-07-14)
 
 **Goal:** Extend the existing AI Tools category with targeted additions that don't duplicate existing tools.
 All require BYOK (bring your own API key) like the rest of the AI suite.
 
-| Tool | Category | Notes |
-|---|---|---|
-| **AI Commit Message Generator** | AI Tools | Paste a diff or changed file list; get a conventional commit message |
-| **AI Regex Generator** | AI Tools | Describe what to match; get a regex with explanation; pairs with existing Regex Parser |
-| **AI Error Explainer** | AI Tools | Paste a stack trace; get plain-language explanation and fix suggestions |
-| **AI Log Analyzer** | AI Tools | Paste server/app logs; get a summary of errors, anomalies, and patterns |
-| **AI Dockerfile Generator** | AI Tools | Describe your stack; get a production-ready Dockerfile |
-| **AI Architecture Diagram Generator** | AI Tools | Describe your system; get Mermaid source (pairs with Phase 6 Mermaid Preview) |
-| **AI Prompt Optimizer** | AI Tools | Paste a prompt; get suggestions for clarity and effectiveness |
-| **AI Release Notes Generator** | AI Tools | Paste commit log or PR titles; get formatted release notes |
+| Tool | Category | Status | Notes |
+|---|---|---|---|
+| **AI Commit Message Generator** | AI Tools | ✅ Done | Paste a diff or list of changed files; get a Conventional Commits-formatted message; optional scope hint at `/tools/ai-commit-generator` |
+| **AI Regex Generator** | AI Tools | ✅ Done | Describe what to match; get regex with flags, explanation, and match/non-match examples; language/engine selector; pairs with Regex Parser at `/tools/ai-regex-generator` |
+| **AI Error Explainer** | AI Tools | ✅ Done | Paste a stack trace; get plain-language explanation, root cause analysis, and step-by-step fix suggestions at `/tools/ai-error-explainer` |
+| **AI Log Analyzer** | AI Tools | ✅ Done | Paste server/app logs; get structured summary of errors, anomalies, patterns, and next steps; optional focus area at `/tools/ai-log-analyzer` |
+| **AI Dockerfile Generator** | AI Tools | ✅ Done | Describe your stack; get a production-ready Dockerfile with multi-stage build, non-root user, and optimized layer caching; optional base image hint at `/tools/ai-dockerfile-generator` |
+| **AI Architecture Diagram Generator** | AI Tools | ✅ Done | Describe your system; get Mermaid diagram source; diagram type selector (flowchart, sequence, class, C4, ER); pairs with Phase 6 Mermaid Preview at `/tools/ai-architecture-diagram` |
+| **AI Prompt Optimizer** | AI Tools | ✅ Done | Paste a prompt; get issue analysis and optimized version with clearer instructions; optional target model context at `/tools/ai-prompt-optimizer` |
+| **AI Release Notes Generator** | AI Tools | ✅ Done | Paste commit log or PR titles; get polished release notes grouped by features, fixes, and breaking changes; optional version number at `/tools/ai-release-notes` |
+
+After Phase 9 the catalog grew from 131 to 139 entries and added 8 new MCP-callable AI tools.

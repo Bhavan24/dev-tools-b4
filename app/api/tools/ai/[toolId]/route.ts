@@ -77,6 +77,30 @@ export async function POST(
         userInput = `${dialect}${schemaCtx}Query: ${body.description || ''}`
       } else if (toolId === 'ai-schema-generator') {
         userInput = `Generate a ${body.format || 'json-schema'} schema for:\n\n${body.input || ''}`
+      } else if (toolId === 'ai-commit-generator') {
+        const scope = body.scope ? `Suggested scope: ${body.scope}\n\n` : ''
+        userInput = `${scope}Changes:\n${body.diff || ''}`
+      } else if (toolId === 'ai-regex-generator') {
+        const lang = body.language ? `Target engine: ${body.language}\n\n` : ''
+        userInput = `${lang}Match: ${body.description || ''}`
+      } else if (toolId === 'ai-error-explainer') {
+        const ctx = body.context ? `Context: ${body.context}\n\n` : ''
+        userInput = `${ctx}Error:\n${body.error || ''}`
+      } else if (toolId === 'ai-log-analyzer') {
+        const focus = body.focus ? `Focus: ${body.focus}\n\n` : ''
+        userInput = `${focus}Logs:\n${body.logs || ''}`
+      } else if (toolId === 'ai-dockerfile-generator') {
+        const base = body.baseImage ? `Preferred base image: ${body.baseImage}\n\n` : ''
+        userInput = `${base}Stack: ${body.description || ''}`
+      } else if (toolId === 'ai-architecture-diagram') {
+        const type = body.diagramType ? `Preferred diagram type: ${body.diagramType}\n\n` : ''
+        userInput = `${type}System: ${body.description || ''}`
+      } else if (toolId === 'ai-prompt-optimizer') {
+        const model = body.targetModel ? `Target model: ${body.targetModel}\n\n` : ''
+        userInput = `${model}Prompt to optimize:\n${body.prompt || ''}`
+      } else if (toolId === 'ai-release-notes') {
+        const ver = body.version ? `Version: ${body.version}\n\n` : ''
+        userInput = `${ver}Commits:\n${body.commits || ''}`
       }
 
       return await invokeAIStream(config, systemPrompt, userInput)

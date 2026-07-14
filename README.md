@@ -46,7 +46,7 @@ curl -X POST https://ai-developer-tools.vercel.app/api/mcp \
 - **111 MCP-Enabled Tools** callable by Claude AI via `/api/mcp`
 - **Pinnable Tools** - Pin your frequently used tools for quick access
 - **Search & Filter** - Find tools by name, description, or category
-- **9 AI Tools** - Bring your own API key; supports OpenAI, Anthropic, Google, Groq, Mistral, Azure, Bedrock, and Ollama
+- **19 AI Tools** - Bring your own API key; supports OpenAI, Anthropic, Google, Groq, Mistral, Azure, Bedrock, and Ollama
 - **Dark Mode** - Full light/dark theme support
 - **No Signup Required** - Works instantly in your browser
 - **Fully Responsive** - Works perfectly on mobile, tablet, and desktop
@@ -185,7 +185,7 @@ curl -X POST https://ai-developer-tools.vercel.app/api/mcp \
 | **PDF Editor** | ✅ Built | — | Edit PDF files: add annotations, rotate or delete pages, merge or split PDFs (browser-only) |
 | **SVG to PNG** | ✅ Built | — | Render an SVG at any scale (1×, 2×, 3×, 4×) and download as PNG with optional transparent background; browser-only |
 
-### AI Tools (11 tools)
+### AI Tools (19 tools)
 
 All AI tools require you to supply your own API credentials.
 Credentials are passed in each request body and never stored server-side.
@@ -204,6 +204,14 @@ Supported providers: OpenAI, Anthropic, Google Gemini, Groq, Mistral, Azure Open
 | **AI Schema Generator** | ✅ Built | ✅ | Generate JSON Schema, OpenAPI specs, SQL CREATE TABLE, or Prisma schemas from sample data or descriptions. |
 | **Workflow Builder** | ✅ Built | ✅ | ReactFlow-based visual workflow builder. Drag-and-drop LLM, conditional, loop, transform, and tool-call nodes. Export/import workflows as JSON. MCP-callable for server-side execution. |
 | **Researcher Agent** | ✅ Built | ✅ | Multi-step AI research with optional Tavily web search (BYOK). Streams search progress, collects sources with citations, and synthesizes a Markdown report. Supports quick/standard/deep depth modes. |
+| **AI Commit Message Generator** | ✅ Built | ✅ | Paste a git diff or list of changed files to get a Conventional Commits-formatted commit message. |
+| **AI Regex Generator** | ✅ Built | ✅ | Describe what to match in plain English; get a regex with flags, explanation, and match/non-match examples. Pairs with Regex Parser. |
+| **AI Error Explainer** | ✅ Built | ✅ | Paste a stack trace or error message; get a plain-language explanation, root cause analysis, and fix suggestions. |
+| **AI Log Analyzer** | ✅ Built | ✅ | Paste server or application logs; get a structured summary of errors, anomalies, patterns, and recommended next steps. |
+| **AI Dockerfile Generator** | ✅ Built | ✅ | Describe your app stack; get a production-ready Dockerfile with multi-stage build, non-root user, and optimized layer caching. |
+| **AI Architecture Diagram Generator** | ✅ Built | ✅ | Describe your system; get Mermaid diagram source code. Pairs with the Mermaid Preview tool for instant visualization. |
+| **AI Prompt Optimizer** | ✅ Built | ✅ | Paste a prompt; get an analysis of issues and an optimized version with clearer instructions and better framing. |
+| **AI Release Notes Generator** | ✅ Built | ✅ | Paste commit log or PR titles; get polished release notes grouped by features, fixes, and breaking changes. |
 
 ### Utilities (5 tools)
 
@@ -219,10 +227,10 @@ Supported providers: OpenAI, Anthropic, Google Gemini, Groq, Mistral, Azure Open
 
 ## 📊 Stats
 
-- **Total Tools**: 131
-- **Built & Ready**: 131 ✅
+- **Total Tools**: 139
+- **Built & Ready**: 139 ✅
 - **Coming Soon**: 0 🏗️
-- **MCP Enabled**: 111 ✅ (callable via `/api/mcp`)
+- **MCP Enabled**: 119 ✅ (callable via `/api/mcp`)
 - **Categories**: 6 (Developer, Validation, Formatter, Converter, AI Tools, Utilities)
 
 ---
