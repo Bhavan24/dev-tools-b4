@@ -3189,6 +3189,356 @@ export const toolHandlers: Record<string, ToolHandler> = {
     },
   },
 
+  // ─── Phase 7 – API Protocol Tools ───────────────────────────────────────────
+
+  'openapi-validator': {
+    description: 'Validate an OpenAPI 3.x specification (YAML or JSON) against the schema and surface errors with line numbers',
+    schema: {
+      type: 'object',
+      properties: {
+        spec: {
+          type: 'string',
+          description: 'OpenAPI 3.x specification as a YAML or JSON string',
+        },
+      },
+      required: ['spec'],
+    },
+    handler: async (input) => {
+      const { spec } = input
+      const yaml = await import('js-yaml')
+
+      let parsed: any
+      let format: 'yaml' | 'json' = 'json'
+      try {
+        parsed = JSON.parse(spec)
+      } catch {
+        try {
+          parsed = yaml.load(spec)
+          format = 'yaml'
+        } catch (e: any) {
+          throw new Error(`Could not parse spec as JSON or YAML: ${e.message}`)
+        }
+      }
+
+      if (typeof parsed !== 'object' || parsed === null) {
+        throw new Error('Spec must be a JSON object or YAML mapping')
+      }
+
+      const errors: Array<{ path: string; message: string }> = []
+
+      // Check required top-level fields
+      if (!parsed.openapi) {
+        errors.push({ path: 'openapi', message: 'Missing required field "openapi"' })
+      } else if (typeof parsed.openapi !== 'string' || !parsed.openapi.startsWith('3.')) {
+        errors.push({ path: 'openapi', message: `"openapi" must be a 3.x version string, got: ${parsed.openapi}` })
+      }
+
+      if (!parsed.info) {
+        errors.push({ path: 'info', message: 'Missing required field "info"' })
+      } else {
+        if (!parsed.info.title) errors.push({ path: 'info.title', message: 'Missing required field "info.title"' })
+        if (!parsed.info.version) errors.push({ path: 'info.version', message: 'Missing required field "info.version"' })
+      }
+
+      if (!parsed.paths && !parsed.components) {
+        errors.push({ path: 'paths', message: 'Spec must contain at least "paths" or "components"' })
+      }
+
+      // Validate paths structure
+      if (parsed.paths && typeof parsed.paths === 'object') {
+        const HTTP_METHODS = ['get', 'post', 'put', 'patch', 'delete', 'head', 'options', 'trace']
+        for (const [pathKey, pathItem] of Object.entries(parsed.paths as Record<string, any>)) {
+          if (!pathKey.startsWith('/')) {
+            errors.push({ path: `paths.${pathKey}`, message: `Path must start with "/": ${pathKey}` })
+          }
+          if (typeof pathItem !== 'object' || pathItem === null) continue
+          for (const method of HTTP_METHODS) {
+            const op = pathItem[method]
+            if (!op) continue
+            if (typeof op !== 'object') {
+              errors.push({ path: `paths.${pathKey}.${method}`, message: 'Operation must be an object' })
+              continue
+            }
+            if (!op.responses) {
+              errors.push({ path: `paths.${pathKey}.${method}.responses`, message: 'Operation is missing required field "responses"' })
+            }
+          }
+        }
+      }
+
+      // Check $ref targets exist
+      const allRefs: string[] = []
+      function collectRefs(obj: any, path: string) {
+        if (typeof obj !== 'object' || obj === null) return
+        if (Array.isArray(obj)) { obj.forEach((v, i) => collectRefs(v, `${path}[${i}]`)); return }
+        for (const [k, v] of Object.entries(obj)) {
+          if (k === '$ref' && typeof v === 'string' && v.startsWith('#/')) {
+            allRefs.push(v)
+          }
+          collectRefs(v, `${path}.${k}`)
+        }
+      }
+      collectRefs(parsed, '$')
+
+      for (const ref of allRefs) {
+        const parts = ref.replace('#/', '').split('/')
+        let cur = parsed
+        let valid = true
+        for (const p of parts) {
+          if (typeof cur !== 'object' || cur === null || !(p in cur)) { valid = false; break }
+          cur = cur[p]
+        }
+        if (!valid) {
+          errors.push({ path: ref, message: `Unresolvable $ref: ${ref}` })
+        }
+      }
+
+      const pathCount = parsed.paths ? Object.keys(parsed.paths).length : 0
+      const operationCount = parsed.paths
+        ? Object.values(parsed.paths as Record<string, any>).reduce((n: number, pi: any) => {
+            const HTTP_METHODS = ['get', 'post', 'put', 'patch', 'delete', 'head', 'options', 'trace']
+            return n + HTTP_METHODS.filter((m) => pi && typeof pi[m] === 'object').length
+          }, 0)
+        : 0
+
+      return {
+        valid: errors.length === 0,
+        errorCount: errors.length,
+        errors,
+        format,
+        info: parsed.info ? { title: parsed.info.title, version: parsed.info.version } : null,
+        openapi: parsed.openapi ?? null,
+        pathCount,
+        operationCount,
+      }
+    },
+  },
+
+  'graphql-formatter': {
+    description: 'Format and pretty-print a GraphQL query, mutation, subscription, or schema document',
+    schema: {
+      type: 'object',
+      properties: {
+        query: {
+          type: 'string',
+          description: 'GraphQL document string to format',
+        },
+        indentWidth: {
+          type: 'number',
+          description: 'Number of spaces per indent level (default: 2)',
+        },
+      },
+      required: ['query'],
+    },
+    handler: async (input) => {
+      const { query, indentWidth = 2 } = input
+      const { parse, print } = await import('graphql')
+      let doc: any
+      try {
+        doc = parse(query)
+      } catch (e: any) {
+        throw new Error(`GraphQL parse error: ${e.message}`)
+      }
+      let formatted = print(doc)
+      // graphql-js print() always uses 2-space indent; re-indent if different width requested
+      if (indentWidth !== 2) {
+        const target = ' '.repeat(indentWidth)
+        formatted = formatted
+          .split('\n')
+          .map((line) => {
+            const match = line.match(/^( *)/)
+            const spaces = match ? match[1]! : ''
+            const level = Math.floor(spaces.length / 2)
+            return target.repeat(level) + line.trimStart()
+          })
+          .join('\n')
+      }
+      return { formatted, originalLength: query.length, formattedLength: formatted.length }
+    },
+  },
+
+  'sql-validator': {
+    description: 'Validate SQL syntax for Postgres, MySQL, and SQLite dialects and report errors',
+    schema: {
+      type: 'object',
+      properties: {
+        sql: {
+          type: 'string',
+          description: 'SQL statement or script to validate',
+        },
+        dialect: {
+          type: 'string',
+          enum: ['generic', 'postgresql', 'mysql', 'sqlite'],
+          description: 'SQL dialect for dialect-specific keyword checking (default: generic)',
+        },
+      },
+      required: ['sql'],
+    },
+    handler: async (input) => {
+      const { sql, dialect = 'generic' } = input
+      const errors: Array<{ line: number; column: number; message: string }> = []
+
+      // Tokenise and do structural validation
+      const lines = sql.split('\n')
+
+      // Remove comments for analysis
+      const stripped = sql
+        .replace(/--[^\n]*/g, ' ')
+        .replace(/\/\*[\s\S]*?\*\//g, ' ')
+        .trim()
+
+      if (!stripped) {
+        errors.push({ line: 1, column: 1, message: 'Empty SQL statement' })
+        return { valid: false, errorCount: 1, errors, dialect }
+      }
+
+      // Check balanced parentheses
+      let depth = 0
+      let inString = false
+      let stringChar = ''
+      for (let i = 0; i < stripped.length; i++) {
+        const ch = stripped[i]!
+        if (inString) {
+          if (ch === stringChar && stripped[i - 1] !== '\\') inString = false
+          continue
+        }
+        if (ch === "'" || ch === '"' || ch === '`') { inString = true; stringChar = ch; continue }
+        if (ch === '(') depth++
+        else if (ch === ')') {
+          depth--
+          if (depth < 0) {
+            const linesUpTo = stripped.slice(0, i).split('\n')
+            errors.push({ line: linesUpTo.length, column: linesUpTo[linesUpTo.length - 1]!.length + 1, message: 'Unexpected closing parenthesis ")"' })
+            depth = 0
+          }
+        }
+      }
+      if (depth > 0) {
+        errors.push({ line: lines.length, column: 1, message: `${depth} unclosed parenthesis${depth > 1 ? 'es' : ''}` })
+      }
+
+      // Check that statement starts with a known keyword
+      const firstToken = stripped.match(/^(\w+)/)?.[1]?.toUpperCase() ?? ''
+      const TOP_LEVEL = ['SELECT', 'INSERT', 'UPDATE', 'DELETE', 'CREATE', 'ALTER', 'DROP', 'TRUNCATE', 'MERGE', 'WITH', 'EXPLAIN', 'SHOW', 'DESCRIBE', 'SET', 'BEGIN', 'COMMIT', 'ROLLBACK', 'GRANT', 'REVOKE', 'CALL', 'PRAGMA', 'VACUUM', 'ANALYZE', 'COPY', 'DO']
+      if (firstToken && !TOP_LEVEL.includes(firstToken)) {
+        errors.push({ line: 1, column: 1, message: `Unexpected token "${firstToken}" - expected a SQL keyword like SELECT, INSERT, UPDATE, etc.` })
+      }
+
+      // Dialect-specific checks
+      if (dialect === 'postgresql') {
+        // PostgreSQL doesn't support backtick identifiers
+        if (/`/.test(stripped)) {
+          const idx = stripped.indexOf('`')
+          const linesUpTo = stripped.slice(0, idx).split('\n')
+          errors.push({ line: linesUpTo.length, column: linesUpTo[linesUpTo.length - 1]!.length + 1, message: 'Backtick identifiers are not valid in PostgreSQL; use double quotes instead' })
+        }
+      } else if (dialect === 'mysql') {
+        // MySQL doesn't use $1 style params
+        if (/\$\d+/.test(stripped)) {
+          errors.push({ line: 1, column: 1, message: 'Positional parameters ($1, $2, ...) are a PostgreSQL feature; MySQL uses "?" placeholders' })
+        }
+      } else if (dialect === 'sqlite') {
+        const unsupported = ['FULL OUTER JOIN', 'RIGHT JOIN', 'STORED GENERATED', 'TABLESPACE']
+        for (const kw of unsupported) {
+          if (stripped.toUpperCase().includes(kw)) {
+            errors.push({ line: 1, column: 1, message: `"${kw}" is not supported in SQLite` })
+          }
+        }
+      }
+
+      // Detect common mistakes
+      const upper = stripped.toUpperCase()
+      if (/SELECT\s+\*\s+FROM\s+\w+\s+WHERE\s*$/.test(upper)) {
+        errors.push({ line: lines.length, column: 1, message: 'WHERE clause appears to be incomplete' })
+      }
+      if (/(?:^|\s)FROM\s*(?:WHERE|GROUP|ORDER|HAVING|LIMIT|$)/i.test(stripped)) {
+        errors.push({ line: 1, column: 1, message: 'FROM clause is missing a table name' })
+      }
+
+      return {
+        valid: errors.length === 0,
+        errorCount: errors.length,
+        errors,
+        dialect,
+        statementCount: stripped.split(/;(?!\s*$)/).filter((s) => s.trim()).length,
+      }
+    },
+  },
+
+  'sql-minifier': {
+    description: 'Strip comments and unnecessary whitespace from SQL to produce compact output',
+    schema: {
+      type: 'object',
+      properties: {
+        sql: {
+          type: 'string',
+          description: 'SQL statement or script to minify',
+        },
+        preserveNewlines: {
+          type: 'boolean',
+          description: 'If true, keep statement-separating newlines before semicolons (default: false)',
+        },
+      },
+      required: ['sql'],
+    },
+    handler: async (input) => {
+      const { sql, preserveNewlines = false } = input
+      if (!sql.trim()) throw new Error('Input SQL is empty')
+
+      // Remove single-line comments
+      let result = sql.replace(/--[^\n]*/g, '')
+      // Remove block comments
+      result = result.replace(/\/\*[\s\S]*?\*\//g, ' ')
+      // Collapse whitespace (but preserve string literals)
+      const parts: string[] = []
+      let i = 0
+      let inString = false
+      let stringChar = ''
+      let buf = ''
+
+      while (i < result.length) {
+        const ch = result[i]!
+        if (inString) {
+          buf += ch
+          if (ch === stringChar && result[i - 1] !== '\\') inString = false
+          i++
+          continue
+        }
+        if (ch === "'" || ch === '"' || ch === '`') {
+          // flush non-string buf
+          parts.push(buf.replace(/\s+/g, ' ').trim())
+          buf = ''
+          inString = true
+          stringChar = ch
+          buf += ch
+          i++
+          continue
+        }
+        buf += ch
+        i++
+      }
+      parts.push(buf.replace(/\s+/g, ' ').trim())
+      result = parts.join('').trim()
+
+      // Clean up spaces around punctuation
+      result = result
+        .replace(/\s*,\s*/g, ', ')
+        .replace(/\s*\(\s*/g, '(')
+        .replace(/\s*\)\s*/g, ')')
+        .replace(/\s*;\s*/g, preserveNewlines ? ';\n' : '; ')
+        .replace(/\s+/g, ' ')
+        .trim()
+
+      return {
+        minified: result,
+        originalLength: sql.length,
+        minifiedLength: result.length,
+        savedBytes: sql.length - result.length,
+        savedPercent: Math.round(((sql.length - result.length) / sql.length) * 100),
+      }
+    },
+  },
+
   'markdown-linter': {
     description: 'Lint a Markdown document and report common issues: inconsistent headings, missing blank lines, long lines, bare URLs, and more',
     schema: {

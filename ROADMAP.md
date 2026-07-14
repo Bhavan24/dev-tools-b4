@@ -361,36 +361,40 @@ After Phase 6 the catalog grew from 114 to 118 entries and added 3 new MCP-calla
 
 ---
 
-### Phase 7 - API Protocol Tools
+### Phase 7 - API Protocol Tools ✅ COMPLETED (2026-07-14)
 
 **Goal:** Expand the API testing surface beyond REST, and add OpenAPI/GraphQL tooling.
 WebSocket and SSE testers are browser-only; OpenAPI and GraphQL tools are MCP-callable.
 
-| Tool | Category | Notes |
-|---|---|---|
-| **OpenAPI Validator** | Validation | Validate a YAML/JSON spec against the OpenAPI 3.x schema; surface errors with line numbers |
-| **OpenAPI Viewer** | Developer | Upload or paste a spec, render an interactive endpoint browser |
-| **GraphQL Formatter** | Formatter | Format a GraphQL query string; deterministic, MCP-callable |
-| **GraphQL Explorer** | Developer | Connect to a GraphQL endpoint, browse schema, run queries; browser-only |
-| **WebSocket Tester** | Developer | Connect to a WS URL, send messages, view incoming frames; browser-only |
-| **SSE Tester** | Developer | Connect to an SSE endpoint, display streamed events; browser-only |
-| **SQL Validator** | Validation | Parse and validate SQL syntax for Postgres/MySQL/SQLite |
-| **SQL Minifier** | Formatter | Strip whitespace and comments from SQL; complements existing SQL Formatter |
+| Tool | Category | Status | Notes |
+|---|---|---|---|
+| **OpenAPI Validator** | Validation | ✅ Done | Validate YAML/JSON spec against OpenAPI 3.x schema; surfaces errors with paths; MCP-callable at `/tools/openapi-validator` |
+| **OpenAPI Viewer** | Developer | ✅ Done | Paste or upload a spec; browse all endpoints, parameters, and response schemas in an interactive panel; browser-only at `/tools/openapi-viewer` |
+| **GraphQL Formatter** | Formatter | ✅ Done | Format GraphQL queries, mutations, subscriptions, and schema documents; MCP-callable at `/tools/graphql-formatter` |
+| **GraphQL Explorer** | Developer | ✅ Done | Connect to any GraphQL endpoint, browse schema by introspection, run queries/mutations; server-proxied at `/tools/graphql-explorer` |
+| **WebSocket Tester** | Developer | ✅ Done | Connect to any WS URL, send messages, view incoming frames with timestamps; browser-only at `/tools/websocket-tester` |
+| **SSE Tester** | Developer | ✅ Done | Connect to an SSE endpoint, display streamed events with type and timestamp; browser-only at `/tools/sse-tester` |
+| **SQL Validator** | Validation | ✅ Done | Validate SQL syntax for Postgres/MySQL/SQLite; reports errors with line/column; MCP-callable at `/tools/sql-validator` |
+| **SQL Minifier** | Formatter | ✅ Done | Strip comments and whitespace from SQL; MCP-callable at `/tools/sql-minifier` |
+
+After Phase 7 the catalog grew from 118 to 126 entries and added 4 new MCP-callable tools (OpenAPI Validator, GraphQL Formatter, SQL Validator, SQL Minifier).
 
 ---
 
-### Phase 8 - Image Tools
+### Phase 8 - Image Tools ✅ COMPLETED (2026-07-14)
 
 **Goal:** Browser-side image utilities.
 All are browser-only (Canvas API); none need MCP.
 
-| Tool | Category | Notes |
-|---|---|---|
-| **Image Compressor** | Utilities | Drag-and-drop lossy/lossless compression; before/after size comparison |
-| **Image Resizer** | Utilities | Resize to exact dimensions or scale by percentage |
-| **SVG Optimizer** | Developer | Strip unnecessary attributes, inline styles, and metadata from SVG |
-| **SVG to PNG** | Converter | Render SVG at a chosen resolution and download as PNG |
-| **EXIF Viewer** | Developer | Display all EXIF metadata from a JPEG/TIFF file |
+| Tool | Category | Status | Notes |
+|---|---|---|---|
+| **Image Compressor** | Utilities | ✅ Done | Quality slider (1-100%); before/after size comparison; side-by-side preview; JPEG/PNG/WebP support at `/tools/image-compressor` |
+| **Image Resizer** | Utilities | ✅ Done | Exact pixel dimensions or percentage scale; aspect ratio lock toggle; JPEG/PNG/WebP output at `/tools/image-resizer` |
+| **SVG Optimizer** | Developer | ✅ Done | Configurable passes: remove comments, metadata, editor attributes (Inkscape/Sodipodi), empty attrs, collapse whitespace; shows byte savings at `/tools/svg-optimizer` |
+| **SVG to PNG** | Converter | ✅ Done | 1×/2×/3×/4× scale presets; optional transparent background; rendered via Canvas API; download PNG at `/tools/svg-to-png` |
+| **EXIF Viewer** | Developer | ✅ Done | Pure JS EXIF/TIFF parser (no npm package); Camera, Exposure, GPS, Other groups; copy all to clipboard at `/tools/exif-viewer` |
+
+After Phase 8 the catalog grew from 126 to 131 entries. All 5 tools are browser-only; no new MCP-callable tools added.
 
 ---
 

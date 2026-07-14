@@ -75,6 +75,19 @@ import { IpRangeCalculatorTool } from '@/components/tools/ip-range-calculator-to
 import { MarkdownTableGeneratorTool } from '@/components/tools/markdown-table-generator-tool'
 import { MarkdownFormatterTool } from '@/components/tools/markdown-formatter-tool'
 import { MarkdownLinterTool } from '@/components/tools/markdown-linter-tool'
+import { OpenApiValidatorTool } from '@/components/tools/openapi-validator-tool'
+import { OpenApiViewerTool } from '@/components/tools/openapi-viewer-tool'
+import { GraphqlFormatterTool } from '@/components/tools/graphql-formatter-tool'
+import { GraphqlExplorerTool } from '@/components/tools/graphql-explorer-tool'
+import { WebSocketTesterTool } from '@/components/tools/websocket-tester-tool'
+import { SseTesterTool } from '@/components/tools/sse-tester-tool'
+import { SqlValidatorTool } from '@/components/tools/sql-validator-tool'
+import { SqlMinifierTool } from '@/components/tools/sql-minifier-tool'
+import { ImageCompressorTool } from '@/components/tools/image-compressor-tool'
+import { ImageResizerTool } from '@/components/tools/image-resizer-tool'
+import { SvgOptimizerTool } from '@/components/tools/svg-optimizer-tool'
+import { SvgToPngTool } from '@/components/tools/svg-to-png-tool'
+import { ExifViewerTool } from '@/components/tools/exif-viewer-tool'
 import dynamic from 'next/dynamic'
 
 const MermaidPreviewTool = dynamic(
@@ -230,6 +243,23 @@ const TOOL_REGISTRY: Record<string, () => React.ReactElement> = {
   'mermaid-preview': () => <MermaidPreviewTool />,
   'markdown-formatter': () => <MarkdownFormatterTool />,
   'markdown-linter': () => <MarkdownLinterTool />,
+
+  // Phase 8 tools
+  'image-compressor': () => <ImageCompressorTool />,
+  'image-resizer': () => <ImageResizerTool />,
+  'svg-optimizer': () => <SvgOptimizerTool />,
+  'svg-to-png': () => <SvgToPngTool />,
+  'exif-viewer': () => <ExifViewerTool />,
+
+  // Phase 7 tools
+  'openapi-validator': () => <OpenApiValidatorTool />,
+  'openapi-viewer': () => <OpenApiViewerTool />,
+  'graphql-formatter': () => <GraphqlFormatterTool />,
+  'graphql-explorer': () => <GraphqlExplorerTool />,
+  'websocket-tester': () => <WebSocketTesterTool />,
+  'sse-tester': () => <SseTesterTool />,
+  'sql-validator': () => <SqlValidatorTool />,
+  'sql-minifier': () => <SqlMinifierTool />,
 
   // Phase 3 tools
   'timezone-converter': () => <TimezoneConverterTool />,

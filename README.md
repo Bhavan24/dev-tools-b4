@@ -1,6 +1,6 @@
 # AI Developer Tools
 
-A comprehensive collection of **118 free developer and AI-powered tools** for developers and creators. All tools are instant, require no signup, and work completely in your browser.
+A comprehensive collection of **131 free developer and AI-powered tools** for developers and creators. All tools are instant, require no signup, and work completely in your browser.
 
 [Visit Live](ai-developer-tools.vercel.app/)
 
@@ -42,8 +42,8 @@ curl -X POST https://ai-developer-tools.vercel.app/api/mcp \
 
 ## 🚀 Features
 
-- **118 Tools** across multiple categories
-- **107 MCP-Enabled Tools** callable by Claude AI via `/api/mcp`
+- **131 Tools** across multiple categories
+- **111 MCP-Enabled Tools** callable by Claude AI via `/api/mcp`
 - **Pinnable Tools** - Pin your frequently used tools for quick access
 - **Search & Filter** - Find tools by name, description, or category
 - **9 AI Tools** - Bring your own API key; supports OpenAI, Anthropic, Google, Groq, Mistral, Azure, Bedrock, and Ollama
@@ -57,7 +57,7 @@ curl -X POST https://ai-developer-tools.vercel.app/api/mcp \
 
 > **MCP column key:** `✅` = callable via `/api/mcp` · `—` = browser-only or coming soon
 
-### Developer Tools (44 tools)
+### Developer Tools (50 tools)
 
 | Tool | Status | MCP | Description |
 |------|--------|-----|-------------|
@@ -93,8 +93,14 @@ curl -X POST https://ai-developer-tools.vercel.app/api/mcp \
 | **IP Range Calculator** | ✅ Built | ✅ | Input start/end IPs; compute the minimal covering set of CIDR blocks |
 | **Markdown Table Generator** | ✅ Built | ✅ | Visual row/column editor that outputs a GFM Markdown table; supports column reordering and alignment |
 | **Mermaid Preview** | ✅ Built | — | Paste Mermaid source and see a live rendered diagram (flowchart, sequence, class, Gantt, gitGraph, etc.); browser-only |
+| **OpenAPI Viewer** | ✅ Built | — | Paste or upload an OpenAPI 3.x spec; browse all endpoints, parameters, and response schemas in an interactive panel; browser-only |
+| **GraphQL Explorer** | ✅ Built | — | Connect to any GraphQL endpoint, browse the schema by introspection, and run queries or mutations interactively; browser-only |
+| **WebSocket Tester** | ✅ Built | — | Connect to any WebSocket URL, send messages, and view incoming frames with timestamps in real time; browser-only |
+| **SSE Tester** | ✅ Built | — | Connect to a Server-Sent Events endpoint and display each streamed event with its data, type, and timestamp; browser-only |
+| **SVG Optimizer** | ✅ Built | — | Remove comments, metadata, editor attributes, and whitespace from SVG source to reduce file size; browser-only |
+| **EXIF Viewer** | ✅ Built | — | Display all EXIF metadata in a JPEG or TIFF file: camera model, exposure, GPS coordinates, timestamps; browser-only |
 
-### Validation Tools (13 tools)
+### Validation Tools (16 tools)
 
 | Tool | Status | MCP | Description |
 |------|--------|-----|-------------|
@@ -109,8 +115,10 @@ curl -X POST https://ai-developer-tools.vercel.app/api/mcp \
 | **JSONPath Finder** | ✅ Built | ✅ | Find all matches and paths in JSON using JSONPath expressions |
 | **Semver Comparator** | ✅ Built | ✅ | Compare two semantic version strings; shows which is higher and what changed (major/minor/patch/pre-release) |
 | **Markdown Linter** | ✅ Built | ✅ | Surface common Markdown issues: skipped heading levels, missing blank lines, trailing whitespace, hard tabs, long lines, bare URLs |
+| **OpenAPI Validator** | ✅ Built | ✅ | Validate an OpenAPI 3.x spec (YAML or JSON) against the schema; surface errors with paths |
+| **SQL Validator** | ✅ Built | ✅ | Validate SQL syntax for Postgres, MySQL, and SQLite; reports errors with line and column numbers |
 
-### Formatter Tools (12 tools)
+### Formatter Tools (14 tools)
 
 | Tool | Status | MCP | Description |
 |------|--------|-----|-------------|
@@ -126,6 +134,8 @@ curl -X POST https://ai-developer-tools.vercel.app/api/mcp \
 | **SQL Formatter** | ✅ Built | ✅ | Format SQL queries with proper indentation |
 | **HTML Formatter** | ✅ Built | ✅ | Format and beautify HTML markup |
 | **HTML Beautifier** | ✅ Built | ✅ | Alias to HTML Formatter with preset options |
+| **GraphQL Formatter** | ✅ Built | ✅ | Format and pretty-print GraphQL queries, mutations, subscriptions, and schema documents |
+| **SQL Minifier** | ✅ Built | ✅ | Strip comments and unnecessary whitespace from SQL to produce compact output |
 
 ### Converter Tools (33 tools)
 
@@ -173,6 +183,7 @@ curl -X POST https://ai-developer-tools.vercel.app/api/mcp \
 | **Excel / CSV to JSON** | ✅ Built | ✅ | Convert Excel (.xlsx, .xls) or CSV files to JSON; multi-sheet with per-sheet header row config |
 | **Excel / CSV to Markdown** | ✅ Built | ✅ | Convert Excel (.xlsx, .xls) or CSV files to Markdown tables; multi-sheet with per-sheet header row config |
 | **PDF Editor** | ✅ Built | — | Edit PDF files: add annotations, rotate or delete pages, merge or split PDFs (browser-only) |
+| **SVG to PNG** | ✅ Built | — | Render an SVG at any scale (1×, 2×, 3×, 4×) and download as PNG with optional transparent background; browser-only |
 
 ### AI Tools (11 tools)
 
@@ -194,22 +205,24 @@ Supported providers: OpenAI, Anthropic, Google Gemini, Groq, Mistral, Azure Open
 | **Workflow Builder** | ✅ Built | ✅ | ReactFlow-based visual workflow builder. Drag-and-drop LLM, conditional, loop, transform, and tool-call nodes. Export/import workflows as JSON. MCP-callable for server-side execution. |
 | **Researcher Agent** | ✅ Built | ✅ | Multi-step AI research with optional Tavily web search (BYOK). Streams search progress, collects sources with citations, and synthesizes a Markdown report. Supports quick/standard/deep depth modes. |
 
-### Utilities (3 tools)
+### Utilities (5 tools)
 
 | Tool | Status | MCP | Description |
 |------|--------|-----|-------------|
 | **Notes** | ✅ Built | — | Simple text notes with local storage persistence (browser-only) |
 | **Stopwatch** | ✅ Built | — | Stopwatch with lap tracking, fastest/slowest highlights, local storage (browser-only) |
 | **Counter** | ✅ Built | — | Multiple counters with custom names, step size, increment/decrement/reset, local storage (browser-only) |
+| **Image Compressor** | ✅ Built | — | Compress JPEG, PNG, or WebP images with an adjustable quality slider; shows before/after sizes and side-by-side preview; browser-only |
+| **Image Resizer** | ✅ Built | — | Resize images to exact pixel dimensions or a percentage scale; optional aspect ratio lock; browser-only |
 
 ---
 
 ## 📊 Stats
 
-- **Total Tools**: 118
-- **Built & Ready**: 118 ✅
+- **Total Tools**: 131
+- **Built & Ready**: 131 ✅
 - **Coming Soon**: 0 🏗️
-- **MCP Enabled**: 107 ✅ (callable via `/api/mcp`)
+- **MCP Enabled**: 111 ✅ (callable via `/api/mcp`)
 - **Categories**: 6 (Developer, Validation, Formatter, Converter, AI Tools, Utilities)
 
 ---

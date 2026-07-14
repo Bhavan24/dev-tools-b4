@@ -863,6 +863,114 @@ export const TOOLS = [
     shortDescription: 'Compare semver versions',
   },
 
+  // Phase 7 tools
+  {
+    id: 'openapi-validator',
+    name: 'OpenAPI Validator',
+    category: TOOLS_CATEGORIES.VALIDATION,
+    description:
+      'Validate an OpenAPI 3.x specification (YAML or JSON) against the schema and surface errors with line numbers.',
+    shortDescription: 'Validate OpenAPI specs',
+  },
+  {
+    id: 'openapi-viewer',
+    name: 'OpenAPI Viewer',
+    category: TOOLS_CATEGORIES.DEVELOPER,
+    description:
+      'Paste or upload an OpenAPI 3.x spec and browse all endpoints, parameters, and response schemas in an interactive panel.',
+    shortDescription: 'Browse OpenAPI endpoints',
+  },
+  {
+    id: 'graphql-formatter',
+    name: 'GraphQL Formatter',
+    category: TOOLS_CATEGORIES.FORMATTER,
+    description:
+      'Format and pretty-print a GraphQL query, mutation, or schema document with consistent indentation.',
+    shortDescription: 'Format GraphQL queries',
+  },
+  {
+    id: 'graphql-explorer',
+    name: 'GraphQL Explorer',
+    category: TOOLS_CATEGORIES.DEVELOPER,
+    description:
+      'Connect to any GraphQL endpoint, browse the schema by introspection, and run queries or mutations interactively.',
+    shortDescription: 'Explore GraphQL endpoints',
+  },
+  {
+    id: 'websocket-tester',
+    name: 'WebSocket Tester',
+    category: TOOLS_CATEGORIES.DEVELOPER,
+    description:
+      'Connect to any WebSocket URL, send messages, and view incoming frames with timestamps in real time.',
+    shortDescription: 'Test WebSocket connections',
+  },
+  {
+    id: 'sse-tester',
+    name: 'SSE Tester',
+    category: TOOLS_CATEGORIES.DEVELOPER,
+    description:
+      'Connect to a Server-Sent Events endpoint and display each streamed event with its data, type, and timestamp.',
+    shortDescription: 'Test SSE endpoints',
+  },
+  {
+    id: 'sql-validator',
+    name: 'SQL Validator',
+    category: TOOLS_CATEGORIES.VALIDATION,
+    description:
+      'Parse and validate SQL syntax for Postgres, MySQL, and SQLite dialects, reporting syntax errors with their position.',
+    shortDescription: 'Validate SQL syntax',
+  },
+  {
+    id: 'sql-minifier',
+    name: 'SQL Minifier',
+    category: TOOLS_CATEGORIES.FORMATTER,
+    description:
+      'Strip comments and unnecessary whitespace from SQL statements to produce compact, single-line output.',
+    shortDescription: 'Minify SQL statements',
+  },
+
+  // Phase 8 tools
+  {
+    id: 'image-compressor',
+    name: 'Image Compressor',
+    category: TOOLS_CATEGORIES.UTILITIES,
+    description:
+      'Compress JPEG, PNG, or WebP images in the browser with an adjustable quality slider; shows before/after file sizes and a side-by-side preview.',
+    shortDescription: 'Compress images in browser',
+  },
+  {
+    id: 'image-resizer',
+    name: 'Image Resizer',
+    category: TOOLS_CATEGORIES.UTILITIES,
+    description:
+      'Resize any image to exact pixel dimensions or scale by percentage; optionally lock the aspect ratio; download the resized image.',
+    shortDescription: 'Resize images in browser',
+  },
+  {
+    id: 'svg-optimizer',
+    name: 'SVG Optimizer',
+    category: TOOLS_CATEGORIES.DEVELOPER,
+    description:
+      'Remove unnecessary attributes, comments, metadata, and whitespace from SVG source to reduce file size without altering the rendered output.',
+    shortDescription: 'Optimize SVG files',
+  },
+  {
+    id: 'svg-to-png',
+    name: 'SVG to PNG',
+    category: TOOLS_CATEGORIES.CONVERTER,
+    description:
+      'Render an SVG at any resolution and download it as a PNG; supports transparent background and custom canvas scale.',
+    shortDescription: 'Convert SVG to PNG',
+  },
+  {
+    id: 'exif-viewer',
+    name: 'EXIF Viewer',
+    category: TOOLS_CATEGORIES.DEVELOPER,
+    description:
+      'Display all EXIF and IPTC metadata embedded in a JPEG or TIFF file: camera model, exposure, GPS coordinates, timestamps, and more.',
+    shortDescription: 'View image EXIF metadata',
+  },
+
   // Utilities
   {
     id: 'pdf-editor',
