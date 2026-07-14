@@ -67,6 +67,11 @@ import { HmacGeneratorTool } from '@/components/tools/hmac-generator-tool'
 import { BcryptTool } from '@/components/tools/bcrypt-tool'
 import { FileHashCheckerTool } from '@/components/tools/file-hash-checker-tool'
 import { RsaAesTool } from '@/components/tools/rsa-aes-tool'
+import { DnsLookupTool } from '@/components/tools/dns-lookup-tool'
+import { WhoisLookupTool } from '@/components/tools/whois-lookup-tool'
+import { SslCheckerTool } from '@/components/tools/ssl-checker-tool'
+import { CidrCalculatorTool } from '@/components/tools/cidr-calculator-tool'
+import { IpRangeCalculatorTool } from '@/components/tools/ip-range-calculator-tool'
 import dynamic from 'next/dynamic'
 
 const WorkflowBuilderTool = dynamic(
@@ -204,6 +209,13 @@ const TOOL_REGISTRY: Record<string, () => React.ReactElement> = {
   'bcrypt-tool': () => <BcryptTool />,
   'file-hash-checker': () => <FileHashCheckerTool />,
   'rsa-aes-tool': () => <RsaAesTool />,
+
+  // Phase 5 tools
+  'dns-lookup': () => <DnsLookupTool />,
+  'whois-lookup': () => <WhoisLookupTool />,
+  'ssl-checker': () => <SslCheckerTool />,
+  'cidr-calculator': () => <CidrCalculatorTool />,
+  'ip-range-calculator': () => <IpRangeCalculatorTool />,
 
   // Phase 3 tools
   'timezone-converter': () => <TimezoneConverterTool />,

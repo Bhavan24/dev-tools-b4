@@ -329,18 +329,20 @@ After Phase 4 the catalog grew from 105 to 109 entries and added 3 new MCP-calla
 
 ---
 
-### Phase 5 - Networking & Infrastructure
+### Phase 5 - Networking & Infrastructure ✅ COMPLETED (2026-07-14)
 
 **Goal:** Add server-side networking lookup tools.
-These require backend fetch/DNS calls; they are MCP-callable but not pure client-side.
+These require backend fetch/DNS/TLS calls; all are MCP-callable.
 
-| Tool | Category | Notes |
-|---|---|---|
-| **DNS Lookup** | Developer | Query A, AAAA, MX, TXT, CNAME records for a domain via a DNS-over-HTTPS API |
-| **WHOIS Lookup** | Developer | Domain registration info via a WHOIS proxy API |
-| **SSL Certificate Checker** | Developer | Inspect TLS cert for any domain: issuer, expiry, SANs via server-side fetch |
-| **CIDR Calculator** | Developer | Input CIDR block; show network address, broadcast, host range, usable count |
-| **IP Range Calculator** | Developer | Input start/end IPs; compute covering CIDR blocks |
+| Tool | Category | Status | Notes |
+|---|---|---|---|
+| **DNS Lookup** | Developer | ✅ Done | Query A, AAAA, MX, TXT, CNAME, NS records via Cloudflare DNS-over-HTTPS; supports ALL or individual type at `/tools/dns-lookup` |
+| **WHOIS Lookup** | Developer | ✅ Done | Domain registration info via RDAP: registrar, dates, nameservers, status at `/tools/whois-lookup` |
+| **SSL Certificate Checker** | Developer | ✅ Done | TLS socket inspection: subject, issuer, expiry, SANs, SHA-256 fingerprint, days remaining at `/tools/ssl-checker` |
+| **CIDR Calculator** | Developer | ✅ Done | Network/broadcast address, subnet mask, wildcard mask, host range, usable count, class, private flag at `/tools/cidr-calculator` |
+| **IP Range Calculator** | Developer | ✅ Done | Input start/end IPs; outputs minimal covering CIDR set at `/tools/ip-range-calculator` |
+
+After Phase 5 the catalog grew from 109 to 114 entries and added 5 new MCP-callable tools.
 
 ---
 

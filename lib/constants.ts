@@ -350,6 +350,48 @@ export const TOOLS = [
     shortDescription: 'RSA and AES encrypt/decrypt',
   },
 
+  // Phase 5 - Networking & Infrastructure
+  {
+    id: 'dns-lookup',
+    name: 'DNS Lookup',
+    category: TOOLS_CATEGORIES.DEVELOPER,
+    description:
+      'Query DNS records (A, AAAA, MX, TXT, CNAME, NS, SOA) for any domain using Cloudflare DNS-over-HTTPS. Supports querying individual record types or all at once.',
+    shortDescription: 'Query DNS records for a domain',
+  },
+  {
+    id: 'whois-lookup',
+    name: 'WHOIS Lookup',
+    category: TOOLS_CATEGORIES.DEVELOPER,
+    description:
+      'Look up domain registration information via RDAP: registrar, creation/expiry dates, nameservers, and status flags.',
+    shortDescription: 'Domain registration info via RDAP',
+  },
+  {
+    id: 'ssl-checker',
+    name: 'SSL Certificate Checker',
+    category: TOOLS_CATEGORIES.DEVELOPER,
+    description:
+      'Inspect the TLS/SSL certificate for any domain: issuer, subject, validity dates, days until expiry, SANs, and fingerprint.',
+    shortDescription: 'Inspect TLS certificate details',
+  },
+  {
+    id: 'cidr-calculator',
+    name: 'CIDR Calculator',
+    category: TOOLS_CATEGORIES.DEVELOPER,
+    description:
+      'Input a CIDR block and get the network address, broadcast address, subnet mask, wildcard mask, first/last host, usable host count, and IP class.',
+    shortDescription: 'Calculate CIDR network details',
+  },
+  {
+    id: 'ip-range-calculator',
+    name: 'IP Range Calculator',
+    category: TOOLS_CATEGORIES.DEVELOPER,
+    description:
+      'Input a start and end IP address and compute the minimal set of CIDR blocks that exactly covers that range.',
+    shortDescription: 'Convert IP range to CIDR blocks',
+  },
+
   // Formatter Tools
   {
     id: 'json-formatter',

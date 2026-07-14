@@ -1,6 +1,6 @@
 # AI Developer Tools
 
-A comprehensive collection of **109 free developer and AI-powered tools** for developers and creators. All tools are instant, require no signup, and work completely in your browser.
+A comprehensive collection of **114 free developer and AI-powered tools** for developers and creators. All tools are instant, require no signup, and work completely in your browser.
 
 [Visit Live](ai-developer-tools.vercel.app/)
 
@@ -42,8 +42,8 @@ curl -X POST https://ai-developer-tools.vercel.app/api/mcp \
 
 ## 🚀 Features
 
-- **109 Tools** across multiple categories
-- **99 MCP-Enabled Tools** callable by Claude AI via `/api/mcp`
+- **114 Tools** across multiple categories
+- **104 MCP-Enabled Tools** callable by Claude AI via `/api/mcp`
 - **Pinnable Tools** - Pin your frequently used tools for quick access
 - **Search & Filter** - Find tools by name, description, or category
 - **9 AI Tools** - Bring your own API key; supports OpenAI, Anthropic, Google, Groq, Mistral, Azure, Bedrock, and Ollama
@@ -57,7 +57,7 @@ curl -X POST https://ai-developer-tools.vercel.app/api/mcp \
 
 > **MCP column key:** `✅` = callable via `/api/mcp` · `—` = browser-only or coming soon
 
-### Developer Tools (38 tools)
+### Developer Tools (43 tools)
 
 | Tool | Status | MCP | Description |
 |------|--------|-----|-------------|
@@ -86,6 +86,11 @@ curl -X POST https://ai-developer-tools.vercel.app/api/mcp \
 | **BCrypt Generator/Verifier** | ✅ Built | ✅ | Hash a password with bcrypt at a configurable cost factor, or verify a password against an existing hash |
 | **File Hash Checker** | ✅ Built | ✅ | Drop any file to compute MD5, SHA-1, SHA-256, and SHA-512 hashes; no file is uploaded to the server |
 | **RSA / AES Encrypt & Decrypt** | ✅ Built | — | Generate RSA-2048 key pairs, encrypt/decrypt with RSA-OAEP, or encrypt/decrypt with AES-256-GCM; browser-only via Web Crypto API |
+| **DNS Lookup** | ✅ Built | ✅ | Query A, AAAA, MX, TXT, CNAME, NS records for any domain via Cloudflare DNS-over-HTTPS |
+| **WHOIS Lookup** | ✅ Built | ✅ | Domain registration info (registrar, dates, nameservers, status) via RDAP |
+| **SSL Certificate Checker** | ✅ Built | ✅ | Inspect TLS cert for any domain: subject, issuer, expiry, SANs, SHA-256 fingerprint |
+| **CIDR Calculator** | ✅ Built | ✅ | Input a CIDR block; get network/broadcast addresses, subnet mask, host range, and usable count |
+| **IP Range Calculator** | ✅ Built | ✅ | Input start/end IPs; compute the minimal covering set of CIDR blocks |
 
 ### Validation Tools (12 tools)
 
@@ -197,10 +202,10 @@ Supported providers: OpenAI, Anthropic, Google Gemini, Groq, Mistral, Azure Open
 
 ## 📊 Stats
 
-- **Total Tools**: 109
-- **Built & Ready**: 109 ✅
+- **Total Tools**: 114
+- **Built & Ready**: 114 ✅
 - **Coming Soon**: 0 🏗️
-- **MCP Enabled**: 99 ✅ (callable via `/api/mcp`)
+- **MCP Enabled**: 104 ✅ (callable via `/api/mcp`)
 - **Categories**: 6 (Developer, Validation, Formatter, Converter, AI Tools, Utilities)
 
 ---

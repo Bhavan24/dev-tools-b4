@@ -2733,6 +2733,316 @@ export const toolHandlers: Record<string, ToolHandler> = {
       return { filename, sizeBytes: buf.length, hashes }
     },
   },
+
+  // ─── Phase 5 – Networking & Infrastructure ───────────────────────────────────
+
+  'dns-lookup': {
+    description: 'Query DNS records (A, AAAA, MX, TXT, CNAME, NS, SOA) for a domain using Cloudflare DNS-over-HTTPS',
+    schema: {
+      type: 'object',
+      properties: {
+        domain: { type: 'string', description: 'Domain name to query (e.g. example.com)' },
+        type: {
+          type: 'string',
+          enum: ['A', 'AAAA', 'MX', 'TXT', 'CNAME', 'NS', 'SOA', 'ALL'],
+          description: 'DNS record type to query, or ALL to fetch all common types',
+        },
+      },
+      required: ['domain'],
+    },
+    handler: async (input) => {
+      const { domain, type = 'ALL' } = input
+      const cleaned = domain.trim().toLowerCase().replace(/^https?:\/\//, '').split('/')[0]!
+      if (!cleaned) throw new Error('Invalid domain')
+
+      const TYPES = type === 'ALL' ? ['A', 'AAAA', 'MX', 'TXT', 'CNAME', 'NS'] : [type]
+      const results: Record<string, any[]> = {}
+
+      await Promise.all(
+        TYPES.map(async (t) => {
+          try {
+            const res = await fetch(
+              `https://cloudflare-dns.com/dns-query?name=${encodeURIComponent(cleaned)}&type=${t}`,
+              { headers: { Accept: 'application/dns-json' } }
+            )
+            if (!res.ok) { results[t] = []; return }
+            const data = await res.json()
+            results[t] = (data.Answer ?? []).map((r: any) => ({
+              name: r.name,
+              ttl: r.TTL,
+              data: r.data,
+            }))
+          } catch {
+            results[t] = []
+          }
+        })
+      )
+
+      const flat = Object.entries(results).flatMap(([recordType, records]) =>
+        records.map((r) => ({ type: recordType, ...r }))
+      )
+
+      return {
+        domain: cleaned,
+        queried: TYPES,
+        totalRecords: flat.length,
+        records: type === 'ALL' ? flat : (results[type] ?? []),
+        byType: type === 'ALL' ? results : undefined,
+      }
+    },
+  },
+
+  'whois-lookup': {
+    description: 'Look up domain registration information (registrar, dates, nameservers, status) via RDAP',
+    schema: {
+      type: 'object',
+      properties: {
+        domain: { type: 'string', description: 'Domain name to query (e.g. example.com)' },
+      },
+      required: ['domain'],
+    },
+    handler: async (input) => {
+      const { domain } = input
+      const cleaned = domain.trim().toLowerCase().replace(/^https?:\/\//, '').split('/')[0]!
+      if (!cleaned) throw new Error('Invalid domain')
+
+      const res = await fetch(`https://rdap.iana.org/domain/${encodeURIComponent(cleaned)}`, {
+        headers: { Accept: 'application/rdap+json' },
+        redirect: 'follow',
+      })
+      if (!res.ok) {
+        if (res.status === 404) throw new Error(`Domain "${cleaned}" not found in RDAP registry`)
+        throw new Error(`RDAP query failed with status ${res.status}`)
+      }
+      const data = await res.json()
+
+      const getEntity = (role: string) =>
+        (data.entities ?? []).find((e: any) => (e.roles ?? []).includes(role))
+      const registrar = getEntity('registrar')
+      const registrant = getEntity('registrant')
+
+      const registrarName =
+        registrar?.vcardArray?.[1]?.find((v: any) => v[0] === 'fn')?.[3] ??
+        registrar?.publicIds?.[0]?.identifier ??
+        null
+
+      const getDate = (type: string) =>
+        (data.events ?? []).find((e: any) => e.eventAction === type)?.eventDate ?? null
+
+      return {
+        domain: cleaned,
+        status: (data.status ?? []).join(', ') || 'unknown',
+        registrar: registrarName,
+        registrantOrg:
+          registrant?.vcardArray?.[1]?.find((v: any) => v[0] === 'org')?.[3] ?? null,
+        created: getDate('registration'),
+        updated: getDate('last changed'),
+        expires: getDate('expiration'),
+        nameservers: (data.nameservers ?? []).map((ns: any) => ns.ldhName ?? ns.unicodeName),
+        handle: data.handle ?? null,
+        ldhName: data.ldhName ?? cleaned,
+      }
+    },
+  },
+
+  'ssl-checker': {
+    description: 'Inspect the TLS/SSL certificate for any domain: issuer, expiry, SANs, and validity',
+    schema: {
+      type: 'object',
+      properties: {
+        domain: { type: 'string', description: 'Domain to check (e.g. example.com)' },
+        port: {
+          type: 'number',
+          description: 'HTTPS port to connect on (default: 443)',
+        },
+      },
+      required: ['domain'],
+    },
+    handler: async (input) => {
+      const { domain, port = 443 } = input
+      const cleaned = domain.trim().toLowerCase().replace(/^https?:\/\//, '').split('/')[0]!
+      if (!cleaned) throw new Error('Invalid domain')
+
+      // tls.connect is the right API for cert inspection: we open a raw TLS
+      // socket solely to read the peer certificate, no HTTP data flows over it.
+      // rejectUnauthorized:false is intentional here - the tool's job is to
+      // *show* whatever cert the server presents (including expired/self-signed
+      // ones), not to trust the connection for data exchange.
+      const cert: any = await new Promise((resolve, reject) => {
+        const tls = require('tls')
+        const socket = tls.connect(
+          { host: cleaned, port, servername: cleaned, rejectUnauthorized: false, timeout: 8000 },
+          () => {
+            const c = socket.getPeerCertificate(false)
+            socket.destroy()
+            if (!c || !c.subject) reject(new Error('No certificate returned'))
+            else resolve(c)
+          }
+        )
+        socket.on('error', (err: Error) => {
+          socket.destroy()
+          reject(new Error(`Connection failed: ${err.message}`))
+        })
+        socket.on('timeout', () => {
+          socket.destroy()
+          reject(new Error('Connection timed out'))
+        })
+      })
+
+      const sans = (cert.subjectaltname ?? '')
+        .split(', ')
+        .filter(Boolean)
+        .map((s: string) => s.replace(/^DNS:/, ''))
+        .filter((s: string) => !s.startsWith('IP:'))
+
+      const validFrom = new Date(cert.valid_from)
+      const validTo = new Date(cert.valid_to)
+      const now = new Date()
+      const daysRemaining = Math.ceil((validTo.getTime() - now.getTime()) / 86_400_000)
+
+      return {
+        domain: cleaned,
+        valid: daysRemaining > 0,
+        daysRemaining,
+        subject: {
+          cn: cert.subject?.CN ?? null,
+          o: cert.subject?.O ?? null,
+          c: cert.subject?.C ?? null,
+        },
+        issuer: {
+          cn: cert.issuer?.CN ?? null,
+          o: cert.issuer?.O ?? null,
+          c: cert.issuer?.C ?? null,
+        },
+        validFrom: validFrom.toISOString(),
+        validTo: validTo.toISOString(),
+        serialNumber: cert.serialNumber ?? null,
+        fingerprint256: cert.fingerprint256 ?? null,
+        sans,
+        sanCount: sans.length,
+      }
+    },
+  },
+
+  'cidr-calculator': {
+    description: 'Calculate network details from a CIDR block: network address, broadcast, host range, subnet mask, and usable host count',
+    schema: {
+      type: 'object',
+      properties: {
+        cidr: {
+          type: 'string',
+          description: 'CIDR notation, e.g. 192.168.1.0/24 or 10.0.0.0/8',
+        },
+      },
+      required: ['cidr'],
+    },
+    handler: async (input) => {
+      const { cidr } = input
+      const match = cidr.trim().match(/^(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\/(\d{1,2})$/)
+      if (!match) throw new Error('Invalid CIDR notation. Expected format: x.x.x.x/prefix (e.g. 192.168.1.0/24)')
+
+      const ipStr = match[1]!
+      const prefix = parseInt(match[2]!, 10)
+      if (prefix < 0 || prefix > 32) throw new Error('Prefix must be between 0 and 32')
+
+      const ipToInt = (ip: string) => {
+        const parts = ip.split('.').map(Number)
+        if (parts.some((p) => p < 0 || p > 255)) throw new Error(`Invalid IP address: ${ip}`)
+        return ((parts[0]! << 24) | (parts[1]! << 16) | (parts[2]! << 8) | parts[3]!) >>> 0
+      }
+      const intToIp = (n: number) =>
+        `${(n >>> 24) & 0xff}.${(n >>> 16) & 0xff}.${(n >>> 8) & 0xff}.${n & 0xff}`
+
+      const ipInt = ipToInt(ipStr)
+      const mask = prefix === 0 ? 0 : (~0 << (32 - prefix)) >>> 0
+      const network = (ipInt & mask) >>> 0
+      const broadcast = (network | (~mask >>> 0)) >>> 0
+      const totalHosts = Math.pow(2, 32 - prefix)
+      const usableHosts = prefix >= 31 ? totalHosts : Math.max(0, totalHosts - 2)
+      const firstHost = prefix >= 31 ? network : network + 1
+      const lastHost = prefix >= 31 ? broadcast : broadcast - 1
+
+      const maskInt = mask
+      const wildcardInt = (~mask) >>> 0
+
+      return {
+        cidr: `${intToIp(network)}/${prefix}`,
+        inputIp: ipStr,
+        networkAddress: intToIp(network),
+        broadcastAddress: intToIp(broadcast),
+        subnetMask: intToIp(maskInt),
+        wildcardMask: intToIp(wildcardInt),
+        firstHost: intToIp(firstHost),
+        lastHost: intToIp(lastHost),
+        totalHosts,
+        usableHosts,
+        prefixLength: prefix,
+        ipClass:
+          network < 0x80000000 ? 'A' :
+          network < 0xc0000000 ? 'B' :
+          network < 0xe0000000 ? 'C' : 'D/E',
+        isPrivate:
+          (network >>> 24) === 10 ||
+          ((network >>> 16) & 0xfff0) === 0xac10 ||
+          ((network >>> 16) === 0xc0a8),
+      }
+    },
+  },
+
+  'ip-range-calculator': {
+    description: 'Compute the minimal set of CIDR blocks that exactly covers a given start-to-end IP range',
+    schema: {
+      type: 'object',
+      properties: {
+        startIp: { type: 'string', description: 'First IP in the range (e.g. 192.168.1.0)' },
+        endIp: { type: 'string', description: 'Last IP in the range (e.g. 192.168.1.255)' },
+      },
+      required: ['startIp', 'endIp'],
+    },
+    handler: async (input) => {
+      const { startIp, endIp } = input
+
+      const ipToInt = (ip: string) => {
+        const parts = ip.trim().split('.').map(Number)
+        if (parts.length !== 4 || parts.some((p) => isNaN(p) || p < 0 || p > 255))
+          throw new Error(`Invalid IP address: ${ip}`)
+        return ((parts[0]! << 24) | (parts[1]! << 16) | (parts[2]! << 8) | parts[3]!) >>> 0
+      }
+      const intToIp = (n: number) =>
+        `${(n >>> 24) & 0xff}.${(n >>> 16) & 0xff}.${(n >>> 8) & 0xff}.${n & 0xff}`
+
+      let start = ipToInt(startIp)
+      const end = ipToInt(endIp)
+      if (start > end) throw new Error('Start IP must be less than or equal to end IP')
+
+      const totalIps = end - start + 1
+      const cidrs: string[] = []
+
+      while (start <= end) {
+        let prefix = 32
+        while (prefix > 0) {
+          const mask = (~0 << (32 - (prefix - 1))) >>> 0
+          const blockStart = (start & mask) >>> 0
+          if (blockStart !== start) break
+          const blockEnd = (blockStart | (~mask >>> 0)) >>> 0
+          if (blockEnd > end) break
+          prefix--
+        }
+        const blockEnd = (start | (~((~0 << (32 - prefix)) >>> 0) >>> 0)) >>> 0
+        cidrs.push(`${intToIp(start)}/${prefix}`)
+        start = blockEnd + 1
+        if (start > 0xffffffff) break
+      }
+
+      return {
+        startIp: intToIp(ipToInt(startIp)),
+        endIp: intToIp(ipToInt(endIp)),
+        totalIps,
+        cidrCount: cidrs.length,
+        cidrs,
+      }
+    },
+  },
 }
 
 
