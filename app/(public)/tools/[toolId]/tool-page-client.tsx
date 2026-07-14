@@ -5,7 +5,6 @@ import { MockDataGenerator } from '@/components/tools/mock-data-generator'
 import { EncodeDecodeTool } from '@/components/tools/encode-decode-tool'
 import { IndentFormatterTool } from '@/components/tools/indent-formatter-tool'
 import { JsonClassConverterTool } from '@/components/tools/json-class-converter-tool'
-import { CsvOptionsConverterTool } from '@/components/tools/csv-options-converter-tool'
 import { ColorTools } from '@/components/tools/color-tools'
 import { GeneratorTools } from '@/components/tools/generator-tools'
 import { SpecialtyTools } from '@/components/tools/specialty-tools'
@@ -32,8 +31,8 @@ import { PdfConverterTool } from '@/components/tools/pdf-converter-tool'
 import { ExcelConverterTool } from '@/components/tools/excel-converter-tool'
 import { AITools } from '@/components/tools/ai-tools/ai-tools'
 import { ResearcherAgentTool } from '@/components/tools/ai-tools/researcher-agent/researcher-agent-tool'
-import { Base64EncoderTool } from '@/components/tools/base64-encoder-tool'
-import { Base64DecoderTool } from '@/components/tools/base64-decoder-tool'
+import { IniConverterTool } from '@/components/tools/ini-converter-tool'
+import { CsvConverterTool } from '@/components/tools/csv-converter-tool'
 import { JsStringEscaperTool } from '@/components/tools/js-string-escaper-tool'
 import { YamlValidatorTool } from '@/components/tools/yaml-validator-tool'
 import { JsValidatorTool } from '@/components/tools/js-validator-tool'
@@ -45,10 +44,7 @@ import { XmlToYamlTool } from '@/components/tools/xml-to-yaml-tool'
 import { YamlToJsonTool } from '@/components/tools/yaml-to-json-tool'
 import { JsonToYamlTool } from '@/components/tools/json-to-yaml-tool'
 import { JsonToPhpTool } from '@/components/tools/json-to-php-tool'
-import { HtmlBeautifierTool } from '@/components/tools/html-beautifier-tool'
 import { SqlFormatterTool } from '@/components/tools/sql-formatter-tool'
-import { IniToJsonTool, IniToXmlTool, IniToYamlTool } from '@/components/tools/ini-converter-tool'
-import { CsvToXmlTool, CsvToYamlTool } from '@/components/tools/csv-extra-converter-tool'
 import { UnitConverterTool } from '@/components/tools/unit-converter-tool'
 import { TimestampConverterTool } from '@/components/tools/timestamp-converter-tool'
 import { UrlSplitterTool } from '@/components/tools/url-splitter-tool'
@@ -75,18 +71,15 @@ const TOOL_REGISTRY: Record<string, () => React.ReactElement> = {
   'html-encoder-decoder': () => <EncodeDecodeTool toolId="html-encoder-decoder" />,
   'xml-string-escaper': () => <EncodeDecodeTool toolId="xml-string-escaper" />,
   'idn-converter': () => <EncodeDecodeTool toolId="idn-converter" />,
-  'base64-encoder': () => <Base64EncoderTool />,
-  'base64-decoder': () => <Base64DecoderTool />,
+  'base64-encoder-decoder': () => <EncodeDecodeTool toolId="base64-encoder-decoder" />,
   'js-string-escaper': () => <JsStringEscaperTool />,
 
   // Formatters
   'js-beautifier': () => <IndentFormatterTool toolId="js-beautifier" />,
   'css-beautifier': () => <IndentFormatterTool toolId="css-beautifier" />,
-  'json-beautifier': () => <IndentFormatterTool toolId="json-beautifier" />,
   'json-formatter': () => <IndentFormatterTool toolId="json-formatter" />,
   'xml-formatter': () => <IndentFormatterTool toolId="xml-formatter" />,
   'html-formatter': () => <IndentFormatterTool toolId="html-formatter" />,
-  'html-beautifier': () => <HtmlBeautifierTool />,
   'sql-formatter': () => <SqlFormatterTool />,
   'js-minifier': () => <JsMinifierTool />,
   'css-minifier': () => <CssMinifierTool />,
@@ -99,24 +92,17 @@ const TOOL_REGISTRY: Record<string, () => React.ReactElement> = {
   'json-to-php': () => <JsonToPhpTool />,
   'json-to-yaml': () => <JsonToYamlTool />,
 
-  // CSV converters
-  'csv-to-json': () => <CsvOptionsConverterTool toolId="csv-to-json" />,
-  'csv-to-sql': () => <CsvOptionsConverterTool toolId="csv-to-sql" />,
-  'csv-to-xml': () => <CsvToXmlTool />,
-  'csv-to-yaml': () => <CsvToYamlTool />,
+  // CSV converter
+  'csv-converter': () => <CsvConverterTool />,
 
   // XML / YAML / INI converters
   'xml-to-json': () => <XmlToJsonTool />,
   'xml-to-yaml': () => <XmlToYamlTool />,
   'yaml-to-json': () => <YamlToJsonTool />,
-  'ini-to-json': () => <IniToJsonTool />,
-  'ini-to-xml': () => <IniToXmlTool />,
-  'ini-to-yaml': () => <IniToYamlTool />,
+  'ini-converter': () => <IniConverterTool />,
 
   // Colors
   'color-code-picker': () => <ColorTools toolId="color-code-picker" />,
-  'rgb-to-hex': () => <ColorTools toolId="rgb-to-hex" />,
-  'hex-to-rgb': () => <ColorTools toolId="hex-to-rgb" />,
 
   // Generators
   'uuid-generator': () => <GeneratorTools toolId="uuid-generator" />,
@@ -200,8 +186,6 @@ const TOOL_REGISTRY: Record<string, () => React.ReactElement> = {
   'workflow-builder': () => <WorkflowBuilderTool />,
 }
 
-const FULL_WIDTH_TOOLS = new Set(['workflow-builder'])
-
 export function ToolPageClient({ toolId }: ToolPageClientProps) {
   const tool = TOOLS.find((t) => t.id === toolId)
 
@@ -239,5 +223,5 @@ export function ToolPageClient({ toolId }: ToolPageClientProps) {
     )
   }
 
-  return <div className={FULL_WIDTH_TOOLS.has(toolId) ? 'w-full' : 'max-w-4xl'}>{factory()}</div>
+  return <div className="w-full">{factory()}</div>
 }

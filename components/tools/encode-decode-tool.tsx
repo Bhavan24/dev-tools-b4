@@ -33,6 +33,12 @@ const CONFIG: Record<string, { label1: string; label2: string; action1: string; 
       action1: 'toAscii',
       action2: 'toUnicode',
     },
+    'base64-encoder-decoder': {
+      label1: 'Encode',
+      label2: 'Decode',
+      action1: 'encode',
+      action2: 'decode',
+    },
   }
 
 export function EncodeDecodeTool({ toolId }: EncodeDecodeToolProps) {

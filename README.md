@@ -1,6 +1,6 @@
 # AI Developer Tools
 
-A comprehensive collection of **80+ free developer and AI-powered tools** for developers and creators. All tools are instant, require no signup, and work completely in your browser.
+A comprehensive collection of **79 free developer and AI-powered tools** for developers and creators. All tools are instant, require no signup, and work completely in your browser.
 
 [Visit Live](ai-developer-tools.vercel.app/)
 
@@ -42,8 +42,8 @@ curl -X POST https://ai-developer-tools.vercel.app/api/mcp \
 
 ## 🚀 Features
 
-- **89 Tools** across multiple categories
-- **79 MCP-Enabled Tools** callable by Claude AI via `/api/mcp`
+- **79 Tools** across multiple categories
+- **70 MCP-Enabled Tools** callable by Claude AI via `/api/mcp`
 - **Pinnable Tools** - Pin your frequently used tools for quick access
 - **Search & Filter** - Find tools by name, description, or category
 - **9 AI Tools** - Bring your own API key; supports OpenAI, Anthropic, Google, Groq, Mistral, Azure, Bedrock, and Ollama
@@ -57,7 +57,7 @@ curl -X POST https://ai-developer-tools.vercel.app/api/mcp \
 
 > **MCP column key:** `✅` = callable via `/api/mcp` · `—` = browser-only or coming soon
 
-### Developer Tools (18 tools)
+### Developer Tools (16 tools)
 
 | Tool | Status | MCP | Description |
 |------|--------|-----|-------------|
@@ -73,9 +73,8 @@ curl -X POST https://ai-developer-tools.vercel.app/api/mcp \
 | **Code Cleaner** | ✅ Built | ✅ | Remove comments and unnecessary whitespace from code |
 | **Diff Checker** | ✅ Built | ✅ | Compare two texts and highlight differences |
 | **QR Code Generator** | ✅ Built | ✅ | Generate QR codes from any text or URL instantly |
-| **REST API Tester** | ✅ Built | ✅ | Test REST APIs with custom headers, authentication, and request body |
-| **Base64 Encoder** | ✅ Built | ✅ | Encode text or binary data to Base64 format |
-| **Base64 Decoder** | ✅ Built | ✅ | Decode Base64 encoded data back to plain text |
+| **REST API Tester** | ✅ Built | ✅ | Test REST APIs with custom headers, authentication, and request body. Includes "Copy as cURL" and "Import cURL" |
+| **Base64 Encoder/Decoder** | ✅ Built | ✅ | Encode text to Base64 or decode Base64 back to plain text |
 | **Color Code Picker** | ✅ Built | ✅ | Convert between HEX, RGB, and HSL color formats with visual picker |
 | **Favicon Generator** | ✅ Built | — | Upload an image and generate favicons in all standard sizes + .ico + ZIP (browser-only) |
 | **SVG Viewer** | ✅ Built | — | Paste or upload SVG code and see a live rendered preview with source editing |
@@ -94,7 +93,7 @@ curl -X POST https://ai-developer-tools.vercel.app/api/mcp \
 | **Link Checker** | ✅ Built | ✅ | Check if URLs are reachable, see HTTP status and response time |
 | **JSONPath Finder** | ✅ Built | ✅ | Find all matches and paths in JSON using JSONPath expressions |
 
-### Formatter Tools (11 tools)
+### Formatter Tools (9 tools)
 
 | Tool | Status | MCP | Description |
 |------|--------|-----|-------------|
@@ -103,14 +102,12 @@ curl -X POST https://ai-developer-tools.vercel.app/api/mcp \
 | **CSS Minifier** | ✅ Built | ✅ | Minify CSS code to reduce file size |
 | **CSS Beautifier** | ✅ Built | ✅ | Format and beautify CSS code |
 | **JSON Minifier** | ✅ Built | ✅ | Minify JSON to reduce file size |
-| **JSON Beautifier** | ✅ Built | ✅ | Format and beautify JSON data |
-| **JSON Formatter** | ✅ Built | ✅ | Format and validate JSON with custom indentation |
+| **JSON Formatter** | ✅ Built | ✅ | Format and beautify JSON with custom indentation |
 | **XML Formatter** | ✅ Built | ✅ | Format and pretty-print XML |
 | **SQL Formatter** | ✅ Built | ✅ | Format SQL queries with proper indentation |
-| **HTML Formatter** | ✅ Built | ✅ | Format and beautify HTML markup |
-| **HTML Beautifier** | ✅ Built | ✅ | Alias to HTML Formatter with preset options |
+| **HTML Formatter** | ✅ Built | ✅ | Format and beautify HTML markup with custom indentation |
 
-### Converter Tools (36 tools)
+### Converter Tools (28 tools)
 
 | Tool | Status | MCP | Description |
 |------|--------|-----|-------------|
@@ -126,17 +123,10 @@ curl -X POST https://ai-developer-tools.vercel.app/api/mcp \
 | **JSON to C#** | ✅ Built | ✅ | Generate C# classes from JSON |
 | **XML to YAML** | ✅ Built | ✅ | Convert XML to YAML format |
 | **XML to JSON** | ✅ Built | ✅ | Convert XML to JSON format |
-| **INI to JSON** | ✅ Built | ✅ | Convert INI configuration to JSON |
-| **INI to XML** | ✅ Built | ✅ | Convert INI to XML format |
-| **INI to YAML** | ✅ Built | ✅ | Convert INI to YAML format |
-| **CSV to JSON** | ✅ Built | ✅ | Convert CSV data to JSON |
-| **CSV to XML** | ✅ Built | ✅ | Convert CSV to XML format |
-| **CSV to YAML** | ✅ Built | ✅ | Convert CSV to YAML format |
-| **CSV to SQL** | ✅ Built | ✅ | Generate SQL INSERT statements from CSV |
+| **INI Converter** | ✅ Built | ✅ | Convert INI configuration to JSON, XML, or YAML with format selector |
+| **CSV Converter** | ✅ Built | ✅ | Convert CSV data to JSON, XML, YAML, or SQL INSERT statements |
 | **YAML to JSON** | ✅ Built | ✅ | Convert YAML to JSON format |
 | **JSON to YAML** | ✅ Built | ✅ | Convert JSON to YAML format |
-| **RGB to HEX** | ✅ Built | ✅ | Convert RGB color values to HEX format |
-| **HEX to RGB** | ✅ Built | ✅ | Convert HEX color values to RGB format |
 | **IDN Converter** | ✅ Built | ✅ | Convert between Unicode and Punycode domains |
 | **Unit Converter** | ✅ Built | ✅ | Convert between different units (length, weight, temperature) |
 | **Currency Converter** | ✅ Built | ✅ | Convert between different currencies with real-time exchange rates |
@@ -184,10 +174,10 @@ Supported providers: OpenAI, Anthropic, Google Gemini, Groq, Mistral, Azure Open
 
 ## 📊 Stats
 
-- **Total Tools**: 89
-- **Built & Ready**: 89 ✅
+- **Total Tools**: 79
+- **Built & Ready**: 79 ✅
 - **Coming Soon**: 0 🏗️
-- **MCP Enabled**: 79 ✅ (callable via `/api/mcp`)
+- **MCP Enabled**: 70 ✅ (callable via `/api/mcp`)
 - **Categories**: 6 (Developer, Validation, Formatter, Converter, AI Tools, Utilities)
 
 ---

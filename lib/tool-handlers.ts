@@ -103,27 +103,6 @@ export const toolHandlers: Record<string, ToolHandler> = {
     },
   },
 
-  'json-beautifier': {
-    description: 'Beautify JSON',
-    schema: {
-      type: 'object',
-      properties: {
-        json: { type: 'string', description: 'JSON string to beautify' },
-        indent: { type: 'number', description: 'Indentation spaces (default: 2)', default: 2 },
-      },
-      required: ['json'],
-    },
-    handler: async (input) => {
-      const { json, indent = 2 } = input
-      try {
-        const parsed = JSON.parse(json)
-        return JSON.stringify(parsed, null, indent)
-      } catch (e) {
-        throw new Error('Invalid JSON')
-      }
-    },
-  },
-
   'json-generator': {
     description: 'Generate valid JSON with random data',
     schema: {
@@ -267,36 +246,26 @@ export const toolHandlers: Record<string, ToolHandler> = {
     },
   },
 
-  'base64-encoder': {
-    description: 'Encode text to Base64',
+  'base64-encoder-decoder': {
+    description: 'Encode text to Base64 or decode Base64 back to plain text',
     schema: {
       type: 'object',
       properties: {
-        text: { type: 'string', description: 'Text to encode' },
+        input: { type: 'string', description: 'Text to encode or Base64 string to decode' },
+        action: { type: 'string', enum: ['encode', 'decode'], description: 'Action to perform' },
       },
-      required: ['text'],
+      required: ['input', 'action'],
     },
     handler: async (input) => {
-      const { text } = input
-      return Buffer.from(text).toString('base64')
-    },
-  },
-
-  'base64-decoder': {
-    description: 'Decode Base64 text',
-    schema: {
-      type: 'object',
-      properties: {
-        base64: { type: 'string', description: 'Base64 string to decode' },
-      },
-      required: ['base64'],
-    },
-    handler: async (input) => {
-      const { base64 } = input
-      try {
-        return Buffer.from(base64, 'base64').toString('utf-8')
-      } catch (e) {
-        throw new Error('Invalid Base64 string')
+      const { input: value, action } = input
+      if (action === 'encode') {
+        return Buffer.from(value).toString('base64')
+      } else {
+        try {
+          return Buffer.from(value, 'base64').toString('utf-8')
+        } catch (e) {
+          throw new Error('Invalid Base64 string')
+        }
       }
     },
   },
@@ -605,21 +574,6 @@ export const toolHandlers: Record<string, ToolHandler> = {
     },
   },
 
-  'html-beautifier': {
-    description: 'Beautify HTML code',
-    schema: {
-      type: 'object',
-      properties: {
-        html: { type: 'string', description: 'HTML to beautify' },
-      },
-      required: ['html'],
-    },
-    handler: async (input) => {
-      const { html } = input
-      return formatHtml(html, 2)
-    },
-  },
-
   'json-to-java': {
     description: 'Convert JSON to Java POJO',
     schema: {
@@ -744,170 +698,104 @@ export const toolHandlers: Record<string, ToolHandler> = {
     },
   },
 
-  'ini-to-json': {
-    description: 'Convert INI to JSON',
+  'ini-converter': {
+    description: 'Convert INI configuration to JSON, XML, or YAML',
     schema: {
       type: 'object',
       properties: {
         ini: { type: 'string', description: 'INI content to convert' },
+        format: {
+          type: 'string',
+          enum: ['json', 'xml', 'yaml'],
+          description: 'Output format: json, xml, or yaml',
+        },
       },
-      required: ['ini'],
+      required: ['ini', 'format'],
     },
     handler: async (input) => {
-      const { ini } = input
-      return JSON.stringify(parseIni(ini), null, 2)
-    },
-  },
-
-  'ini-to-xml': {
-    description: 'Convert INI to XML',
-    schema: {
-      type: 'object',
-      properties: {
-        ini: { type: 'string', description: 'INI content to convert' },
-      },
-      required: ['ini'],
-    },
-    handler: async (input) => {
-      const { ini } = input
+      const { ini, format } = input
       const obj = parseIni(ini)
-      return jsonToXml(obj, 'config')
-    },
-  },
-
-  'ini-to-yaml': {
-    description: 'Convert INI to YAML',
-    schema: {
-      type: 'object',
-      properties: {
-        ini: { type: 'string', description: 'INI content to convert' },
-      },
-      required: ['ini'],
-    },
-    handler: async (input) => {
-      const { ini } = input
-      const obj = parseIni(ini)
+      if (format === 'json') return JSON.stringify(obj, null, 2)
+      if (format === 'xml') return jsonToXml(obj, 'config')
       const jsYaml = await import('js-yaml')
       return jsYaml.dump(obj, { lineWidth: -1 })
     },
   },
 
-  'csv-to-json': {
-    description: 'Convert CSV to JSON',
+  'csv-converter': {
+    description: 'Convert CSV data to JSON, XML, YAML, or SQL INSERT statements',
     schema: {
       type: 'object',
       properties: {
         csv: { type: 'string', description: 'CSV content to convert' },
-        hasHeader: { type: 'boolean', description: 'First row is header', default: true },
+        format: {
+          type: 'string',
+          enum: ['json', 'xml', 'yaml', 'sql'],
+          description: 'Output format: json, xml, yaml, or sql',
+        },
+        hasHeader: { type: 'boolean', description: 'First row is header (used for json/xml/yaml/sql output)', default: true },
+        tableName: { type: 'string', description: 'Table name for SQL output', default: 'table1' },
       },
-      required: ['csv'],
+      required: ['csv', 'format'],
     },
     handler: async (input) => {
-      const { csv, hasHeader = true } = input
+      const { csv, format, hasHeader = true, tableName = 'table1' } = input
       const lines = csv.trim().split('\n')
       if (lines.length === 0) throw new Error('Empty CSV')
 
-      const rows = lines.map((line: string) => parseCSVLine(line))
-      const result = hasHeader
-        ? rows.slice(1).map((row: string[]) => {
-            const obj: Record<string, any> = {}
-            rows[0]!.forEach((header: string, i: number) => {
-              obj[header] = row[i]
+      if (format === 'json') {
+        const rows = lines.map((line: string) => parseCSVLine(line))
+        const result = hasHeader
+          ? rows.slice(1).map((row: string[]) => {
+              const obj: Record<string, any> = {}
+              rows[0]!.forEach((header: string, i: number) => {
+                obj[header] = row[i]
+              })
+              return obj
             })
-            return obj
+          : rows
+        return JSON.stringify(result, null, 2)
+      }
+
+      if (format === 'xml') {
+        const headers = parseCSVLine(lines[0]!)
+        let xml = '<?xml version="1.0" encoding="UTF-8"?>\n<rows>\n'
+        for (let i = 1; i < lines.length; i++) {
+          const values = parseCSVLine(lines[i]!)
+          xml += '  <row>\n'
+          headers.forEach((header: string, idx: number) => {
+            xml += `    <${header}>${escapeXml(values[idx] || '')}</${header}>\n`
           })
-        : rows
-
-      return JSON.stringify(result, null, 2)
-    },
-  },
-
-  'csv-to-xml': {
-    description: 'Convert CSV to XML',
-    schema: {
-      type: 'object',
-      properties: {
-        csv: { type: 'string', description: 'CSV content to convert' },
-      },
-      required: ['csv'],
-    },
-    handler: async (input) => {
-      const { csv } = input
-      const lines = csv.trim().split('\n')
-      if (lines.length === 0) throw new Error('Empty CSV')
-
-      const headers = parseCSVLine(lines[0]!)
-      let xml = '<?xml version="1.0" encoding="UTF-8"?>\n<rows>\n'
-
-      for (let i = 1; i < lines.length; i++) {
-        const values = parseCSVLine(lines[i]!)
-        xml += '  <row>\n'
-        headers.forEach((header: string, idx: number) => {
-          xml += `    <${header}>${escapeXml(values[idx] || '')}</${header}>\n`
-        })
-        xml += '  </row>\n'
-      }
-      xml += '</rows>'
-      return xml
-    },
-  },
-
-  'csv-to-yaml': {
-    description: 'Convert CSV to YAML',
-    schema: {
-      type: 'object',
-      properties: {
-        csv: { type: 'string', description: 'CSV content to convert' },
-      },
-      required: ['csv'],
-    },
-    handler: async (input) => {
-      const { csv } = input
-      const lines = csv.trim().split('\n')
-      if (lines.length === 0) throw new Error('Empty CSV')
-
-      const headers = parseCSVLine(lines[0]!)
-      const rows: Record<string, any>[] = []
-
-      for (let i = 1; i < lines.length; i++) {
-        const values = parseCSVLine(lines[i]!)
-        const obj: Record<string, any> = {}
-        headers.forEach((header: string, idx: number) => {
-          obj[header] = values[idx]
-        })
-        rows.push(obj)
+          xml += '  </row>\n'
+        }
+        xml += '</rows>'
+        return xml
       }
 
-      const jsYaml = await import('js-yaml')
-      return jsYaml.dump(rows, { lineWidth: -1 })
-    },
-  },
+      if (format === 'yaml') {
+        const headers = parseCSVLine(lines[0]!)
+        const rows: Record<string, any>[] = []
+        for (let i = 1; i < lines.length; i++) {
+          const values = parseCSVLine(lines[i]!)
+          const obj: Record<string, any> = {}
+          headers.forEach((header: string, idx: number) => {
+            obj[header] = values[idx]
+          })
+          rows.push(obj)
+        }
+        const jsYaml = await import('js-yaml')
+        return jsYaml.dump(rows, { lineWidth: -1 })
+      }
 
-  'csv-to-sql': {
-    description: 'Convert CSV to SQL INSERT',
-    schema: {
-      type: 'object',
-      properties: {
-        csv: { type: 'string', description: 'CSV content to convert' },
-        tableName: { type: 'string', description: 'Table name', default: 'table1' },
-      },
-      required: ['csv'],
-    },
-    handler: async (input) => {
-      const { csv, tableName = 'table1' } = input
-      const lines = csv.trim().split('\n')
-      if (lines.length === 0) throw new Error('Empty CSV')
-
+      // sql
       const headers = parseCSVLine(lines[0])
       let sql = ''
-
       for (let i = 1; i < lines.length; i++) {
         const values = parseCSVLine(lines[i])
         const cols = headers.map((h: string) => h).join(', ')
         const vals = values.map((v: string) => `'${v.replace(/'/g, "''")}'`).join(', ')
         sql += `INSERT INTO ${tableName} (${cols}) VALUES (${vals});\n`
       }
-
       return sql.trim()
     },
   },

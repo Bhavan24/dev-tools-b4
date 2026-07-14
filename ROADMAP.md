@@ -232,23 +232,23 @@ Cleanups come first because they reduce the catalog surface before new tools are
 
 ---
 
-### Phase 0 - Cleanup & Consolidation
+### Phase 0 - Cleanup & Consolidation ✅ COMPLETED (2026-07-14)
 
 **Goal:** Reduce tool count from duplicate/inverse pairs without removing any functionality.
 No new backend handlers needed; just UI merges.
 
-| Work Item | Type | Details |
-|---|---|---|
-| Merge JSON Beautifier into JSON Formatter | Refactor | One tool with indent selector; retire the `/tools/json-beautifier` route with a redirect |
-| Merge HTML Beautifier into HTML Formatter | Refactor | Same pattern; retire `/tools/html-beautifier` |
-| Merge Base64 Encoder + Decoder into Base64 Encoder/Decoder | Refactor | Tab-based UI, one route; already mirrors URL Encoder/Decoder pattern |
-| Merge RGB to HEX + HEX to RGB into Color Code Picker | Refactor | Extend Color Code Picker to show all three output formats at once; retire the two separate routes |
-| Merge INI to JSON + INI to XML + INI to YAML into INI Converter | Refactor | One source pane, output format selector tab |
-| Merge CSV to JSON + CSV to XML + CSV to YAML + CSV to SQL into CSV Converter | Refactor | One source pane, output format selector |
-| Add cURL Generator to REST API Tester | Enhancement | "Copy as cURL" button on the response panel of every executed request |
-| Add cURL Importer to REST API Tester | Enhancement | "Import cURL" input in the request panel to pre-fill method, URL, headers, body |
+| Work Item | Type | Status | Details |
+|---|---|---|---|
+| Merge JSON Beautifier into JSON Formatter | Refactor | ✅ Done | One tool with indent selector; `/tools/json-beautifier` redirects to `/tools/json-formatter` |
+| Merge HTML Beautifier into HTML Formatter | Refactor | ✅ Done | Same pattern; `/tools/html-beautifier` redirects to `/tools/html-formatter` |
+| Merge Base64 Encoder + Decoder into Base64 Encoder/Decoder | Refactor | ✅ Done | Tab-based UI at `/tools/base64-encoder-decoder`; old routes redirect |
+| Merge RGB to HEX + HEX to RGB into Color Code Picker | Refactor | ✅ Done | Both routes redirect to `/tools/color-code-picker` |
+| Merge INI to JSON + INI to XML + INI to YAML into INI Converter | Refactor | ✅ Done | One source pane with JSON/XML/YAML format selector at `/tools/ini-converter` |
+| Merge CSV to JSON + CSV to XML + CSV to YAML + CSV to SQL into CSV Converter | Refactor | ✅ Done | One source pane with JSON/XML/YAML/SQL format selector at `/tools/csv-converter` |
+| Add cURL Generator to REST API Tester | Enhancement | ✅ Done | "Copy as cURL" button next to "Send Request" button |
+| Add cURL Importer to REST API Tester | Enhancement | ✅ Done | "Import cURL" toggle above the request form; pre-fills method, URL, headers, body |
 
-After Phase 0 the catalog shrinks by roughly 10 entries and the REST API Tester becomes significantly more capable.
+After Phase 0 the catalog shrank from 89 to 79 entries and the REST API Tester became significantly more capable.
 
 ---
 

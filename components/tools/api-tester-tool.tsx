@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Loader2, AlertCircle, Copy, Check, Plus, X } from 'lucide-react'
+import { Loader2, AlertCircle, Copy, Check, Plus, X, Terminal, Upload } from 'lucide-react'
 
 interface ApiTesterToolProps {
   toolId: string
@@ -10,6 +10,49 @@ interface ApiTesterToolProps {
 interface Header {
   key: string
   value: string
+}
+
+function parseCurl(curlStr: string): { url: string; method: string; headers: Header[]; body: string } | null {
+  try {
+    const trimmed = curlStr.trim()
+    if (!trimmed.startsWith('curl')) return null
+
+    // Extract URL (first quoted or unquoted arg after curl that looks like a URL)
+    const urlMatch = trimmed.match(/curl\s+(?:[^\s]*\s+)*['"]?(https?:\/\/[^\s'"]+)['"]?/)
+    const url = urlMatch ? urlMatch[1] : ''
+
+    // Detect -X METHOD
+    const methodMatch = trimmed.match(/-X\s+([A-Z]+)/)
+    const method = methodMatch ? methodMatch[1] : 'GET'
+
+    // Extract -H headers
+    const headerMatches = [...trimmed.matchAll(/-H\s+['"]([^'"]+)['"]/g)]
+    const headers: Header[] = headerMatches.map((m) => {
+      const colon = m[1].indexOf(':')
+      return {
+        key: m[1].substring(0, colon).trim(),
+        value: m[1].substring(colon + 1).trim(),
+      }
+    })
+    if (headers.length === 0) headers.push({ key: '', value: '' })
+
+    // Extract body from --data or -d
+    const bodyMatch = trimmed.match(/(?:--data(?:-raw)?|-d)\s+['"]([^'"]+)['"]/)
+    const body = bodyMatch ? bodyMatch[1] : ''
+
+    return { url, method, headers, body }
+  } catch {
+    return null
+  }
+}
+
+function buildCurl(url: string, method: string, headers: Header[], body: string): string {
+  let cmd = `curl -X ${method} '${url}'`
+  headers.forEach((h) => {
+    if (h.key && h.value) cmd += ` \\\n  -H '${h.key}: ${h.value}'`
+  })
+  if (body) cmd += ` \\\n  --data-raw '${body}'`
+  return cmd
 }
 
 export function ApiTesterTool({ toolId }: ApiTesterToolProps) {
@@ -21,9 +64,34 @@ export function ApiTesterTool({ toolId }: ApiTesterToolProps) {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [copied, setCopied] = useState(false)
-  const [bodyTab, setBodyTab] = useState('json')
+  const [curlImport, setCurlImport] = useState('')
+  const [showCurlImport, setShowCurlImport] = useState(false)
+  const [curlImportError, setCurlImportError] = useState('')
+  const [copiedCurl, setCopiedCurl] = useState(false)
 
   const hasBody = ['POST', 'PUT', 'PATCH'].includes(method)
+
+  const handleImportCurl = () => {
+    const parsed = parseCurl(curlImport)
+    if (!parsed) {
+      setCurlImportError('Could not parse cURL command. Make sure it starts with "curl" and includes a URL.')
+      return
+    }
+    setUrl(parsed.url)
+    setMethod(parsed.method)
+    setHeaders(parsed.headers)
+    setBody(parsed.body)
+    setCurlImport('')
+    setCurlImportError('')
+    setShowCurlImport(false)
+  }
+
+  const handleCopyCurl = () => {
+    const curl = buildCurl(url, method, headers, body)
+    navigator.clipboard.writeText(curl)
+    setCopiedCurl(true)
+    setTimeout(() => setCopiedCurl(false), 2000)
+  }
 
   const handleExecute = async () => {
     setLoading(true)
@@ -102,6 +170,38 @@ export function ApiTesterTool({ toolId }: ApiTesterToolProps) {
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
       <div className="space-y-4">
+        {/* Import cURL */}
+        <div className="flex justify-between items-center">
+          <button
+            onClick={() => { setShowCurlImport((v) => !v); setCurlImportError('') }}
+            className="text-sm text-primary hover:text-primary/80 flex items-center gap-1"
+          >
+            <Upload size={14} /> Import cURL
+          </button>
+        </div>
+
+        {showCurlImport && (
+          <div className="card-base p-4 space-y-3">
+            <label className="block font-medium text-foreground text-sm">Paste cURL command</label>
+            <textarea
+              value={curlImport}
+              onChange={(e) => { setCurlImport(e.target.value); setCurlImportError('') }}
+              placeholder={'curl -X GET \'https://api.example.com/data\' \\\n  -H \'Authorization: Bearer token\''}
+              className="input-base h-28 font-mono text-xs resize-none"
+            />
+            {curlImportError && (
+              <p className="text-xs text-red-500">{curlImportError}</p>
+            )}
+            <button
+              onClick={handleImportCurl}
+              disabled={!curlImport.trim()}
+              className="btn-primary text-sm w-full"
+            >
+              Import
+            </button>
+          </div>
+        )}
+
         {/* URL & Method */}
         <div className="card-base p-4 space-y-3">
           <div>
@@ -186,20 +286,35 @@ export function ApiTesterTool({ toolId }: ApiTesterToolProps) {
           </div>
         )}
 
-        <button
-          onClick={handleExecute}
-          disabled={loading || !url}
-          className="btn-primary w-full flex items-center justify-center gap-2"
-        >
-          {loading ? (
-            <>
-              <Loader2 size={18} className="animate-spin" />
-              Sending...
-            </>
-          ) : (
-            `Send ${method} Request`
-          )}
-        </button>
+        <div className="flex gap-2">
+          <button
+            onClick={handleExecute}
+            disabled={loading || !url}
+            className="btn-primary flex-1 flex items-center justify-center gap-2"
+          >
+            {loading ? (
+              <>
+                <Loader2 size={18} className="animate-spin" />
+                Sending...
+              </>
+            ) : (
+              `Send ${method} Request`
+            )}
+          </button>
+          <button
+            onClick={handleCopyCurl}
+            disabled={!url}
+            title="Copy as cURL"
+            className="btn-secondary flex items-center gap-1 px-3"
+          >
+            {copiedCurl ? (
+              <Check size={16} className="text-green-500" />
+            ) : (
+              <Terminal size={16} />
+            )}
+            <span className="text-xs">cURL</span>
+          </button>
+        </div>
       </div>
 
       {/* Response */}
