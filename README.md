@@ -1,6 +1,6 @@
 # AI Developer Tools
 
-A comprehensive collection of **79 free developer and AI-powered tools** for developers and creators. All tools are instant, require no signup, and work completely in your browser.
+A comprehensive collection of **87 free developer and AI-powered tools** for developers and creators. All tools are instant, require no signup, and work completely in your browser.
 
 [Visit Live](ai-developer-tools.vercel.app/)
 
@@ -42,8 +42,8 @@ curl -X POST https://ai-developer-tools.vercel.app/api/mcp \
 
 ## 🚀 Features
 
-- **79 Tools** across multiple categories
-- **70 MCP-Enabled Tools** callable by Claude AI via `/api/mcp`
+- **87 Tools** across multiple categories
+- **78 MCP-Enabled Tools** callable by Claude AI via `/api/mcp`
 - **Pinnable Tools** - Pin your frequently used tools for quick access
 - **Search & Filter** - Find tools by name, description, or category
 - **9 AI Tools** - Bring your own API key; supports OpenAI, Anthropic, Google, Groq, Mistral, Azure, Bedrock, and Ollama
@@ -57,7 +57,7 @@ curl -X POST https://ai-developer-tools.vercel.app/api/mcp \
 
 > **MCP column key:** `✅` = callable via `/api/mcp` · `—` = browser-only or coming soon
 
-### Developer Tools (16 tools)
+### Developer Tools (22 tools)
 
 | Tool | Status | MCP | Description |
 |------|--------|-----|-------------|
@@ -78,8 +78,14 @@ curl -X POST https://ai-developer-tools.vercel.app/api/mcp \
 | **Color Code Picker** | ✅ Built | ✅ | Convert between HEX, RGB, and HSL color formats with visual picker |
 | **Favicon Generator** | ✅ Built | — | Upload an image and generate favicons in all standard sizes + .ico + ZIP (browser-only) |
 | **SVG Viewer** | ✅ Built | — | Paste or upload SVG code and see a live rendered preview with source editing |
+| **Cron Expression Builder** | ✅ Built | ✅ | Build and parse cron expressions with human-readable descriptions and next N run times |
+| **JWT Generator** | ✅ Built | ✅ | Generate signed JWT tokens (HS256/HS512) with custom payload and expiry |
+| **URL Builder** | ✅ Built | ✅ | Build URLs visually from protocol, host, path, and query parameters |
+| **Query String Parser** | ✅ Built | ✅ | Parse query strings or full URLs into a key-value table; handles arrays and encoded values |
+| **Word & Character Counter** | ✅ Built | ✅ | Live text stats: words, characters, sentences, paragraphs, and reading time |
+| **Lorem Ipsum Generator** | ✅ Built | ✅ | Generate placeholder text by paragraph, sentence, or word count |
 
-### Validation Tools (9 tools)
+### Validation Tools (11 tools)
 
 | Tool | Status | MCP | Description |
 |------|--------|-----|-------------|
@@ -92,6 +98,8 @@ curl -X POST https://ai-developer-tools.vercel.app/api/mcp \
 | **XPath Evaluator** | ✅ Built | ✅ | Query XML documents using XPath expressions |
 | **Link Checker** | ✅ Built | ✅ | Check if URLs are reachable, see HTTP status and response time |
 | **JSONPath Finder** | ✅ Built | ✅ | Find all matches and paths in JSON using JSONPath expressions |
+| **JSON Schema Validator** | ✅ Built | ✅ | Validate a JSON document against a JSON Schema; shows errors with property paths |
+| **JSON Schema Generator** | ✅ Built | ✅ | Infer a draft-07 JSON Schema from a sample JSON document |
 
 ### Formatter Tools (9 tools)
 
@@ -174,10 +182,10 @@ Supported providers: OpenAI, Anthropic, Google Gemini, Groq, Mistral, Azure Open
 
 ## 📊 Stats
 
-- **Total Tools**: 79
-- **Built & Ready**: 79 ✅
+- **Total Tools**: 87
+- **Built & Ready**: 87 ✅
 - **Coming Soon**: 0 🏗️
-- **MCP Enabled**: 70 ✅ (callable via `/api/mcp`)
+- **MCP Enabled**: 78 ✅ (callable via `/api/mcp`)
 - **Categories**: 6 (Developer, Validation, Formatter, Converter, AI Tools, Utilities)
 
 ---

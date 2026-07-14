@@ -252,21 +252,23 @@ After Phase 0 the catalog shrank from 89 to 79 entries and the REST API Tester b
 
 ---
 
-### Phase 1 - Core Developer Gaps
+### Phase 1 - Core Developer Gaps ✅ COMPLETED (2026-07-14)
 
 **Goal:** Fill the most-searched gaps in day-to-day developer workflow.
 All tools in this phase are deterministic (no LLM), stateless, and MCP-callable.
 
-| Tool | Category | Notes |
-|---|---|---|
-| **Cron Expression Builder** | Developer | Visual field selector + free-text; parse expression -> description; show next N run times |
-| **JWT Generator** | Developer | Completes the JWT pair with the existing Decoder; HS256/RS256, custom payload, secret or key |
-| **URL Builder** | Developer | Visual form for protocol/host/path/query params; pairs with existing URL Splitter |
-| **Query String Parser** | Developer | Parse raw query string or full URL into a key-value table; handle arrays and encoded values |
-| **JSON Schema Validator** | Validation | Validate a JSON document against a JSON Schema; show errors with paths |
-| **JSON Schema Generator** | Validation | Infer a schema from a sample JSON document; deterministic, complements AI Schema Generator |
-| **Word & Character Counter** | Developer | Live stats: words, chars, chars-without-spaces, sentences, paragraphs, reading time |
-| **Lorem Ipsum Generator** | Developer | Paragraph/word/sentence count; lorem or random English |
+| Tool | Category | Status | Notes |
+|---|---|---|---|
+| **Cron Expression Builder** | Developer | ✅ Done | Visual presets + free-text; parse expression -> description; show next N run times at `/tools/cron-expression-builder` |
+| **JWT Generator** | Developer | ✅ Done | HS256/HS512, custom payload, secret, configurable expiry at `/tools/jwt-generator` |
+| **URL Builder** | Developer | ✅ Done | Visual form for protocol/host/path/query params; live URL preview at `/tools/url-builder` |
+| **Query String Parser** | Developer | ✅ Done | Parse raw query string or full URL into key-value table; handles arrays at `/tools/query-string-parser` |
+| **JSON Schema Validator** | Validation | ✅ Done | Validate a JSON document against a JSON Schema; shows errors with paths at `/tools/json-schema-validator` |
+| **JSON Schema Generator** | Validation | ✅ Done | Infer a draft-07 schema from a sample JSON document at `/tools/json-schema-generator` |
+| **Word & Character Counter** | Developer | ✅ Done | Live stats: words, chars, chars-without-spaces, sentences, paragraphs, reading time at `/tools/word-counter` |
+| **Lorem Ipsum Generator** | Developer | ✅ Done | Paragraph/word/sentence count; classic latin or random English at `/tools/lorem-ipsum-generator` |
+
+After Phase 1 the catalog grew from 79 to 87 entries and added 8 new MCP-callable tools.
 
 ---
 

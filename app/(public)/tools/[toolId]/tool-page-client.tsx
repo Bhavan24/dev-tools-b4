@@ -35,6 +35,13 @@ import { IniConverterTool } from '@/components/tools/ini-converter-tool'
 import { CsvConverterTool } from '@/components/tools/csv-converter-tool'
 import { JsStringEscaperTool } from '@/components/tools/js-string-escaper-tool'
 import { YamlValidatorTool } from '@/components/tools/yaml-validator-tool'
+import { CronExpressionTool } from '@/components/tools/cron-expression-tool'
+import { JwtGeneratorTool } from '@/components/tools/jwt-generator-tool'
+import { UrlBuilderTool } from '@/components/tools/url-builder-tool'
+import { QueryStringParserTool } from '@/components/tools/query-string-parser-tool'
+import { WordCounterTool } from '@/components/tools/word-counter-tool'
+import { LoremIpsumTool } from '@/components/tools/lorem-ipsum-tool'
+import { JsonSchemaValidatorTool, JsonSchemaGeneratorTool } from '@/components/tools/json-schema-tools'
 import { JsValidatorTool } from '@/components/tools/js-validator-tool'
 import { JsonMinifierTool } from '@/components/tools/json-minifier-tool'
 import { JsMinifierTool } from '@/components/tools/js-minifier-tool'
@@ -144,6 +151,16 @@ const TOOL_REGISTRY: Record<string, () => React.ReactElement> = {
   'json-path-evaluator': () => <PathEvaluatorTool toolId="json-path-evaluator" />,
   'xpath-evaluator': () => <PathEvaluatorTool toolId="xpath-evaluator" />,
   'jsonpath-finder': () => <JsonpathFinderTool toolId="jsonpath-finder" />,
+
+  // Phase 1 tools
+  'cron-expression-builder': () => <CronExpressionTool />,
+  'jwt-generator': () => <JwtGeneratorTool />,
+  'url-builder': () => <UrlBuilderTool />,
+  'query-string-parser': () => <QueryStringParserTool />,
+  'word-counter': () => <WordCounterTool />,
+  'lorem-ipsum-generator': () => <LoremIpsumTool />,
+  'json-schema-validator': () => <JsonSchemaValidatorTool />,
+  'json-schema-generator': () => <JsonSchemaGeneratorTool />,
 
   // SQL
   'sql-to-mongodb': () => <SqlToMongodbTool toolId="sql-to-mongodb" />,

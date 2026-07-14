@@ -1760,6 +1760,190 @@ export const toolHandlers: Record<string, ToolHandler> = {
       return { markdown, rowCount: dataRows.length, columnCount: colCount }
     },
   },
+
+  'cron-expression-builder': {
+    description: 'Parse a cron expression and return a human-readable description and the next N run times',
+    schema: {
+      type: 'object',
+      properties: {
+        expression: { type: 'string', description: 'Cron expression (5 or 6 fields)' },
+        nextCount: { type: 'number', description: 'Number of upcoming run times to return (default: 5)', default: 5 },
+      },
+      required: ['expression'],
+    },
+    handler: async (input) => {
+      const { expression, nextCount = 5 } = input
+      return parseCronExpression(expression, nextCount)
+    },
+  },
+
+  'jwt-generator': {
+    description: 'Generate a signed JWT token with a custom payload using HS256 or HS512',
+    schema: {
+      type: 'object',
+      properties: {
+        payload: { type: 'string', description: 'JSON payload object' },
+        secret: { type: 'string', description: 'Signing secret key' },
+        algorithm: { type: 'string', enum: ['HS256', 'HS512'], description: 'Signing algorithm: HS256 or HS512', default: 'HS256' },
+        expiresIn: { type: 'string', description: 'Expiry (e.g. "1h", "7d", "3600"). Leave empty for no expiry.' },
+      },
+      required: ['payload', 'secret'],
+    },
+    handler: async (input) => {
+      const { payload, secret, algorithm = 'HS256', expiresIn } = input
+      let parsed: Record<string, unknown>
+      try {
+        parsed = JSON.parse(payload)
+      } catch {
+        throw new Error('Payload must be valid JSON')
+      }
+      return generateJwt(parsed, secret, algorithm, expiresIn)
+    },
+  },
+
+  'url-builder': {
+    description: 'Build a URL from protocol, host, path, and query parameters',
+    schema: {
+      type: 'object',
+      properties: {
+        protocol: { type: 'string', description: 'Protocol: http or https', default: 'https' },
+        host: { type: 'string', description: 'Hostname (e.g. example.com)' },
+        port: { type: 'string', description: 'Port number (optional)' },
+        path: { type: 'string', description: 'Path (e.g. /api/users)' },
+        params: {
+          type: 'array',
+          description: 'Query parameters as key-value pairs',
+          items: {
+            type: 'object',
+            properties: {
+              key: { type: 'string' },
+              value: { type: 'string' },
+            },
+          },
+        },
+        hash: { type: 'string', description: 'Fragment / hash (optional)' },
+      },
+      required: ['host'],
+    },
+    handler: async (input) => {
+      const { protocol = 'https', host, port, path = '', params = [], hash = '' } = input
+      const base = `${protocol}://${host}${port ? ':' + port : ''}${path || '/'}`
+      const url = new URL(base)
+      for (const p of params as Array<{ key: string; value: string }>) {
+        if (p.key) url.searchParams.append(p.key, p.value ?? '')
+      }
+      if (hash) url.hash = hash
+      return { url: url.toString() }
+    },
+  },
+
+  'query-string-parser': {
+    description: 'Parse a query string or full URL into a key-value table',
+    schema: {
+      type: 'object',
+      properties: {
+        input: { type: 'string', description: 'Query string (e.g. foo=1&bar=2) or full URL' },
+      },
+      required: ['input'],
+    },
+    handler: async (input) => {
+      const { input: raw } = input
+      let qs = raw.trim()
+      if (qs.startsWith('http://') || qs.startsWith('https://') || qs.includes('://')) {
+        try {
+          qs = new URL(qs).search.replace(/^\?/, '')
+        } catch {
+          qs = qs.split('?')[1] ?? qs
+        }
+      } else {
+        qs = qs.replace(/^\?/, '')
+      }
+      const params = new URLSearchParams(qs)
+      const result: Record<string, string | string[]> = {}
+      for (const key of new Set(params.keys())) {
+        const vals = params.getAll(key)
+        result[key] = vals.length === 1 ? vals[0]! : vals
+      }
+      return { params: result, count: Object.keys(result).length }
+    },
+  },
+
+  'word-counter': {
+    description: 'Count words, characters, sentences, paragraphs, and estimate reading time',
+    schema: {
+      type: 'object',
+      properties: {
+        text: { type: 'string', description: 'Text to analyze' },
+      },
+      required: ['text'],
+    },
+    handler: async (input) => {
+      const { text } = input
+      const chars = text.length
+      const charsNoSpaces = text.replace(/\s/g, '').length
+      const words = text.trim() === '' ? 0 : text.trim().split(/\s+/).length
+      const sentences = text.trim() === '' ? 0 : (text.match(/[^.!?]+[.!?]+/g) ?? []).length
+      const paragraphs = text.trim() === '' ? 0 : text.split(/\n\s*\n/).filter((p) => p.trim()).length
+      const readingTimeMin = Math.ceil(words / 200)
+      return { words, chars, charsNoSpaces, sentences, paragraphs, readingTimeMin }
+    },
+  },
+
+  'lorem-ipsum-generator': {
+    description: 'Generate lorem ipsum placeholder text',
+    schema: {
+      type: 'object',
+      properties: {
+        type: { type: 'string', enum: ['paragraphs', 'sentences', 'words'], description: 'Unit: paragraphs, sentences, or words' },
+        count: { type: 'number', description: 'Number of units to generate (default: 3)' },
+        style: { type: 'string', enum: ['lorem', 'english'], description: 'Style: classic lorem ipsum or random English words', default: 'lorem' },
+      },
+      required: ['type', 'count'],
+    },
+    handler: async (input) => {
+      const { type, count, style = 'lorem' } = input
+      return { text: generateLoremIpsum(type, count, style) }
+    },
+  },
+
+  'json-schema-validator': {
+    description: 'Validate a JSON document against a JSON Schema',
+    schema: {
+      type: 'object',
+      properties: {
+        json: { type: 'string', description: 'JSON document to validate' },
+        schema: { type: 'string', description: 'JSON Schema to validate against' },
+      },
+      required: ['json', 'schema'],
+    },
+    handler: async (input) => {
+      const { json, schema: schemaStr } = input
+      let doc: unknown
+      let schema: unknown
+      try { doc = JSON.parse(json) } catch { throw new Error('Invalid JSON document') }
+      try { schema = JSON.parse(schemaStr) } catch { throw new Error('Invalid JSON Schema') }
+      const errors = validateJsonSchema(doc, schema as Record<string, unknown>, '')
+      return { valid: errors.length === 0, errors }
+    },
+  },
+
+  'json-schema-generator': {
+    description: 'Infer a JSON Schema (draft-07) from a sample JSON document',
+    schema: {
+      type: 'object',
+      properties: {
+        json: { type: 'string', description: 'Sample JSON document to infer schema from' },
+      },
+      required: ['json'],
+    },
+    handler: async (input) => {
+      const { json } = input
+      let doc: unknown
+      try { doc = JSON.parse(json) } catch { throw new Error('Invalid JSON') }
+      const schema = inferJsonSchema(doc)
+      return JSON.stringify(schema, null, 2)
+    },
+  },
 }
 
 // Helper functions
@@ -2483,6 +2667,7 @@ function convertDelete(sql: string): ReturnType<typeof convertSqlToMongodb> {
   }
 }
 
+
 function parseCsvText(csv: string): string[][] {
   const rows: string[][] = []
   const lines = csv.split(/\r?\n/)
@@ -2521,4 +2706,303 @@ function mergeHeaderRows(headerRows: string[][]): string[] {
     const parts = headerRows.map((r) => (r[i] ?? '').trim()).filter(Boolean)
     return parts.join(' - ')
   })
+}
+
+// ─── Cron helpers ─────────────────────────────────────────────────────────────
+
+function parseCronExpression(expression: string, nextCount: number) {
+  const parts = expression.trim().split(/\s+/)
+  if (parts.length < 5 || parts.length > 6) {
+    throw new Error('Cron expression must have 5 or 6 fields: [second] minute hour day month weekday')
+  }
+  const is6 = parts.length === 6
+  const [secOrMin, minOrHour, hourOrDay, dayOrMonth, monthOrWeekday, weekday] = parts
+  const fields = is6
+    ? { second: secOrMin!, minute: minOrHour!, hour: hourOrDay!, day: hourOrDay!, month: dayOrMonth!, weekday: monthOrWeekday! }
+    : { minute: secOrMin!, hour: minOrHour!, day: hourOrDay!, month: dayOrMonth!, weekday: monthOrWeekday! }
+
+  const normalize = (p: string, is6field: boolean) => ({
+    second: is6field ? parts[0]! : '0',
+    minute: is6field ? parts[1]! : parts[0]!,
+    hour: is6field ? parts[2]! : parts[1]!,
+    day: is6field ? parts[3]! : parts[2]!,
+    month: is6field ? parts[4]! : parts[3]!,
+    weekday: is6field ? parts[5]! : parts[4]!,
+  })
+
+  const f = normalize(expression, is6)
+  const description = describeCron(f)
+  const next = getNextCronRuns(f, nextCount)
+  return { expression, description, nextRuns: next, fields: f }
+}
+
+function describeCron(f: { second: string; minute: string; hour: string; day: string; month: string; weekday: string }) {
+  const parts: string[] = []
+  const descField = (v: string, unit: string) => {
+    if (v === '*') return `every ${unit}`
+    if (v.startsWith('*/')) return `every ${v.slice(2)} ${unit}s`
+    if (v.includes('-')) return `${unit}s ${v}`
+    if (v.includes(',')) return `${unit}s ${v}`
+    return `at ${unit} ${v}`
+  }
+  parts.push(descField(f.minute, 'minute'))
+  if (f.hour !== '*') parts.push(descField(f.hour, 'hour'))
+  if (f.day !== '*') parts.push(`on day-of-month ${f.day}`)
+  if (f.month !== '*') parts.push(`in month ${f.month}`)
+  if (f.weekday !== '*') {
+    const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
+    const d = parseInt(f.weekday)
+    parts.push(`on ${!isNaN(d) && days[d] ? days[d] : f.weekday}`)
+  }
+  return parts.join(', ')
+}
+
+function cronFieldMatches(value: number, field: string, min: number, max: number): boolean {
+  if (field === '*') return true
+  for (const part of field.split(',')) {
+    if (part.startsWith('*/')) {
+      const step = parseInt(part.slice(2))
+      if ((value - min) % step === 0) return true
+    } else if (part.includes('-')) {
+      const [lo, hi] = part.split('-').map(Number)
+      if (value >= lo! && value <= hi!) return true
+    } else if (parseInt(part) === value) {
+      return true
+    }
+  }
+  return false
+}
+
+function getNextCronRuns(f: { second: string; minute: string; hour: string; day: string; month: string; weekday: string }, count: number): string[] {
+  const results: string[] = []
+  const now = new Date()
+  now.setSeconds(now.getSeconds() + 1, 0)
+  let cur = new Date(now)
+  const limit = 10000
+  let iter = 0
+  while (results.length < count && iter < limit) {
+    iter++
+    const min = cur.getMinutes()
+    const hour = cur.getHours()
+    const day = cur.getDate()
+    const month = cur.getMonth() + 1
+    const weekday = cur.getDay()
+    if (
+      cronFieldMatches(min, f.minute, 0, 59) &&
+      cronFieldMatches(hour, f.hour, 0, 23) &&
+      cronFieldMatches(day, f.day, 1, 31) &&
+      cronFieldMatches(month, f.month, 1, 12) &&
+      cronFieldMatches(weekday, f.weekday, 0, 6)
+    ) {
+      results.push(cur.toISOString())
+    }
+    cur = new Date(cur.getTime() + 60000)
+  }
+  return results
+}
+
+// ─── JWT generator ─────────────────────────────────────────────────────────────
+
+async function generateJwt(
+  payload: Record<string, unknown>,
+  secret: string,
+  algorithm: string,
+  expiresIn?: string
+) {
+  const header = { alg: algorithm, typ: 'JWT' }
+  const now = Math.floor(Date.now() / 1000)
+  const claims: Record<string, unknown> = { iat: now, ...payload }
+  if (expiresIn) {
+    const match = expiresIn.match(/^(\d+)([smhd]?)$/)
+    if (match) {
+      const n = parseInt(match[1]!)
+      const unit = match[2] || 's'
+      const mult: Record<string, number> = { s: 1, m: 60, h: 3600, d: 86400 }
+      claims.exp = now + n * (mult[unit] ?? 1)
+    } else {
+      const secs = parseInt(expiresIn)
+      if (!isNaN(secs)) claims.exp = now + secs
+    }
+  }
+  const enc = (obj: unknown) =>
+    Buffer.from(JSON.stringify(obj)).toString('base64url')
+  const headerB64 = enc(header)
+  const payloadB64 = enc(claims)
+  const signingInput = `${headerB64}.${payloadB64}`
+
+  const hashName = algorithm === 'HS512' ? 'SHA-512' : 'SHA-256'
+  const key = await crypto.subtle.importKey(
+    'raw',
+    new TextEncoder().encode(secret),
+    { name: 'HMAC', hash: hashName },
+    false,
+    ['sign']
+  )
+  const sig = await crypto.subtle.sign('HMAC', key, new TextEncoder().encode(signingInput))
+  const sigB64 = Buffer.from(sig).toString('base64url')
+  const token = `${signingInput}.${sigB64}`
+  return { token, header, payload: claims }
+}
+
+// ─── Lorem ipsum ──────────────────────────────────────────────────────────────
+
+const LOREM_WORDS = [
+  'lorem', 'ipsum', 'dolor', 'sit', 'amet', 'consectetur', 'adipiscing', 'elit',
+  'sed', 'do', 'eiusmod', 'tempor', 'incididunt', 'ut', 'labore', 'et', 'dolore',
+  'magna', 'aliqua', 'enim', 'ad', 'minim', 'veniam', 'quis', 'nostrud',
+  'exercitation', 'ullamco', 'laboris', 'nisi', 'aliquip', 'ex', 'ea', 'commodo',
+  'consequat', 'duis', 'aute', 'irure', 'in', 'reprehenderit', 'voluptate',
+  'velit', 'esse', 'cillum', 'eu', 'fugiat', 'nulla', 'pariatur', 'excepteur',
+  'sint', 'occaecat', 'cupidatat', 'non', 'proident', 'sunt', 'culpa', 'qui',
+  'officia', 'deserunt', 'mollit', 'anim', 'id', 'est', 'laborum',
+]
+
+const ENGLISH_WORDS = [
+  'the', 'quick', 'brown', 'fox', 'jumps', 'over', 'lazy', 'dog', 'developer',
+  'builds', 'creates', 'designs', 'tests', 'deploys', 'application', 'system',
+  'function', 'component', 'module', 'service', 'database', 'network', 'cloud',
+  'platform', 'interface', 'library', 'framework', 'software', 'hardware',
+  'performance', 'security', 'scalable', 'reliable', 'efficient', 'robust',
+  'flexible', 'maintainable', 'readable', 'elegant', 'simple', 'complex',
+  'modern', 'legacy', 'innovative', 'standard', 'custom', 'dynamic', 'static',
+]
+
+let _loremSeed = 0
+function seededWord(pool: string[]): string {
+  return pool[_loremSeed++ % pool.length]!
+}
+
+function generateLoremIpsum(type: string, count: number, style: string): string {
+  _loremSeed = 0
+  const pool = style === 'english' ? ENGLISH_WORDS : LOREM_WORDS
+  const n = Math.max(1, Math.min(count, 200))
+
+  const randomWord = () => seededWord(pool)
+  const sentence = (len = 8) => {
+    const words = Array.from({ length: len + Math.floor(_loremSeed % 5) }, randomWord)
+    words[0] = words[0]!.charAt(0).toUpperCase() + words[0]!.slice(1)
+    return words.join(' ') + '.'
+  }
+  const paragraph = () =>
+    Array.from({ length: 4 + (_loremSeed % 3) }, () => sentence(7 + (_loremSeed % 4))).join(' ')
+
+  if (type === 'words') return Array.from({ length: n }, randomWord).join(' ')
+  if (type === 'sentences') return Array.from({ length: n }, () => sentence()).join(' ')
+  return Array.from({ length: n }, paragraph).join('\n\n')
+}
+
+// ─── JSON Schema validator ─────────────────────────────────────────────────────
+
+function validateJsonSchema(
+  doc: unknown,
+  schema: Record<string, unknown>,
+  path: string
+): string[] {
+  const errors: string[] = []
+  const at = path || 'root'
+
+  if (schema.type) {
+    const expected = schema.type as string
+    const actual = Array.isArray(doc) ? 'array' : doc === null ? 'null' : typeof doc
+    if (expected !== actual) {
+      errors.push(`${at}: expected type "${expected}" but got "${actual}"`)
+      return errors
+    }
+  }
+
+  if (schema.enum && Array.isArray(schema.enum)) {
+    if (!schema.enum.includes(doc)) {
+      errors.push(`${at}: value must be one of [${schema.enum.map((v) => JSON.stringify(v)).join(', ')}]`)
+    }
+  }
+
+  if (typeof doc === 'string') {
+    if (typeof schema.minLength === 'number' && doc.length < schema.minLength)
+      errors.push(`${at}: length ${doc.length} is less than minLength ${schema.minLength}`)
+    if (typeof schema.maxLength === 'number' && doc.length > schema.maxLength)
+      errors.push(`${at}: length ${doc.length} exceeds maxLength ${schema.maxLength}`)
+    if (schema.pattern) {
+      try {
+        if (!new RegExp(schema.pattern as string).test(doc))
+          errors.push(`${at}: does not match pattern "${schema.pattern}"`)
+      } catch {}
+    }
+  }
+
+  if (typeof doc === 'number') {
+    if (typeof schema.minimum === 'number' && doc < schema.minimum)
+      errors.push(`${at}: ${doc} is less than minimum ${schema.minimum}`)
+    if (typeof schema.maximum === 'number' && doc > schema.maximum)
+      errors.push(`${at}: ${doc} exceeds maximum ${schema.maximum}`)
+  }
+
+  if (Array.isArray(doc)) {
+    if (typeof schema.minItems === 'number' && doc.length < schema.minItems)
+      errors.push(`${at}: array length ${doc.length} is less than minItems ${schema.minItems}`)
+    if (typeof schema.maxItems === 'number' && doc.length > schema.maxItems)
+      errors.push(`${at}: array length ${doc.length} exceeds maxItems ${schema.maxItems}`)
+    if (schema.items && typeof schema.items === 'object') {
+      doc.forEach((item, i) =>
+        errors.push(...validateJsonSchema(item, schema.items as Record<string, unknown>, `${at}[${i}]`))
+      )
+    }
+  }
+
+  if (doc !== null && typeof doc === 'object' && !Array.isArray(doc)) {
+    const obj = doc as Record<string, unknown>
+    if (Array.isArray(schema.required)) {
+      for (const req of schema.required as string[]) {
+        if (!(req in obj)) errors.push(`${at}: missing required property "${req}"`)
+      }
+    }
+    if (schema.properties && typeof schema.properties === 'object') {
+      for (const [key, propSchema] of Object.entries(schema.properties as Record<string, unknown>)) {
+        if (key in obj) {
+          errors.push(...validateJsonSchema(obj[key], propSchema as Record<string, unknown>, `${at}.${key}`))
+        }
+      }
+    }
+    if (schema.additionalProperties === false && schema.properties) {
+      const allowed = new Set(Object.keys(schema.properties as object))
+      for (const key of Object.keys(obj)) {
+        if (!allowed.has(key)) errors.push(`${at}: additional property "${key}" is not allowed`)
+      }
+    }
+  }
+
+  return errors
+}
+
+// ─── JSON Schema generator ─────────────────────────────────────────────────────
+
+function inferJsonSchema(value: unknown): Record<string, unknown> {
+  if (value === null) return { type: 'null' }
+  if (Array.isArray(value)) {
+    const itemSchemas = value.map(inferJsonSchema)
+    const types = [...new Set(itemSchemas.map((s) => s.type as string))]
+    const items = types.length === 1 && itemSchemas.length > 0 ? itemSchemas[0] : {}
+    return { type: 'array', items }
+  }
+  if (typeof value === 'object') {
+    const obj = value as Record<string, unknown>
+    const properties: Record<string, unknown> = {}
+    for (const [k, v] of Object.entries(obj)) {
+      properties[k] = inferJsonSchema(v)
+    }
+    return {
+      type: 'object',
+      properties,
+      required: Object.keys(obj),
+      additionalProperties: false,
+    }
+  }
+  if (typeof value === 'string') {
+    if (/^\d{4}-\d{2}-\d{2}(T[\d:.Z+-]+)?$/.test(value)) return { type: 'string', format: 'date-time' }
+    if (/^[^@]+@[^@]+\.[^@]+$/.test(value)) return { type: 'string', format: 'email' }
+    if (/^https?:\/\//.test(value)) return { type: 'string', format: 'uri' }
+    return { type: 'string' }
+  }
+  if (typeof value === 'number') return Number.isInteger(value) ? { type: 'integer' } : { type: 'number' }
+  if (typeof value === 'boolean') return { type: 'boolean' }
+  return {}
 }

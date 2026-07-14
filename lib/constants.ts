@@ -260,6 +260,54 @@ export const TOOLS = [
     description: 'Get your public IP address instantly with geolocation details',
     shortDescription: 'Find your public IP',
   },
+  {
+    id: 'cron-expression-builder',
+    name: 'Cron Expression Builder',
+    category: TOOLS_CATEGORIES.DEVELOPER,
+    description:
+      'Build, parse, and describe cron expressions visually. Enter fields or use the visual selector, get a human-readable description, and see the next N run times.',
+    shortDescription: 'Build and parse cron expressions',
+  },
+  {
+    id: 'jwt-generator',
+    name: 'JWT Generator',
+    category: TOOLS_CATEGORIES.DEVELOPER,
+    description:
+      'Generate signed JWT tokens with custom payload using HS256 or HS512 algorithms. Complement to the existing JWT Decoder.',
+    shortDescription: 'Generate signed JWTs',
+  },
+  {
+    id: 'url-builder',
+    name: 'URL Builder',
+    category: TOOLS_CATEGORIES.DEVELOPER,
+    description:
+      'Build URLs visually by filling in protocol, host, path, and query parameters as key-value rows. Live URL preview updates as fields change.',
+    shortDescription: 'Build URLs from components',
+  },
+  {
+    id: 'query-string-parser',
+    name: 'Query String Parser',
+    category: TOOLS_CATEGORIES.DEVELOPER,
+    description:
+      'Parse a raw query string or full URL into a formatted key-value table. Handles arrays, encoded values, and duplicate keys.',
+    shortDescription: 'Parse query strings',
+  },
+  {
+    id: 'word-counter',
+    name: 'Word & Character Counter',
+    category: TOOLS_CATEGORIES.DEVELOPER,
+    description:
+      'Live text statistics: word count, character count, characters without spaces, sentence count, paragraph count, and estimated reading time.',
+    shortDescription: 'Count words and characters',
+  },
+  {
+    id: 'lorem-ipsum-generator',
+    name: 'Lorem Ipsum Generator',
+    category: TOOLS_CATEGORIES.DEVELOPER,
+    description:
+      'Generate lorem ipsum placeholder text by paragraph, sentence, or word count. Choose classic latin or random English words.',
+    shortDescription: 'Generate placeholder text',
+  },
 
   // Formatter Tools
   {
@@ -545,6 +593,22 @@ export const TOOLS = [
   },
 
   // Validation Tools
+  {
+    id: 'json-schema-validator',
+    name: 'JSON Schema Validator',
+    category: TOOLS_CATEGORIES.VALIDATION,
+    description:
+      'Validate a JSON document against a JSON Schema. Shows all validation errors with property paths.',
+    shortDescription: 'Validate JSON against schema',
+  },
+  {
+    id: 'json-schema-generator',
+    name: 'JSON Schema Generator',
+    category: TOOLS_CATEGORIES.VALIDATION,
+    description:
+      'Infer a JSON Schema from a sample JSON document. Produces a draft-07 schema with types, required fields, and nested object definitions.',
+    shortDescription: 'Generate schema from JSON',
+  },
   {
     id: 'regex-parser',
     name: 'Regex Parser',
