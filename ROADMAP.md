@@ -346,16 +346,18 @@ After Phase 5 the catalog grew from 109 to 114 entries and added 5 new MCP-calla
 
 ---
 
-### Phase 6 - Markdown & Diagram Tools
+### Phase 6 - Markdown & Diagram Tools ✅ COMPLETED (2026-07-14)
 
 **Goal:** Fill the Markdown authoring gap, including diagram preview that pairs naturally with AI tools.
 
-| Tool | Category | Notes |
-|---|---|---|
-| **Markdown Table Generator** | Developer | Visual row/column editor outputting a GFM Markdown table |
-| **Mermaid Preview** | Developer | Paste Mermaid source, render live in browser; browser-only |
-| **Markdown Formatter** | Formatter | Normalize heading spacing, list indentation, blank lines |
-| **Markdown Linter** | Validation | Surface common Markdown issues: inconsistent headings, missing blank lines |
+| Tool | Category | Status | Notes |
+|---|---|---|---|
+| **Markdown Table Generator** | Developer | ✅ Done | Visual row/column editor with reorder, alignment selector; outputs GFM table; MCP-callable at `/tools/markdown-table-generator` |
+| **Mermaid Preview** | Developer | ✅ Done | Live diagram rendering with DOMPurify SVG sanitization; 5 built-in examples; download SVG; browser-only at `/tools/mermaid-preview` |
+| **Markdown Formatter** | Formatter | ✅ Done | Normalize heading spacing, collapse blank lines, trim trailing whitespace, ATX heading style; MCP-callable at `/tools/markdown-formatter` |
+| **Markdown Linter** | Validation | ✅ Done | Rules MD001/018/022/009/010/013/034/047; configurable line-length limit; MCP-callable at `/tools/markdown-linter` |
+
+After Phase 6 the catalog grew from 114 to 118 entries and added 3 new MCP-callable tools (Markdown Table Generator, Markdown Formatter, Markdown Linter).
 
 ---
 

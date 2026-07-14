@@ -72,7 +72,15 @@ import { WhoisLookupTool } from '@/components/tools/whois-lookup-tool'
 import { SslCheckerTool } from '@/components/tools/ssl-checker-tool'
 import { CidrCalculatorTool } from '@/components/tools/cidr-calculator-tool'
 import { IpRangeCalculatorTool } from '@/components/tools/ip-range-calculator-tool'
+import { MarkdownTableGeneratorTool } from '@/components/tools/markdown-table-generator-tool'
+import { MarkdownFormatterTool } from '@/components/tools/markdown-formatter-tool'
+import { MarkdownLinterTool } from '@/components/tools/markdown-linter-tool'
 import dynamic from 'next/dynamic'
+
+const MermaidPreviewTool = dynamic(
+  () => import('@/components/tools/mermaid-preview-tool').then((m) => m.MermaidPreviewTool),
+  { ssr: false }
+)
 
 const WorkflowBuilderTool = dynamic(
   () =>
@@ -216,6 +224,12 @@ const TOOL_REGISTRY: Record<string, () => React.ReactElement> = {
   'ssl-checker': () => <SslCheckerTool />,
   'cidr-calculator': () => <CidrCalculatorTool />,
   'ip-range-calculator': () => <IpRangeCalculatorTool />,
+
+  // Phase 6 tools
+  'markdown-table-generator': () => <MarkdownTableGeneratorTool />,
+  'mermaid-preview': () => <MermaidPreviewTool />,
+  'markdown-formatter': () => <MarkdownFormatterTool />,
+  'markdown-linter': () => <MarkdownLinterTool />,
 
   // Phase 3 tools
   'timezone-converter': () => <TimezoneConverterTool />,

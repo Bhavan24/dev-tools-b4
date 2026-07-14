@@ -1,6 +1,6 @@
 # AI Developer Tools
 
-A comprehensive collection of **114 free developer and AI-powered tools** for developers and creators. All tools are instant, require no signup, and work completely in your browser.
+A comprehensive collection of **118 free developer and AI-powered tools** for developers and creators. All tools are instant, require no signup, and work completely in your browser.
 
 [Visit Live](ai-developer-tools.vercel.app/)
 
@@ -42,8 +42,8 @@ curl -X POST https://ai-developer-tools.vercel.app/api/mcp \
 
 ## 🚀 Features
 
-- **114 Tools** across multiple categories
-- **104 MCP-Enabled Tools** callable by Claude AI via `/api/mcp`
+- **118 Tools** across multiple categories
+- **107 MCP-Enabled Tools** callable by Claude AI via `/api/mcp`
 - **Pinnable Tools** - Pin your frequently used tools for quick access
 - **Search & Filter** - Find tools by name, description, or category
 - **9 AI Tools** - Bring your own API key; supports OpenAI, Anthropic, Google, Groq, Mistral, Azure, Bedrock, and Ollama
@@ -57,7 +57,7 @@ curl -X POST https://ai-developer-tools.vercel.app/api/mcp \
 
 > **MCP column key:** `✅` = callable via `/api/mcp` · `—` = browser-only or coming soon
 
-### Developer Tools (43 tools)
+### Developer Tools (44 tools)
 
 | Tool | Status | MCP | Description |
 |------|--------|-----|-------------|
@@ -91,8 +91,10 @@ curl -X POST https://ai-developer-tools.vercel.app/api/mcp \
 | **SSL Certificate Checker** | ✅ Built | ✅ | Inspect TLS cert for any domain: subject, issuer, expiry, SANs, SHA-256 fingerprint |
 | **CIDR Calculator** | ✅ Built | ✅ | Input a CIDR block; get network/broadcast addresses, subnet mask, host range, and usable count |
 | **IP Range Calculator** | ✅ Built | ✅ | Input start/end IPs; compute the minimal covering set of CIDR blocks |
+| **Markdown Table Generator** | ✅ Built | ✅ | Visual row/column editor that outputs a GFM Markdown table; supports column reordering and alignment |
+| **Mermaid Preview** | ✅ Built | — | Paste Mermaid source and see a live rendered diagram (flowchart, sequence, class, Gantt, gitGraph, etc.); browser-only |
 
-### Validation Tools (12 tools)
+### Validation Tools (13 tools)
 
 | Tool | Status | MCP | Description |
 |------|--------|-----|-------------|
@@ -106,11 +108,13 @@ curl -X POST https://ai-developer-tools.vercel.app/api/mcp \
 | **Link Checker** | ✅ Built | ✅ | Check if URLs are reachable, see HTTP status and response time |
 | **JSONPath Finder** | ✅ Built | ✅ | Find all matches and paths in JSON using JSONPath expressions |
 | **Semver Comparator** | ✅ Built | ✅ | Compare two semantic version strings; shows which is higher and what changed (major/minor/patch/pre-release) |
+| **Markdown Linter** | ✅ Built | ✅ | Surface common Markdown issues: skipped heading levels, missing blank lines, trailing whitespace, hard tabs, long lines, bare URLs |
 
-### Formatter Tools (11 tools)
+### Formatter Tools (12 tools)
 
 | Tool | Status | MCP | Description |
 |------|--------|-----|-------------|
+| **Markdown Formatter** | ✅ Built | ✅ | Normalize Markdown: consistent heading spacing, collapsed blank lines, removed trailing whitespace, clean ATX headings |
 | **JavaScript Minifier** | ✅ Built | ✅ | Minify JavaScript code to reduce file size |
 | **JavaScript Beautifier** | ✅ Built | ✅ | Format and beautify JavaScript code |
 | **CSS Minifier** | ✅ Built | ✅ | Minify CSS code to reduce file size |
@@ -202,10 +206,10 @@ Supported providers: OpenAI, Anthropic, Google Gemini, Groq, Mistral, Azure Open
 
 ## 📊 Stats
 
-- **Total Tools**: 114
-- **Built & Ready**: 114 ✅
+- **Total Tools**: 118
+- **Built & Ready**: 118 ✅
 - **Coming Soon**: 0 🏗️
-- **MCP Enabled**: 104 ✅ (callable via `/api/mcp`)
+- **MCP Enabled**: 107 ✅ (callable via `/api/mcp`)
 - **Categories**: 6 (Developer, Validation, Formatter, Converter, AI Tools, Utilities)
 
 ---

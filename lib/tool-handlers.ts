@@ -3043,6 +3043,261 @@ export const toolHandlers: Record<string, ToolHandler> = {
       }
     },
   },
+
+  // ─── Phase 6 – Markdown & Diagram Tools ──────────────────────────────────────
+
+  'markdown-table-generator': {
+    description: 'Generate a GitHub-Flavored Markdown table from a JSON array of objects or a 2D array of rows',
+    schema: {
+      type: 'object',
+      properties: {
+        headers: {
+          type: 'array',
+          items: { type: 'string' },
+          description: 'Column header names',
+        },
+        rows: {
+          type: 'array',
+          items: { type: 'array', items: { type: 'string' } },
+          description: '2D array of cell values (each inner array is one row)',
+        },
+        alignment: {
+          type: 'string',
+          enum: ['left', 'center', 'right', 'none'],
+          description: 'Column alignment applied to all columns (default: none)',
+        },
+      },
+      required: ['headers', 'rows'],
+    },
+    handler: async (input) => {
+      const { headers, rows, alignment = 'none' } = input
+      if (!headers.length) throw new Error('headers must not be empty')
+
+      const sep = { left: ':---', center: ':---:', right: '---:', none: '---' }[alignment] ?? '---'
+      const escape = (s: string) => String(s ?? '').replace(/\|/g, '\\|')
+
+      const colWidths = headers.map((h: string, i: number) => {
+        const maxRow = rows.reduce((m: number, r: string[]) => Math.max(m, (r[i] ?? '').length), 0)
+        return Math.max(h.length, sep.length, maxRow)
+      })
+
+      const pad = (s: string, w: number) => escape(s).padEnd(w)
+
+      const headerLine = '| ' + headers.map((h: string, i: number) => pad(h, colWidths[i]!)).join(' | ') + ' |'
+      const sepLine = '| ' + colWidths.map((w: number) => sep.padEnd(w, sep.endsWith(':') ? '-' : '-').slice(0, w).padEnd(w, '-')).join(' | ') + ' |'
+      const dataLines = rows.map((row: string[]) =>
+        '| ' + headers.map((_: string, i: number) => pad(row[i] ?? '', colWidths[i]!)).join(' | ') + ' |'
+      )
+
+      const table = [headerLine, sepLine, ...dataLines].join('\n')
+      return { table, columns: headers.length, rows: rows.length }
+    },
+  },
+
+  'markdown-formatter': {
+    description: 'Format and normalize a Markdown document: consistent heading spacing, list indentation, blank lines, and trailing whitespace',
+    schema: {
+      type: 'object',
+      properties: {
+        markdown: { type: 'string', description: 'Markdown source to format' },
+        headingStyle: {
+          type: 'string',
+          enum: ['atx', 'preserve'],
+          description: 'atx = normalize all headings to # style; preserve = keep as-is (default: atx)',
+        },
+      },
+      required: ['markdown'],
+    },
+    handler: async (input) => {
+      const { markdown, headingStyle = 'atx' } = input
+      const lines = markdown.split('\n')
+      const out: string[] = []
+      let prevWasBlank = false
+      let prevWasHeading = false
+      let prevWasList = false
+      let inFence = false
+
+      for (let i = 0; i < lines.length; i++) {
+        const raw = lines[i]!
+        const trimmed = raw.trimEnd()
+
+        // Track fenced code blocks - don't touch their contents
+        if (/^```|^~~~/.test(trimmed)) {
+          inFence = !inFence
+          out.push(trimmed)
+          prevWasBlank = false
+          prevWasHeading = false
+          prevWasList = false
+          continue
+        }
+        if (inFence) {
+          out.push(raw.trimEnd())
+          continue
+        }
+
+        const isBlank = trimmed === ''
+        const isHeading = /^#{1,6}\s/.test(trimmed)
+        const isList = /^(\s*[-*+]|\s*\d+\.)\s/.test(trimmed)
+        const isHr = /^[-*_]{3,}\s*$/.test(trimmed)
+        const isBlockquote = /^>/.test(trimmed)
+
+        // Normalize ATX headings spacing
+        let line = trimmed
+        if (headingStyle === 'atx' && isHeading) {
+          line = line.replace(/^(#{1,6})\s+/, '$1 ')
+        }
+
+        // Ensure blank line before heading (not at doc start)
+        if (isHeading && out.length > 0 && !prevWasBlank) {
+          out.push('')
+        }
+
+        // Ensure blank line after heading
+        if (prevWasHeading && !isBlank) {
+          if (out[out.length - 1] !== '') out.push('')
+        }
+
+        // Collapse multiple blank lines into one
+        if (isBlank) {
+          if (!prevWasBlank && out.length > 0) out.push('')
+          prevWasBlank = true
+          prevWasHeading = false
+          prevWasList = false
+          continue
+        }
+
+        out.push(line)
+        prevWasBlank = false
+        prevWasHeading = isHeading
+        prevWasList = isList
+      }
+
+      // Strip leading/trailing blank lines from output
+      while (out.length && out[0] === '') out.shift()
+      while (out.length && out[out.length - 1] === '') out.pop()
+
+      const result = out.join('\n')
+      const linesBefore = lines.length
+      const linesAfter = result.split('\n').length
+
+      return {
+        formatted: result,
+        linesBefore,
+        linesAfter,
+        changed: result !== markdown.split('\n').map((l) => l.trimEnd()).join('\n'),
+      }
+    },
+  },
+
+  'markdown-linter': {
+    description: 'Lint a Markdown document and report common issues: inconsistent headings, missing blank lines, long lines, bare URLs, and more',
+    schema: {
+      type: 'object',
+      properties: {
+        markdown: { type: 'string', description: 'Markdown source to lint' },
+        maxLineLength: {
+          type: 'number',
+          description: 'Maximum line length before a warning is raised (default: 120, 0 to disable)',
+        },
+      },
+      required: ['markdown'],
+    },
+    handler: async (input) => {
+      const { markdown, maxLineLength = 120 } = input
+      const lines = markdown.split('\n')
+
+      interface Issue {
+        line: number
+        rule: string
+        message: string
+        severity: 'error' | 'warning'
+      }
+      const issues: Issue[] = []
+      const warn = (line: number, rule: string, message: string, severity: 'error' | 'warning' = 'warning') =>
+        issues.push({ line, rule, message, severity })
+
+      let inFence = false
+      let prevHeadingLevel = 0
+      let prevLineBlank = true
+      let prevLineWasHeading = false
+
+      for (let i = 0; i < lines.length; i++) {
+        const line = lines[i]!
+        const lineNum = i + 1
+        const trimmed = line.trimEnd()
+
+        if (/^```|^~~~/.test(trimmed)) { inFence = !inFence }
+        if (inFence) { prevLineBlank = false; continue }
+
+        const isBlank = trimmed === ''
+        const headingMatch = trimmed.match(/^(#{1,6})\s/)
+        const isHeading = !!headingMatch
+        const headingLevel = headingMatch ? headingMatch[1]!.length : 0
+        const isList = /^(\s*[-*+]|\s*\d+\.)\s/.test(trimmed)
+
+        // MD001: Heading levels should only increment by one
+        if (isHeading && prevHeadingLevel > 0 && headingLevel > prevHeadingLevel + 1) {
+          warn(lineNum, 'MD001', `Heading level skipped: h${prevHeadingLevel} → h${headingLevel}`, 'error')
+        }
+
+        // MD018: No space after # in ATX heading
+        if (/^#{1,6}[^ #\n]/.test(trimmed)) {
+          warn(lineNum, 'MD018', 'No space after # in ATX heading', 'error')
+        }
+
+        // MD022: Headings should be surrounded by blank lines
+        if (isHeading && !prevLineBlank && i > 0) {
+          warn(lineNum, 'MD022', 'Heading not preceded by a blank line', 'warning')
+        }
+        if (prevLineWasHeading && !isBlank) {
+          warn(lineNum, 'MD022', 'Heading not followed by a blank line', 'warning')
+        }
+
+        // MD009: Trailing spaces (more than 2 - 2 is intentional line break)
+        const trailingSpaces = line.length - line.trimEnd().length
+        if (trailingSpaces > 2) {
+          warn(lineNum, 'MD009', `Trailing whitespace (${trailingSpaces} spaces)`, 'warning')
+        }
+
+        // MD010: Hard tabs
+        if (line.includes('\t')) {
+          warn(lineNum, 'MD010', 'Hard tab character found', 'warning')
+        }
+
+        // MD013: Line too long
+        if (maxLineLength > 0 && !isHeading && trimmed.length > maxLineLength) {
+          warn(lineNum, 'MD013', `Line length ${trimmed.length} exceeds ${maxLineLength}`, 'warning')
+        }
+
+        // MD034: Bare URL
+        if (/(?<![(\[`])(https?:\/\/[^\s)>\]]+)/.test(trimmed) && !/^\[.*\]:/.test(trimmed)) {
+          warn(lineNum, 'MD034', 'Bare URL found - consider wrapping in angle brackets or a link', 'warning')
+        }
+
+        // MD047: File should end with a newline (checked after loop)
+
+        prevLineBlank = isBlank
+        prevLineWasHeading = isHeading
+        if (isHeading) prevHeadingLevel = headingLevel
+      }
+
+      // MD047: File should end with a single newline
+      if (markdown.length > 0 && !markdown.endsWith('\n')) {
+        warn(lines.length, 'MD047', 'File should end with a newline', 'warning')
+      }
+
+      const errors = issues.filter((i) => i.severity === 'error').length
+      const warnings = issues.filter((i) => i.severity === 'warning').length
+
+      return {
+        valid: errors === 0,
+        issueCount: issues.length,
+        errors,
+        warnings,
+        issues,
+      }
+    },
+  },
 }
 
 

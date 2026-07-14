@@ -392,6 +392,40 @@ export const TOOLS = [
     shortDescription: 'Convert IP range to CIDR blocks',
   },
 
+  // Phase 6 - Markdown & Diagram Tools
+  {
+    id: 'markdown-table-generator',
+    name: 'Markdown Table Generator',
+    category: TOOLS_CATEGORIES.DEVELOPER,
+    description:
+      'Build a GitHub-Flavored Markdown table using a visual row/column editor. Add, remove, and reorder columns and rows, then copy the ready-to-paste GFM table.',
+    shortDescription: 'Build GFM tables visually',
+  },
+  {
+    id: 'mermaid-preview',
+    name: 'Mermaid Preview',
+    category: TOOLS_CATEGORIES.DEVELOPER,
+    description:
+      'Paste Mermaid diagram source and see a live rendered preview in the browser. Supports flowcharts, sequence diagrams, class diagrams, Gantt charts, and more.',
+    shortDescription: 'Live Mermaid diagram preview',
+  },
+  {
+    id: 'markdown-formatter',
+    name: 'Markdown Formatter',
+    category: TOOLS_CATEGORIES.FORMATTER,
+    description:
+      'Normalize a Markdown document: consistent heading spacing, collapsed blank lines, removed trailing whitespace, and clean ATX headings.',
+    shortDescription: 'Normalize Markdown formatting',
+  },
+  {
+    id: 'markdown-linter',
+    name: 'Markdown Linter',
+    category: TOOLS_CATEGORIES.VALIDATION,
+    description:
+      'Lint a Markdown document and surface common issues: skipped heading levels, missing blank lines around headings, trailing whitespace, hard tabs, long lines, and bare URLs.',
+    shortDescription: 'Lint Markdown for common issues',
+  },
+
   // Formatter Tools
   {
     id: 'json-formatter',
