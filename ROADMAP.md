@@ -313,17 +313,19 @@ After Phase 3 the catalog grew from 96 to 105 entries and added 9 new MCP-callab
 
 ---
 
-### Phase 4 - Security & Cryptography
+### Phase 4 - Security & Cryptography ✅ COMPLETED (2026-07-14)
 
 **Goal:** Add the missing crypto tools that developers reach for when building or testing APIs.
-Most are MCP-callable; File Hash Checker is browser-only.
+Most are MCP-callable; File Hash Checker and RSA/AES are browser-only.
 
-| Tool | Category | Notes |
-|---|---|---|
-| **HMAC Generator** | Developer | Key + message + algorithm (SHA256/SHA512); hex/base64 output; covers AWS/Stripe/webhook signing |
-| **BCrypt Generator/Verifier** | Developer | Hash a password; verify a hash against a plain-text input |
-| **File Hash Checker** | Developer | Upload a file, compute MD5/SHA1/SHA256/SHA512 in the browser (no upload to server); browser-only |
-| **RSA/AES Encrypt/Decrypt** | Developer | Generate key pairs, encrypt/decrypt text payloads for local testing |
+| Tool | Category | Status | Notes |
+|---|---|---|---|
+| **HMAC Generator** | Developer | ✅ Done | Key + message + algorithm (SHA-256/SHA-512/SHA-1/MD5); hex/base64 output; covers AWS/Stripe/webhook signing at `/tools/hmac-generator` |
+| **BCrypt Generator/Verifier** | Developer | ✅ Done | Hash a password with configurable cost rounds (4-14); verify a password against an existing hash at `/tools/bcrypt-tool` |
+| **File Hash Checker** | Developer | ✅ Done | Drop any file, compute MD5/SHA-1/SHA-256/SHA-512 in the browser; no upload to server at `/tools/file-hash-checker` |
+| **RSA / AES Encrypt & Decrypt** | Developer | ✅ Done | Generate RSA-2048 key pairs, encrypt/decrypt with RSA-OAEP; AES-256-GCM with PBKDF2 passphrase; browser-only via Web Crypto API at `/tools/rsa-aes-tool` |
+
+After Phase 4 the catalog grew from 105 to 109 entries and added 3 new MCP-callable tools (HMAC Generator, BCrypt, File Hash Checker).
 
 ---
 

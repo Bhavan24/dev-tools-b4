@@ -2628,6 +2628,111 @@ export const toolHandlers: Record<string, ToolHandler> = {
       }
     },
   },
+
+  // ─── Phase 4 – Security & Cryptography ───────────────────────────────────────
+
+  'hmac-generator': {
+    description: 'Generate an HMAC signature using a secret key and a chosen hash algorithm',
+    schema: {
+      type: 'object',
+      properties: {
+        message: { type: 'string', description: 'The message to sign' },
+        key: { type: 'string', description: 'The secret key' },
+        algorithm: {
+          type: 'string',
+          enum: ['sha256', 'sha512', 'sha1', 'md5'],
+          description: 'HMAC algorithm: sha256 (default), sha512, sha1, md5',
+        },
+        encoding: {
+          type: 'string',
+          enum: ['hex', 'base64'],
+          description: 'Output encoding: hex (default) or base64',
+        },
+      },
+      required: ['message', 'key'],
+    },
+    handler: async (input) => {
+      const { message, key, algorithm = 'sha256', encoding = 'hex' } = input
+      const crypto = require('crypto')
+      const validAlgorithms = ['sha256', 'sha512', 'sha1', 'md5']
+      const validEncodings = ['hex', 'base64']
+      if (!validAlgorithms.includes(algorithm))
+        throw new Error(`Invalid algorithm. Use: ${validAlgorithms.join(', ')}`)
+      if (!validEncodings.includes(encoding))
+        throw new Error(`Invalid encoding. Use: ${validEncodings.join(', ')}`)
+      const hmac = crypto.createHmac(algorithm, key).update(message).digest(encoding)
+      return { message, algorithm, encoding, hmac }
+    },
+  },
+
+  'bcrypt-tool': {
+    description: 'Hash a password with bcrypt or verify a plain-text password against a bcrypt hash',
+    schema: {
+      type: 'object',
+      properties: {
+        action: {
+          type: 'string',
+          enum: ['hash', 'verify'],
+          description: 'hash - generate a bcrypt hash; verify - compare a password to a hash',
+        },
+        password: { type: 'string', description: 'Plain-text password' },
+        hash: {
+          type: 'string',
+          description: 'Existing bcrypt hash (required when action is verify)',
+        },
+        rounds: {
+          type: 'number',
+          description: 'Cost factor / salt rounds for hashing (4-14, default: 10)',
+        },
+      },
+      required: ['action', 'password'],
+    },
+    handler: async (input) => {
+      const { action, password, hash, rounds = 10 } = input
+      const bcrypt = require('bcryptjs')
+      if (action === 'hash') {
+        if (rounds < 4 || rounds > 14)
+          throw new Error('Rounds must be between 4 and 14')
+        const generated = await bcrypt.hash(password, rounds)
+        return { action, rounds, hash: generated }
+      }
+      if (action === 'verify') {
+        if (!hash) throw new Error('hash is required for verify action')
+        const match = await bcrypt.compare(password, hash)
+        return { action, match }
+      }
+      throw new Error('action must be hash or verify')
+    },
+  },
+
+  'file-hash-checker': {
+    description: 'Compute MD5, SHA-1, SHA-256, and SHA-512 hashes from base64-encoded file content',
+    schema: {
+      type: 'object',
+      properties: {
+        fileBase64: {
+          type: 'string',
+          description: 'Base64-encoded file content to hash',
+        },
+        filename: {
+          type: 'string',
+          description: 'Original file name (used for display only)',
+        },
+      },
+      required: ['fileBase64'],
+    },
+    handler: async (input) => {
+      const { fileBase64, filename = 'file' } = input
+      const crypto = require('crypto')
+      const buf = Buffer.from(fileBase64, 'base64')
+      const algorithms = ['md5', 'sha1', 'sha256', 'sha512'] as const
+      const hashes: Record<string, string> = {}
+      for (const algo of algorithms) {
+        hashes[algo] = crypto.createHash(algo).update(buf).digest('hex')
+      }
+      return { filename, sizeBytes: buf.length, hashes }
+    },
+  },
 }
 
 

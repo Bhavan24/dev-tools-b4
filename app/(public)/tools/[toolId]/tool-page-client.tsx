@@ -63,6 +63,10 @@ import { EnvFileParserTool } from '@/components/tools/env-file-parser-tool'
 import { GitignoreGeneratorTool } from '@/components/tools/gitignore-generator-tool'
 import { ConventionalCommitTool } from '@/components/tools/conventional-commit-tool'
 import { SemverComparatorTool } from '@/components/tools/semver-comparator-tool'
+import { HmacGeneratorTool } from '@/components/tools/hmac-generator-tool'
+import { BcryptTool } from '@/components/tools/bcrypt-tool'
+import { FileHashCheckerTool } from '@/components/tools/file-hash-checker-tool'
+import { RsaAesTool } from '@/components/tools/rsa-aes-tool'
 import dynamic from 'next/dynamic'
 
 const WorkflowBuilderTool = dynamic(
@@ -195,6 +199,12 @@ const TOOL_REGISTRY: Record<string, () => React.ReactElement> = {
   stopwatch: () => <TimerTool />,
   counter: () => <CounterTool />,
 
+  // Phase 4 tools
+  'hmac-generator': () => <HmacGeneratorTool />,
+  'bcrypt-tool': () => <BcryptTool />,
+  'file-hash-checker': () => <FileHashCheckerTool />,
+  'rsa-aes-tool': () => <RsaAesTool />,
+
   // Phase 3 tools
   'timezone-converter': () => <TimezoneConverterTool />,
   'iso8601-converter': () => <Iso8601ConverterTool />,
@@ -219,8 +229,6 @@ const TOOL_REGISTRY: Record<string, () => React.ReactElement> = {
   'researcher-agent': () => <ResearcherAgentTool />,
   'workflow-builder': () => <WorkflowBuilderTool />,
 }
-
-const FULL_WIDTH_TOOLS = new Set(['workflow-builder'])
 
 export function ToolPageClient({ toolId }: ToolPageClientProps) {
   const tool = TOOLS.find((t) => t.id === toolId)
@@ -259,5 +267,5 @@ export function ToolPageClient({ toolId }: ToolPageClientProps) {
     )
   }
 
-  return <div className={FULL_WIDTH_TOOLS.has(toolId) ? 'w-full' : 'max-w-4xl'}>{factory()}</div>
+  return <div className="w-full">{factory()}</div>
 }

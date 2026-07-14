@@ -1,6 +1,6 @@
 # AI Developer Tools
 
-A comprehensive collection of **105 free developer and AI-powered tools** for developers and creators. All tools are instant, require no signup, and work completely in your browser.
+A comprehensive collection of **109 free developer and AI-powered tools** for developers and creators. All tools are instant, require no signup, and work completely in your browser.
 
 [Visit Live](ai-developer-tools.vercel.app/)
 
@@ -42,8 +42,8 @@ curl -X POST https://ai-developer-tools.vercel.app/api/mcp \
 
 ## 🚀 Features
 
-- **105 Tools** across multiple categories
-- **96 MCP-Enabled Tools** callable by Claude AI via `/api/mcp`
+- **109 Tools** across multiple categories
+- **99 MCP-Enabled Tools** callable by Claude AI via `/api/mcp`
 - **Pinnable Tools** - Pin your frequently used tools for quick access
 - **Search & Filter** - Find tools by name, description, or category
 - **9 AI Tools** - Bring your own API key; supports OpenAI, Anthropic, Google, Groq, Mistral, Azure, Bedrock, and Ollama
@@ -57,7 +57,7 @@ curl -X POST https://ai-developer-tools.vercel.app/api/mcp \
 
 > **MCP column key:** `✅` = callable via `/api/mcp` · `—` = browser-only or coming soon
 
-### Developer Tools (34 tools)
+### Developer Tools (38 tools)
 
 | Tool | Status | MCP | Description |
 |------|--------|-----|-------------|
@@ -82,6 +82,10 @@ curl -X POST https://ai-developer-tools.vercel.app/api/mcp \
 | **Env File Parser** | ✅ Built | ✅ | Parse .env files into a key-value table; detects duplicates, empty values, and quoted strings |
 | **Gitignore Generator** | ✅ Built | ✅ | Generate .gitignore from curated templates for languages, frameworks, and editors |
 | **Conventional Commit Generator** | ✅ Built | ✅ | Fill in type/scope/description/body/breaking-change; outputs a formatted Conventional Commit message |
+| **HMAC Generator** | ✅ Built | ✅ | Generate HMAC signatures (SHA-256/512/1, MD5); hex or base64 output; useful for AWS, Stripe, and webhook signing |
+| **BCrypt Generator/Verifier** | ✅ Built | ✅ | Hash a password with bcrypt at a configurable cost factor, or verify a password against an existing hash |
+| **File Hash Checker** | ✅ Built | ✅ | Drop any file to compute MD5, SHA-1, SHA-256, and SHA-512 hashes; no file is uploaded to the server |
+| **RSA / AES Encrypt & Decrypt** | ✅ Built | — | Generate RSA-2048 key pairs, encrypt/decrypt with RSA-OAEP, or encrypt/decrypt with AES-256-GCM; browser-only via Web Crypto API |
 
 ### Validation Tools (12 tools)
 
@@ -193,10 +197,10 @@ Supported providers: OpenAI, Anthropic, Google Gemini, Groq, Mistral, Azure Open
 
 ## 📊 Stats
 
-- **Total Tools**: 105
-- **Built & Ready**: 105 ✅
+- **Total Tools**: 109
+- **Built & Ready**: 109 ✅
 - **Coming Soon**: 0 🏗️
-- **MCP Enabled**: 96 ✅ (callable via `/api/mcp`)
+- **MCP Enabled**: 99 ✅ (callable via `/api/mcp`)
 - **Categories**: 6 (Developer, Validation, Formatter, Converter, AI Tools, Utilities)
 
 ---

@@ -316,6 +316,40 @@ export const TOOLS = [
     shortDescription: 'Generate conventional commit messages',
   },
 
+  // Phase 4 - Security & Cryptography
+  {
+    id: 'hmac-generator',
+    name: 'HMAC Generator',
+    category: TOOLS_CATEGORIES.DEVELOPER,
+    description:
+      'Generate HMAC signatures using a secret key and algorithm (SHA-256, SHA-512, SHA-1, MD5). Supports hex and base64 output. Useful for API request signing (AWS, Stripe, webhooks).',
+    shortDescription: 'Generate HMAC signatures',
+  },
+  {
+    id: 'bcrypt-tool',
+    name: 'BCrypt Generator/Verifier',
+    category: TOOLS_CATEGORIES.DEVELOPER,
+    description:
+      'Hash a plain-text password using bcrypt with a configurable cost factor, or verify a password against an existing bcrypt hash.',
+    shortDescription: 'Hash and verify passwords with bcrypt',
+  },
+  {
+    id: 'file-hash-checker',
+    name: 'File Hash Checker',
+    category: TOOLS_CATEGORIES.DEVELOPER,
+    description:
+      'Drop a file to compute its MD5, SHA-1, SHA-256, and SHA-512 hashes directly in the browser. No file is uploaded to the server.',
+    shortDescription: 'Compute file hashes in-browser',
+  },
+  {
+    id: 'rsa-aes-tool',
+    name: 'RSA / AES Encrypt & Decrypt',
+    category: TOOLS_CATEGORIES.DEVELOPER,
+    description:
+      'Generate RSA key pairs and encrypt/decrypt text with RSA-OAEP, or encrypt/decrypt with AES-GCM using a passphrase. All operations run client-side in the browser.',
+    shortDescription: 'RSA and AES encrypt/decrypt',
+  },
+
   // Formatter Tools
   {
     id: 'json-formatter',
