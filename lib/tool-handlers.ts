@@ -617,6 +617,29 @@ export const toolHandlers: Record<string, ToolHandler> = {
     },
   },
 
+  'base64-encoder-decoder': {
+    description: 'Encode text to Base64 or decode Base64 back to plain text',
+    schema: {
+      type: 'object',
+      properties: {
+        input: { type: 'string', description: 'Text to encode or Base64 string to decode' },
+        action: { type: 'string', enum: ['encode', 'decode'], description: 'encode or decode' },
+      },
+      required: ['input', 'action'],
+    },
+    handler: async (input) => {
+      const { input: text, action } = input
+      if (action === 'encode') {
+        return Buffer.from(text).toString('base64')
+      }
+      try {
+        return Buffer.from(text, 'base64').toString('utf-8')
+      } catch {
+        throw new Error('Invalid Base64 string')
+      }
+    },
+  },
+
   'base64-encoder': {
     description: 'Encode text to Base64',
     schema: {
@@ -1259,6 +1282,103 @@ export const toolHandlers: Record<string, ToolHandler> = {
       }
 
       return sql.trim()
+    },
+  },
+
+  'csv-converter': {
+    description: 'Convert CSV to JSON, XML, YAML, or SQL',
+    schema: {
+      type: 'object',
+      properties: {
+        csv: { type: 'string', description: 'CSV content to convert' },
+        format: { type: 'string', enum: ['json', 'xml', 'yaml', 'sql'], description: 'Output format' },
+        hasHeader: { type: 'boolean', description: 'First row is header (JSON only)', default: true },
+        tableName: { type: 'string', description: 'Table name for SQL output', default: 'table1' },
+      },
+      required: ['csv', 'format'],
+    },
+    handler: async (input) => {
+      const { csv, format, hasHeader = true, tableName = 'table1' } = input
+      const lines = csv.trim().split('\n')
+      if (lines.length === 0) throw new Error('Empty CSV')
+
+      if (format === 'json') {
+        const rows = lines.map((line: string) => parseCSVLine(line))
+        const result = hasHeader
+          ? rows.slice(1).map((row: string[]) => {
+              const obj: Record<string, any> = {}
+              rows[0]!.forEach((header: string, i: number) => { obj[header] = row[i] })
+              return obj
+            })
+          : rows
+        return JSON.stringify(result, null, 2)
+      }
+
+      if (format === 'xml') {
+        const headers = parseCSVLine(lines[0]!)
+        let xml = '<?xml version="1.0" encoding="UTF-8"?>\n<rows>\n'
+        for (let i = 1; i < lines.length; i++) {
+          const values = parseCSVLine(lines[i]!)
+          xml += '  <row>\n'
+          headers.forEach((header: string, idx: number) => {
+            xml += `    <${header}>${escapeXml(values[idx] || '')}</${header}>\n`
+          })
+          xml += '  </row>\n'
+        }
+        xml += '</rows>'
+        return xml
+      }
+
+      if (format === 'yaml') {
+        const headers = parseCSVLine(lines[0]!)
+        const rows: Record<string, any>[] = []
+        for (let i = 1; i < lines.length; i++) {
+          const values = parseCSVLine(lines[i]!)
+          const obj: Record<string, any> = {}
+          headers.forEach((header: string, idx: number) => { obj[header] = values[idx] })
+          rows.push(obj)
+        }
+        const jsYaml = await import('js-yaml')
+        return jsYaml.dump(rows, { lineWidth: -1 })
+      }
+
+      if (format === 'sql') {
+        const headers = parseCSVLine(lines[0]!)
+        let sql = ''
+        for (let i = 1; i < lines.length; i++) {
+          const values = parseCSVLine(lines[i]!)
+          const cols = headers.join(', ')
+          const vals = values.map((v: string) => `'${v.replace(/'/g, "''")}'`).join(', ')
+          sql += `INSERT INTO ${tableName} (${cols}) VALUES (${vals});\n`
+        }
+        return sql.trim()
+      }
+
+      throw new Error('Invalid format. Use: json, xml, yaml, sql')
+    },
+  },
+
+  'ini-converter': {
+    description: 'Convert INI to JSON, XML, or YAML',
+    schema: {
+      type: 'object',
+      properties: {
+        ini: { type: 'string', description: 'INI content to convert' },
+        format: { type: 'string', enum: ['json', 'xml', 'yaml'], description: 'Output format' },
+      },
+      required: ['ini', 'format'],
+    },
+    handler: async (input) => {
+      const { ini, format } = input
+      const obj = parseIni(ini)
+
+      if (format === 'json') return JSON.stringify(obj, null, 2)
+      if (format === 'xml') return jsonToXml(obj, 'config')
+      if (format === 'yaml') {
+        const jsYaml = await import('js-yaml')
+        return jsYaml.dump(obj, { lineWidth: -1 })
+      }
+      throw new Error('Invalid format. Use: json, xml, yaml')
     },
   },
 

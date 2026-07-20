@@ -25,6 +25,8 @@ export function AITools({ toolId }: AIToolsProps) {
   if (toolId === 'ai-architecture-diagram') return <AIArchitectureDiagramTool />
   if (toolId === 'ai-prompt-optimizer') return <AIPromptOptimizerTool />
   if (toolId === 'ai-release-notes') return <AIReleaseNotesTool />
+  if (toolId === 'ai-email-generator') return <AIEmailGeneratorTool />
+  if (toolId === 'ai-social-post') return <AISocialPostTool />
   return null
 }
 
@@ -548,6 +550,135 @@ function AIReleaseNotesTool() {
             placeholder="e.g. v2.1.0, 1.5.3..."
             className="input-base"
           />
+        </div>
+      }
+    />
+  )
+}
+
+function AIEmailGeneratorTool() {
+  const [style, setStyle] = useState('professional')
+  const [recipientContext, setRecipientContext] = useState('')
+
+  const styles = [
+    { value: 'professional', label: 'Professional - Formal business tone' },
+    { value: 'friendly', label: 'Friendly - Warm and approachable' },
+    { value: 'short', label: 'Short - Concise, no fluff' },
+    { value: 'persuasive', label: 'Persuasive - Action-oriented' },
+    { value: 'apologetic', label: 'Apologetic - Sincere and empathetic' },
+    { value: 'follow-up', label: 'Follow-up - References prior contact' },
+  ]
+
+  return (
+    <AIToolShell
+      toolId="ai-email-generator"
+      systemPromptKey="ai-email-generator"
+      inputLabel="Describe the email scenario or paste your draft"
+      inputPlaceholder={`Describe what you need, or paste a draft to improve:\n\nExample: Write an email to my client Sarah explaining that the project deadline needs to move by one week due to unexpected technical issues. Keep it apologetic but professional.\n\nOr paste an existing email to improve its tone and clarity.`}
+      submitLabel="Generate Email"
+      buildToolFields={(input) => ({ input, style, recipientContext })}
+      extraFields={
+        <div className="space-y-4">
+          <div>
+            <label className="block font-medium text-foreground mb-2">Email style</label>
+            <select value={style} onChange={(e) => setStyle(e.target.value)} className="input-base">
+              {styles.map((s) => (
+                <option key={s.value} value={s.value}>
+                  {s.label}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label className="block font-medium text-foreground mb-2">
+              Recipient context{' '}
+              <span className="text-muted-foreground text-xs font-normal">(optional)</span>
+            </label>
+            <input
+              type="text"
+              value={recipientContext}
+              onChange={(e) => setRecipientContext(e.target.value)}
+              placeholder="e.g. manager, new client, long-term colleague, unknown contact..."
+              className="input-base"
+            />
+          </div>
+        </div>
+      }
+    />
+  )
+}
+
+function AISocialPostTool() {
+  const [tone, setTone] = useState('')
+
+  const platformOptions = [
+    { value: 'linkedin', label: 'LinkedIn' },
+    { value: 'twitter', label: 'Twitter / X' },
+    { value: 'instagram', label: 'Instagram' },
+    { value: 'facebook', label: 'Facebook' },
+    { value: 'whatsapp', label: 'WhatsApp' },
+    { value: 'tiktok', label: 'TikTok' },
+    { value: 'threads', label: 'Threads' },
+  ]
+
+  const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>(['linkedin'])
+
+  const togglePlatform = (value: string) => {
+    setSelectedPlatforms((prev) =>
+      prev.includes(value) ? prev.filter((p) => p !== value) : [...prev, value]
+    )
+  }
+
+  return (
+    <AIToolShell
+      toolId="ai-social-post"
+      systemPromptKey="ai-social-post"
+      inputLabel="Topic or content idea"
+      inputPlaceholder={`Describe what you want to post about:\n\nExample: We just launched our new AI developer tools platform with 130+ free tools. Want to share this with our community and drive traffic to the site.\n\nOr paste existing content to repurpose across platforms.`}
+      submitLabel="Generate Posts"
+      buildToolFields={(input) => ({
+        topic: input,
+        platforms: selectedPlatforms.join(', '),
+        tone,
+      })}
+      extraFields={
+        <div className="space-y-4">
+          <div>
+            <label className="block font-medium text-foreground mb-3">Platforms</label>
+            <div className="flex flex-wrap gap-2">
+              {platformOptions.map((p) => (
+                <button
+                  key={p.value}
+                  type="button"
+                  onClick={() => togglePlatform(p.value)}
+                  className={`px-3 py-1.5 rounded-lg text-sm font-medium border transition-colors ${
+                    selectedPlatforms.includes(p.value)
+                      ? 'bg-primary text-primary-foreground border-primary'
+                      : 'bg-background border-border text-muted-foreground hover:border-primary/50'
+                  }`}
+                >
+                  {p.label}
+                </button>
+              ))}
+            </div>
+            {selectedPlatforms.length === 0 && (
+              <p className="text-xs text-red-500 mt-1">Select at least one platform.</p>
+            )}
+          </div>
+          <div>
+            <label className="block font-medium text-foreground mb-2">
+              Tone <span className="text-muted-foreground text-xs font-normal">(optional)</span>
+            </label>
+            <select value={tone} onChange={(e) => setTone(e.target.value)} className="input-base">
+              <option value="">Auto (match platform defaults)</option>
+              <option value="inspirational">Inspirational</option>
+              <option value="educational">Educational</option>
+              <option value="promotional">Promotional</option>
+              <option value="humorous">Humorous</option>
+              <option value="personal">Personal / Storytelling</option>
+              <option value="announcement">Announcement</option>
+            </select>
+          </div>
         </div>
       }
     />

@@ -1,6 +1,6 @@
 # AI Developer Tools
 
-A comprehensive collection of **131 free developer and AI-powered tools** for developers and creators. All tools are instant, require no signup, and work completely in your browser.
+A comprehensive collection of **136 free developer and AI-powered tools** for developers and creators. All tools are instant, require no signup, and work completely in your browser.
 
 [Visit Live](ai-developer-tools.vercel.app/)
 
@@ -42,11 +42,11 @@ curl -X POST https://ai-developer-tools.vercel.app/api/mcp \
 
 ## 🚀 Features
 
-- **131 Tools** across multiple categories
-- **111 MCP-Enabled Tools** callable by Claude AI via `/api/mcp`
+- **136 Tools** across multiple categories
+- **116 MCP-Enabled Tools** callable by Claude AI via `/api/mcp`
 - **Pinnable Tools** - Pin your frequently used tools for quick access
 - **Search & Filter** - Find tools by name, description, or category
-- **19 AI Tools** - Bring your own API key; supports OpenAI, Anthropic, Google, Groq, Mistral, Azure, Bedrock, and Ollama
+- **21 AI Tools** - Bring your own API key; supports OpenAI, Anthropic, Google, Groq, Mistral, Azure, Bedrock, and Ollama
 - **Dark Mode** - Full light/dark theme support
 - **No Signup Required** - Works instantly in your browser
 - **Fully Responsive** - Works perfectly on mobile, tablet, and desktop
@@ -57,7 +57,7 @@ curl -X POST https://ai-developer-tools.vercel.app/api/mcp \
 
 > **MCP column key:** `✅` = callable via `/api/mcp` · `—` = browser-only or coming soon
 
-### Developer Tools (50 tools)
+### Developer Tools (41 tools)
 
 | Tool | Status | MCP | Description |
 |------|--------|-----|-------------|
@@ -74,7 +74,7 @@ curl -X POST https://ai-developer-tools.vercel.app/api/mcp \
 | **Diff Checker** | ✅ Built | ✅ | Compare two texts and highlight differences |
 | **QR Code Generator** | ✅ Built | ✅ | Generate QR codes from any text or URL instantly |
 | **REST API Tester** | ✅ Built | ✅ | Test REST APIs with custom headers, authentication, and request body |
-| **Favicon Generator** | ✅ Built | — | Upload an image and generate favicons in all standard sizes + .ico + ZIP (browser-only) |
+| **Favicon Generator** | ✅ Built | ✅ | Upload an image and generate favicons in all standard sizes + .ico + ZIP |
 | **SVG Viewer** | ✅ Built | — | Paste or upload SVG code and see a live rendered preview with source editing |
 | **Business Day Calculator** | ✅ Built | ✅ | Add or subtract N business days from a date, with optional holiday exclusions |
 | **Relative Date Calculator** | ✅ Built | ✅ | Calculate difference between two dates, or add/subtract days from a date |
@@ -99,8 +99,11 @@ curl -X POST https://ai-developer-tools.vercel.app/api/mcp \
 | **SSE Tester** | ✅ Built | — | Connect to a Server-Sent Events endpoint and display each streamed event with its data, type, and timestamp; browser-only |
 | **SVG Optimizer** | ✅ Built | — | Remove comments, metadata, editor attributes, and whitespace from SVG source to reduce file size; browser-only |
 | **EXIF Viewer** | ✅ Built | — | Display all EXIF metadata in a JPEG or TIFF file: camera model, exposure, GPS coordinates, timestamps; browser-only |
+| **Color Code Picker** | ✅ Built | ✅ | Convert between HEX, RGB, and HSL color formats |
+| **Base64 Encoder** | ✅ Built | ✅ | Encode data to Base64 format |
+| **Base64 Decoder** | ✅ Built | ✅ | Decode Base64 encoded data |
 
-### Validation Tools (16 tools)
+### Validation Tools (13 tools)
 
 | Tool | Status | MCP | Description |
 |------|--------|-----|-------------|
@@ -137,20 +140,17 @@ curl -X POST https://ai-developer-tools.vercel.app/api/mcp \
 | **GraphQL Formatter** | ✅ Built | ✅ | Format and pretty-print GraphQL queries, mutations, subscriptions, and schema documents |
 | **SQL Minifier** | ✅ Built | ✅ | Strip comments and unnecessary whitespace from SQL to produce compact output |
 
-### Converter Tools (33 tools)
+### Converter Tools (39 tools)
 
 | Tool | Status | MCP | Description |
 |------|--------|-----|-------------|
 | **Timestamp Converter** | ✅ Built | ✅ | Convert between Unix timestamps and readable dates |
 | **Timezone Converter** | ✅ Built | ✅ | Convert a datetime between any two IANA timezones with DST-awareness |
 | **ISO 8601 Converter** | ✅ Built | ✅ | Convert date/time strings between ISO 8601, RFC 2822, human-readable, and Unix timestamp formats |
-| **Color Code Picker** | ✅ Built | ✅ | Convert between HEX, RGB, and HSL color formats |
 | **URL Encoder/Decoder** | ✅ Built | ✅ | Encode and decode URLs and special characters |
 | **HTML Encoder/Decoder** | ✅ Built | ✅ | Encode and decode HTML entities |
 | **JavaScript String Escaper** | ✅ Built | ✅ | Escape special characters in JavaScript strings |
 | **XML String Escaper** | ✅ Built | ✅ | Escape special characters in XML strings |
-| **Base64 Encoder** | ✅ Built | ✅ | Encode data to Base64 format |
-| **Base64 Decoder** | ✅ Built | ✅ | Decode Base64 encoded data |
 | **Text Case Converter** | ✅ Built | ✅ | Convert text between different cases (uppercase, camelCase, snake_case, etc.) |
 | **JSON to Java** | ✅ Built | ✅ | Generate Java POJO classes from JSON |
 | **JSON to XML** | ✅ Built | ✅ | Convert JSON to XML format |
@@ -161,10 +161,12 @@ curl -X POST https://ai-developer-tools.vercel.app/api/mcp \
 | **INI to JSON** | ✅ Built | ✅ | Convert INI configuration to JSON |
 | **INI to XML** | ✅ Built | ✅ | Convert INI to XML format |
 | **INI to YAML** | ✅ Built | ✅ | Convert INI to YAML format |
+| **INI Converter** | ✅ Built | ✅ | Convert INI files to JSON, XML, or YAML (combined) |
 | **CSV to JSON** | ✅ Built | ✅ | Convert CSV data to JSON |
 | **CSV to XML** | ✅ Built | ✅ | Convert CSV to XML format |
 | **CSV to YAML** | ✅ Built | ✅ | Convert CSV to YAML format |
 | **CSV to SQL** | ✅ Built | ✅ | Generate SQL INSERT statements from CSV |
+| **CSV Converter** | ✅ Built | ✅ | Convert CSV to JSON, XML, YAML, or SQL (combined) |
 | **YAML to JSON** | ✅ Built | ✅ | Convert YAML to JSON format |
 | **JSON to YAML** | ✅ Built | ✅ | Convert JSON to YAML format |
 | **RGB to HEX** | ✅ Built | ✅ | Convert RGB color values to HEX format |
@@ -182,10 +184,9 @@ curl -X POST https://ai-developer-tools.vercel.app/api/mcp \
 | **HTML / Markdown Converter** | ✅ Built | ✅ | Convert HTML to clean Markdown, or render Markdown to styled HTML |
 | **Excel / CSV to JSON** | ✅ Built | ✅ | Convert Excel (.xlsx, .xls) or CSV files to JSON; multi-sheet with per-sheet header row config |
 | **Excel / CSV to Markdown** | ✅ Built | ✅ | Convert Excel (.xlsx, .xls) or CSV files to Markdown tables; multi-sheet with per-sheet header row config |
-| **PDF Editor** | ✅ Built | — | Edit PDF files: add annotations, rotate or delete pages, merge or split PDFs (browser-only) |
 | **SVG to PNG** | ✅ Built | — | Render an SVG at any scale (1×, 2×, 3×, 4×) and download as PNG with optional transparent background; browser-only |
 
-### AI Tools (19 tools)
+### AI Tools (21 tools)
 
 All AI tools require you to supply your own API credentials.
 Credentials are passed in each request body and never stored server-side.
@@ -212,8 +213,10 @@ Supported providers: OpenAI, Anthropic, Google Gemini, Groq, Mistral, Azure Open
 | **AI Architecture Diagram Generator** | ✅ Built | ✅ | Describe your system; get Mermaid diagram source code. Pairs with the Mermaid Preview tool for instant visualization. |
 | **AI Prompt Optimizer** | ✅ Built | ✅ | Paste a prompt; get an analysis of issues and an optimized version with clearer instructions and better framing. |
 | **AI Release Notes Generator** | ✅ Built | ✅ | Paste commit log or PR titles; get polished release notes grouped by features, fixes, and breaking changes. |
+| **AI Email Generator** | ✅ Built | ✅ | Generate or rewrite professional emails from a scenario or draft. Styles: professional, friendly, short, persuasive, apologetic, follow-up. |
+| **AI Social Media Post Generator** | ✅ Built | ✅ | Generate platform-optimized posts for LinkedIn, Twitter/X, Instagram, Facebook, WhatsApp, TikTok, and Threads from a topic or idea. |
 
-### Utilities (5 tools)
+### Utilities (6 tools)
 
 | Tool | Status | MCP | Description |
 |------|--------|-----|-------------|
@@ -222,15 +225,16 @@ Supported providers: OpenAI, Anthropic, Google Gemini, Groq, Mistral, Azure Open
 | **Counter** | ✅ Built | — | Multiple counters with custom names, step size, increment/decrement/reset, local storage (browser-only) |
 | **Image Compressor** | ✅ Built | — | Compress JPEG, PNG, or WebP images with an adjustable quality slider; shows before/after sizes and side-by-side preview; browser-only |
 | **Image Resizer** | ✅ Built | — | Resize images to exact pixel dimensions or a percentage scale; optional aspect ratio lock; browser-only |
+| **PDF Editor** | ✅ Built | — | Edit PDF files: add annotations, rotate or delete pages, merge or split PDFs (browser-only) |
 
 ---
 
 ## 📊 Stats
 
-- **Total Tools**: 139
-- **Built & Ready**: 139 ✅
+- **Total Tools**: 136
+- **Built & Ready**: 136 ✅
 - **Coming Soon**: 0 🏗️
-- **MCP Enabled**: 119 ✅ (callable via `/api/mcp`)
+- **MCP Enabled**: 116 ✅ (callable via `/api/mcp`)
 - **Categories**: 6 (Developer, Validation, Formatter, Converter, AI Tools, Utilities)
 
 ---
@@ -308,7 +312,7 @@ pnpm run lint
 - **Large Screen**: 4-column grid
 
 ### MCP Integration
-- 57 tools are exposed via the `/api/mcp` endpoint
+- 116 tools are exposed via the `/api/mcp` endpoint
 - Claude AI can access and use any MCP-enabled tool programmatically
 - Perfect for AI-powered automation and chaining tools together
 - Browser-only tools (Notes, Favicon Generator, QR Scanner) are not available via MCP
