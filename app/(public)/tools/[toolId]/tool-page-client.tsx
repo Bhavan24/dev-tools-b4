@@ -48,6 +48,7 @@ import { JsonToPhpTool } from '@/components/tools/json-to-php-tool'
 import { HtmlBeautifierTool } from '@/components/tools/html-beautifier-tool'
 import { SqlFormatterTool } from '@/components/tools/sql-formatter-tool'
 import { IniConverterTool } from '@/components/tools/ini-converter-tool'
+import { CsvConverterTool } from '@/components/tools/csv-converter-tool'
 import { CsvToXmlTool, CsvToYamlTool } from '@/components/tools/csv-extra-converter-tool'
 import { UnitConverterTool } from '@/components/tools/unit-converter-tool'
 import { TimestampConverterTool } from '@/components/tools/timestamp-converter-tool'
@@ -116,6 +117,7 @@ const TOOL_REGISTRY: Record<string, () => React.ReactElement> = {
   'idn-converter': () => <EncodeDecodeTool toolId="idn-converter" />,
   'base64-encoder': () => <Base64EncoderTool />,
   'base64-decoder': () => <Base64DecoderTool />,
+  'base64-encoder-decoder': () => <EncodeDecodeTool toolId="base64-encoder-decoder" />,
   'js-string-escaper': () => <JsStringEscaperTool />,
 
   // Formatters
@@ -151,6 +153,8 @@ const TOOL_REGISTRY: Record<string, () => React.ReactElement> = {
   'ini-to-json': () => <IniConverterTool />,
   'ini-to-xml': () => <IniConverterTool />,
   'ini-to-yaml': () => <IniConverterTool />,
+  'ini-converter': () => <IniConverterTool />,
+  'csv-converter': () => <CsvConverterTool />,
 
   // Colors
   'color-code-picker': () => <ColorTools toolId="color-code-picker" />,
@@ -290,6 +294,8 @@ const TOOL_REGISTRY: Record<string, () => React.ReactElement> = {
   'ai-architecture-diagram': () => <AITools toolId="ai-architecture-diagram" />,
   'ai-prompt-optimizer': () => <AITools toolId="ai-prompt-optimizer" />,
   'ai-release-notes': () => <AITools toolId="ai-release-notes" />,
+  'ai-email-generator': () => <AITools toolId="ai-email-generator" />,
+  'ai-social-post': () => <AITools toolId="ai-social-post" />,
   'researcher-agent': () => <ResearcherAgentTool />,
   'workflow-builder': () => <WorkflowBuilderTool />,
 }

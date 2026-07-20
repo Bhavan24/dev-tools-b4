@@ -165,6 +165,40 @@ Given a list of commit messages or PR titles, produce polished release notes:
 - Format as Markdown with a version header if a version is provided
 
 Return only the release notes Markdown.`,
+
+  'ai-email-generator': `You are an expert professional communications writer specializing in email composition and improvement.
+
+Given a scenario description or a draft email, produce a polished result based on the requested style:
+- professional: formal, clear, respectful tone suited for business correspondence
+- friendly: warm, conversational but still professional
+- short: ultra-concise, no fluff, gets straight to the point
+- persuasive: compelling, action-oriented, highlights benefits
+- apologetic: sincere, empathetic, takes responsibility clearly
+- follow-up: gentle, referencing previous contact, clear call to action
+
+Always include:
+1. Subject line (if not provided)
+2. Salutation
+3. Well-structured body
+4. Clear call to action (if applicable)
+5. Professional sign-off
+
+Return only the final email (subject line first, then body). No meta-commentary.`,
+
+  'ai-social-post': `You are an expert social media content strategist who writes engaging, platform-optimized posts.
+
+Platform-specific rules you MUST follow:
+- LinkedIn: professional tone, 150-300 words, can use line breaks, up to 3 relevant hashtags, no emojis in excess
+- Twitter/X: max 280 characters, punchy and direct, 1-2 hashtags, emojis optional
+- Instagram: visual storytelling, 100-200 words, 5-10 hashtags at the end, emojis welcome
+- Facebook: conversational, 50-150 words, 1-2 hashtags, relatable and shareable
+- WhatsApp: casual and personal, very short (1-3 sentences), no hashtags, warm tone
+- TikTok: energetic, trend-aware, 50-100 words, call-to-action, 3-5 hashtags
+- Threads: casual, conversational, max 500 characters, minimal hashtags
+
+For the requested platform(s), generate a ready-to-post version.
+If multiple platforms are requested, clearly label each section.
+Return only the post content, no explanation.`,
 }
 
 export const aiToolHandlers: Record<string, AIToolHandler> = {
@@ -667,6 +701,76 @@ export const aiToolHandlers: Record<string, AIToolHandler> = {
     },
   },
 
+  'ai-email-generator': {
+    description: 'Generate or improve professional emails from a scenario or draft using AI',
+    systemPrompt: AI_SYSTEM_PROMPTS['ai-email-generator'],
+    schema: {
+      type: 'object',
+      properties: {
+        input: { type: 'string', description: 'Describe the email scenario or paste your draft email' },
+        style: {
+          type: 'string',
+          description: 'Email style: professional, friendly, short, persuasive, apologetic, follow-up',
+        },
+        recipientContext: {
+          type: 'string',
+          description: 'Optional context about the recipient (e.g. manager, client, colleague, unknown)',
+        },
+        systemPrompt: { type: 'string', description: 'Optional custom system prompt override' },
+        ...COMMON_AI_SCHEMA_FIELDS,
+        resourceName: { type: 'string', description: 'Azure resource name (Azure only)' },
+        region: { type: 'string', description: 'AWS region (Bedrock only)' },
+        accessKeyId: { type: 'string', description: 'AWS access key ID (Bedrock only)' },
+        secretAccessKey: { type: 'string', description: 'AWS secret access key (Bedrock only)' },
+        baseUrl: { type: 'string', description: 'Ollama base URL (Ollama only)' },
+      },
+      required: ['input', 'style', 'provider', 'modelId'],
+    },
+    handler: async (input) => {
+      const config = buildAIConfig(input)
+      const systemPrompt = input.systemPrompt || AI_SYSTEM_PROMPTS['ai-email-generator']
+      const recipient = input.recipientContext ? `Recipient context: ${input.recipientContext}\n` : ''
+      const userInput = `Style: ${input.style}\n${recipient}\n${input.input}`
+      const result = await invokeAI(config, systemPrompt, userInput)
+      return { result }
+    },
+  },
+
+  'ai-social-post': {
+    description: 'Generate platform-optimized social media posts for LinkedIn, Instagram, Twitter, Facebook, WhatsApp, TikTok, and Threads using AI',
+    systemPrompt: AI_SYSTEM_PROMPTS['ai-social-post'],
+    schema: {
+      type: 'object',
+      properties: {
+        topic: { type: 'string', description: 'Topic, idea, or content to turn into a social post' },
+        platforms: {
+          type: 'string',
+          description: 'Comma-separated platforms: linkedin, twitter, instagram, facebook, whatsapp, tiktok, threads',
+        },
+        tone: {
+          type: 'string',
+          description: 'Optional tone: inspirational, educational, promotional, humorous, personal, announcement',
+        },
+        systemPrompt: { type: 'string', description: 'Optional custom system prompt override' },
+        ...COMMON_AI_SCHEMA_FIELDS,
+        resourceName: { type: 'string', description: 'Azure resource name (Azure only)' },
+        region: { type: 'string', description: 'AWS region (Bedrock only)' },
+        accessKeyId: { type: 'string', description: 'AWS access key ID (Bedrock only)' },
+        secretAccessKey: { type: 'string', description: 'AWS secret access key (Bedrock only)' },
+        baseUrl: { type: 'string', description: 'Ollama base URL (Ollama only)' },
+      },
+      required: ['topic', 'platforms', 'provider', 'modelId'],
+    },
+    handler: async (input) => {
+      const config = buildAIConfig(input)
+      const systemPrompt = input.systemPrompt || AI_SYSTEM_PROMPTS['ai-social-post']
+      const tone = input.tone ? `Tone: ${input.tone}\n` : ''
+      const userInput = `Platforms: ${input.platforms}\n${tone}\nTopic/Content:\n${input.topic}`
+      const result = await invokeAI(config, systemPrompt, userInput)
+      return { result }
+    },
+  },
+
   'workflow-builder': {
     description: 'Execute a visual AI workflow from a JSON workflow definition',
     systemPrompt: '',
@@ -696,10 +800,9 @@ export const aiToolHandlers: Record<string, AIToolHandler> = {
       } catch {
         throw new Error('workflow must be a valid JSON string')
       }
-      const aiConfig = buildAIConfig(input)
       // Dynamic import to avoid loading ReactFlow on server startup
       const { executeWorkflow } = await import('./workflow-engine')
-      const result = await executeWorkflow(workflowDef, input.input, aiConfig)
+      const result = await executeWorkflow(workflowDef, input.input)
       return result
     },
   },

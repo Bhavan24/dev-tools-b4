@@ -201,6 +201,22 @@ export const TOOLS = [
       'Paste a commit log or PR titles and get polished, user-focused release notes grouped by category: features, fixes, and breaking changes.',
     shortDescription: 'Generate release notes with AI',
   },
+  {
+    id: 'ai-email-generator',
+    name: 'AI Email Generator',
+    category: TOOLS_CATEGORIES.AI_TOOLS,
+    description:
+      'Generate or rewrite professional emails from a scenario description or draft. Choose from multiple styles: professional, friendly, short, persuasive, apologetic, and follow-up.',
+    shortDescription: 'Write & improve emails with AI',
+  },
+  {
+    id: 'ai-social-post',
+    name: 'AI Social Media Post Generator',
+    category: TOOLS_CATEGORIES.AI_TOOLS,
+    description:
+      'Generate platform-optimized social media posts for LinkedIn, Twitter/X, Instagram, Facebook, WhatsApp, TikTok, and Threads from a topic or idea.',
+    shortDescription: 'Generate social posts with AI',
+  },
 
   // Developer Tools
   {
@@ -237,6 +253,13 @@ export const TOOLS = [
     category: TOOLS_CATEGORIES.DEVELOPER,
     description: 'Decode Base64 text back to plain text',
     shortDescription: 'Decode Base64',
+  },
+  {
+    id: 'base64-encoder-decoder',
+    name: 'Base64 Encoder / Decoder',
+    category: TOOLS_CATEGORIES.DEVELOPER,
+    description: 'Encode text to Base64 or decode Base64 back to plain text',
+    shortDescription: 'Encode and decode Base64',
   },
   {
     id: 'color-code-picker',
@@ -754,6 +777,20 @@ export const TOOLS = [
     category: TOOLS_CATEGORIES.CONVERTER,
     description: 'Convert INI configuration to YAML',
     shortDescription: 'INI to YAML',
+  },
+  {
+    id: 'ini-converter',
+    name: 'INI Converter',
+    category: TOOLS_CATEGORIES.CONVERTER,
+    description: 'Convert INI configuration files to JSON, XML, or YAML format',
+    shortDescription: 'Convert INI to JSON, XML, YAML',
+  },
+  {
+    id: 'csv-converter',
+    name: 'CSV Converter',
+    category: TOOLS_CATEGORIES.CONVERTER,
+    description: 'Convert CSV data to JSON, XML, YAML, or SQL INSERT statements',
+    shortDescription: 'Convert CSV to JSON, XML, YAML, SQL',
   },
 
   {
